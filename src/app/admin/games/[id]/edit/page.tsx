@@ -1,3 +1,4 @@
+import { connection } from 'next/server'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { GameForm } from '@/components/admin/GameForm'
@@ -5,6 +6,7 @@ import { GameForm } from '@/components/admin/GameForm'
 type Props = { params: Promise<{ id: string }> }
 
 export default async function EditGamePage({ params }: Props) {
+  await connection()
   const { id } = await params
   const supabase = await createClient()
   const { data: game } = await supabase.from('games').select('*').eq('id', id).single()
