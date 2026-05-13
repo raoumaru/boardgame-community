@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { connection } from 'next/server'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
@@ -5,9 +6,8 @@ import { GameForm } from '@/components/admin/GameForm'
 
 type Props = { params: Promise<{ id: string }> }
 
-export default async function EditGamePage({ params }: Props) {
+async function EditGameLoader({ id }: { id: string }) {
   await connection()
-  const { id } = await params
   const supabase = await createClient()
   const { data: game } = await supabase.from('games').select('*').eq('id', id).single()
   if (!game) notFound()
@@ -19,5 +19,14 @@ export default async function EditGamePage({ params }: Props) {
         <GameForm game={game} />
       </div>
     </div>
+  )
+}
+
+export default async function EditGamePage({ params }: Props) {
+  const { id } = await params
+  return (
+    <Suspense fallback={<div className="p-6 text-gray-500">読み込み中...</div>}>
+      <EditGameLoader id={id} />
+    </Suspense>
   )
 }
