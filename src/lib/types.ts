@@ -25,11 +25,9 @@ export const GENRES = [
   { value: 'family',            label: 'ファミリー' },
   { value: 'party',             label: 'パーティー' },
   { value: 'cooperative',       label: '協力' },
-  { value: 'dice',              label: 'ダイス' },
   { value: 'puzzle',            label: 'パズル' },
   { value: 'hidden_role',       label: '正体隠匿' },
   { value: 'drafting',          label: 'ドラフト' },
-  { value: 'worker_placement',  label: 'ワーカープレイスメント' },
   { value: 'deck_building',     label: 'デッキ構築' },
   { value: 'bluffing',          label: 'ブラフ' },
 ] as const
