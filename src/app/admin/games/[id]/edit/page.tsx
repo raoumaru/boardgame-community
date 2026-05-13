@@ -6,8 +6,9 @@ import { GameForm } from '@/components/admin/GameForm'
 
 type Props = { params: Promise<{ id: string }> }
 
-async function EditGameLoader({ id }: { id: string }) {
+async function EditGameLoader({ params }: Props) {
   await connection()
+  const { id } = await params
   const supabase = await createClient()
   const { data: game } = await supabase.from('games').select('*').eq('id', id).single()
   if (!game) notFound()
@@ -22,11 +23,10 @@ async function EditGameLoader({ id }: { id: string }) {
   )
 }
 
-export default async function EditGamePage({ params }: Props) {
-  const { id } = await params
+export default function EditGamePage({ params }: Props) {
   return (
     <Suspense fallback={<div className="p-6 text-gray-500">読み込み中...</div>}>
-      <EditGameLoader id={id} />
+      <EditGameLoader params={params} />
     </Suspense>
   )
 }
