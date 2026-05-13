@@ -26,7 +26,7 @@ export const GENRES = [
   { value: 'party',             label: 'パーティー' },
   { value: 'cooperative',       label: '協力' },
   { value: 'dice',              label: 'ダイス' },
-  { value: 'abstract',          label: '抽象' },
+  { value: 'puzzle',            label: 'パズル' },
   { value: 'hidden_role',       label: '正体隠匿' },
   { value: 'drafting',          label: 'ドラフト' },
   { value: 'worker_placement',  label: 'ワーカープレイスメント' },
