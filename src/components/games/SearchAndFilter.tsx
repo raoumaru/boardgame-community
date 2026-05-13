@@ -1,0 +1,161 @@
+'use client'
+
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useTransition } from 'react'
+import { GENRES } from '@/lib/types'
+
+const PLAYER_OPTIONS = [
+  { label: 'すべて',  value: '' },
+  { label: '2人',    value: '2' },
+  { label: '3人',    value: '3' },
+  { label: '4人',    value: '4' },
+  { label: '5人',    value: '5' },
+  { label: '6人',    value: '6' },
+  { label: '7人',    value: '7' },
+  { label: '8人以上', value: '8' },
+]
+
+const TIME_OPTIONS = [
+  { label: 'すべて', value: '' },
+  { label: '〜30分', value: '30' },
+  { label: '〜60分', value: '60' },
+  { label: '〜90分', value: '90' },
+  { label: '90分以上', value: '91' },
+]
+
+const DIFFICULTY_OPTIONS = [
+  { label: 'すべて',   value: '' },
+  { label: 'かんたん', value: 'easy' },
+  { label: '普通',     value: 'medium' },
+  { label: '難しい',   value: 'hard' },
+]
+
+export function SearchAndFilter() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [, startTransition] = useTransition()
+
+  const update = useCallback(
+    (key: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (value) {
+        params.set(key, value)
+      } else {
+        params.delete(key)
+      }
+      // 別フィルターをリセットせず保持したままページ遷移
+      startTransition(() => {
+        router.push(`/games?${params.toString()}`, { scroll: false })
+      })
+    },
+    [router, searchParams]
+  )
+
+  const current = {
+    q:          searchParams.get('q') ?? '',
+    players:    searchParams.get('players') ?? '',
+    time:       searchParams.get('time') ?? '',
+    genre:      searchParams.get('genre') ?? '',
+    difficulty: searchParams.get('difficulty') ?? '',
+  }
+
+  const hasFilter = current.players || current.time || current.genre || current.difficulty || current.q
+
+  return (
+    <div className="mb-6 space-y-3">
+
+      {/* 検索バー */}
+      <div className="relative">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          type="search"
+          placeholder="ゲーム名で検索..."
+          defaultValue={current.q}
+          onChange={e => update('q', e.target.value)}
+          className="w-full rounded-xl border-0 bg-white/90 py-2.5 pl-9 pr-4 text-sm text-gray-800 shadow-md placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
+        />
+      </div>
+
+      {/* フィルターチップ群 */}
+      <div className="space-y-2 rounded-xl bg-black/20 p-3 backdrop-blur-sm">
+
+        <FilterRow
+          label="👥 人数"
+          options={PLAYER_OPTIONS}
+          current={current.players}
+          onChange={v => update('players', v)}
+        />
+        <FilterRow
+          label="⏱ 時間"
+          options={TIME_OPTIONS}
+          current={current.time}
+          onChange={v => update('time', v)}
+        />
+        <FilterRow
+          label="🎲 ジャンル"
+          options={[{ label: 'すべて', value: '' }, ...GENRES.map(g => ({ label: g.label, value: g.value }))]}
+          current={current.genre}
+          onChange={v => update('genre', v)}
+        />
+        <FilterRow
+          label="🏆 難易度"
+          options={DIFFICULTY_OPTIONS}
+          current={current.difficulty}
+          onChange={v => update('difficulty', v)}
+        />
+      </div>
+
+      {/* リセットボタン */}
+      {hasFilter && (
+        <button
+          onClick={() => {
+            startTransition(() => router.push('/games', { scroll: false }))
+          }}
+          className="flex items-center gap-1 text-xs text-amber-200/80 underline underline-offset-2 hover:text-amber-100"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          絞り込みをリセット
+        </button>
+      )}
+    </div>
+  )
+}
+
+type FilterRowProps = {
+  label: string
+  options: { label: string; value: string }[]
+  current: string
+  onChange: (v: string) => void
+}
+
+function FilterRow({ label, options, current, onChange }: FilterRowProps) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="w-20 shrink-0 text-xs text-amber-200/70">{label}</span>
+      <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+        {options.map(opt => (
+          <button
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
+            className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              current === opt.value
+                ? 'bg-amber-400 text-amber-900 shadow'
+                : 'bg-white/20 text-white hover:bg-white/30'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}

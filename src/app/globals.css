@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #1A0A04 !important;
+    background-image:
+      radial-gradient(ellipse 90% 55% at 50% 115%, rgba(230, 90, 10, 0.55) 0%, rgba(160, 40, 0, 0.25) 40%, transparent 65%),
+      radial-gradient(ellipse 50% 35% at 10% 95%,  rgba(200, 70, 0, 0.2)   0%, transparent 55%),
+      radial-gradient(ellipse 50% 35% at 90% 95%,  rgba(200, 70, 0, 0.2)   0%, transparent 55%),
+      radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.5) 100%),
+      repeating-linear-gradient(
+        180deg,
+        transparent         0px,
+        transparent         28px,
+        rgba(0,0,0,0.2)     28px,
+        rgba(0,0,0,0.2)     31px
+      ) !important;
+    background-attachment: fixed !important;
+    min-height: 100dvh;
+  }
+}
