@@ -1,6 +1,14 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+
+function toKatakana(str: string): string {
+  return str.replace(/[ぁ-ゖ]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60))
+}
+
+function toHiragana(str: string): string {
+  return str.replace(/[ァ-ヶ]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0x60))
+}
 import Link from 'next/link'
 import { DeleteButton } from '@/components/admin/DeleteButton'
 import { TogglePublishButton } from '@/components/admin/TogglePublishButton'
@@ -29,7 +37,11 @@ export function AdminGamesClient({ games: initialGames }: Props) {
 
   const filtered = useMemo(() => {
     return games.filter(g => {
-      const matchTitle = g.title.toLowerCase().includes(titleFilter.toLowerCase())
+      const q = titleFilter.toLowerCase()
+      const qKata = toKatakana(q)
+      const qHira = toHiragana(q)
+      const t = g.title.toLowerCase()
+      const matchTitle = !q || t.includes(q) || t.includes(qKata) || t.includes(qHira)
       const matchImage =
         imageFilter === 'all' ? true :
         imageFilter === 'has' ? !!g.image_path :
