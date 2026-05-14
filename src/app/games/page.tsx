@@ -43,11 +43,12 @@ async function GamesContent({ searchParams }: { searchParams: SearchParams }) {
     .limit(5);
   const newGameIds = new Set((newGames ?? []).map((g: { id: string }) => g.id));
 
+  const orderByNew = params.new === "true";
   let query = supabase
     .from("games")
     .select("*")
     .eq("is_published", true)
-    .order("sort_order", { ascending: true });
+    .order(orderByNew ? "created_at" : "sort_order", { ascending: !orderByNew });
 
   if (params.q) {
     const kata = toKatakana(params.q)
