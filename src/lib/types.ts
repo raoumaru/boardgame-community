@@ -16,6 +16,7 @@ export type Game = {
   rules: string | null
   recommended_for: string | null
   is_published: boolean
+  is_recommendable: boolean
   sort_order: number
   created_at: string
   updated_at: string

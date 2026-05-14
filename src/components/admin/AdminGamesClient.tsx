@@ -12,6 +12,7 @@ function toHiragana(str: string): string {
 import Link from 'next/link'
 import { DeleteButton } from '@/components/admin/DeleteButton'
 import { TogglePublishButton } from '@/components/admin/TogglePublishButton'
+import { ToggleRecommendButton } from '@/components/admin/ToggleRecommendButton'
 
 type Game = {
   id: string
@@ -21,6 +22,7 @@ type Game = {
   play_time_min: number
   play_time_max: number | null
   is_published: boolean
+  is_recommendable: boolean
   sort_order: number
   image_path: string | null
 }
@@ -117,6 +119,7 @@ export function AdminGamesClient({ games: initialGames }: Props) {
               <th className="px-4 py-3 text-left">時間</th>
               <th className="px-4 py-3 text-left">画像</th>
               <th className="px-4 py-3 text-left">公開</th>
+              <th className="px-4 py-3 text-left">占い</th>
               <th className="px-4 py-3 text-right">操作</th>
             </tr>
           </thead>
@@ -140,6 +143,15 @@ export function AdminGamesClient({ games: initialGames }: Props) {
                     isPublished={game.is_published}
                     onToggle={next =>
                       setGames(prev => prev.map(g => g.id === game.id ? { ...g, is_published: next } : g))
+                    }
+                  />
+                </td>
+                <td className="px-4 py-3">
+                  <ToggleRecommendButton
+                    id={game.id}
+                    isRecommendable={game.is_recommendable}
+                    onToggle={next =>
+                      setGames(prev => prev.map(g => g.id === game.id ? { ...g, is_recommendable: next } : g))
                     }
                   />
                 </td>

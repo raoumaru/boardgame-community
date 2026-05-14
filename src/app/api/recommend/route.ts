@@ -30,6 +30,7 @@ export async function POST(req: NextRequest) {
     .from('games')
     .select('*')
     .eq('is_published', true)
+    .eq('is_recommendable', true)
 
   if (error || !games) {
     return NextResponse.json({ error: 'Failed to fetch games' }, { status: 500 })

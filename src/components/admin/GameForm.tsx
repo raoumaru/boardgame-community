@@ -22,8 +22,9 @@ const schema = z.object({
   play_time_max:   z.coerce.number().optional().nullable(),
   difficulty:      z.enum(['easy', 'medium', 'hard']).optional().nullable(),
   genres:          z.array(z.string()).optional(),
-  is_published:    z.boolean(),
-  sort_order:      z.coerce.number().default(0),
+  is_published:      z.boolean(),
+  is_recommendable:  z.boolean(),
+  sort_order:        z.coerce.number().default(0),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -58,8 +59,9 @@ export function GameForm({ game }: Props) {
       play_time_max:   game?.play_time_max ?? null,
       difficulty:      (game?.difficulty as 'easy'|'medium'|'hard'|null) ?? null,
       genres:          game?.genres ?? [],
-      is_published:    game?.is_published ?? true,
-      sort_order:      game?.sort_order ?? 0,
+      is_published:      game?.is_published ?? true,
+      is_recommendable:  game?.is_recommendable ?? true,
+      sort_order:        game?.sort_order ?? 0,
     },
   })
 
@@ -238,6 +240,10 @@ export function GameForm({ game }: Props) {
         <label className="flex cursor-pointer items-center gap-2">
           <input type="checkbox" {...register('is_published')} className="rounded border-gray-300 text-amber-500" />
           <span className="text-sm font-medium text-gray-700">公開する</span>
+        </label>
+        <label className="flex cursor-pointer items-center gap-2">
+          <input type="checkbox" {...register('is_recommendable')} className="rounded border-gray-300 text-purple-500" />
+          <span className="text-sm font-medium text-gray-700">占い対象にする</span>
         </label>
       </div>
 
