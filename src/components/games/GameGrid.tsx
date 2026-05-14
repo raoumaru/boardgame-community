@@ -8,9 +8,10 @@ import type { Game } from '@/lib/types'
 type Props = {
   games: Game[]
   imageBaseUrl: string
+  newGameIds?: Set<string>
 }
 
-export function GameGrid({ games, imageBaseUrl }: Props) {
+export function GameGrid({ games, imageBaseUrl, newGameIds }: Props) {
   const [selectedGame, setSelectedGame] = useState<Game | null>(null)
 
   if (games.length === 0) {
@@ -33,6 +34,7 @@ export function GameGrid({ games, imageBaseUrl }: Props) {
             key={game.id}
             game={game}
             imageBaseUrl={imageBaseUrl}
+            isNew={newGameIds?.has(game.id) ?? false}
             onClick={() => setSelectedGame(game)}
           />
         ))}

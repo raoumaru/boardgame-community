@@ -6,9 +6,9 @@ import { GENRES } from "@/lib/types";
 
 const VALID_GENRES = new Set<string>(GENRES.map((g) => g.value));
 
-type Props = { game: Game; imageBaseUrl: string; onClick: () => void };
+type Props = { game: Game; imageBaseUrl: string; isNew?: boolean; onClick: () => void };
 
-export function GameCard({ game, imageBaseUrl, onClick }: Props) {
+export function GameCard({ game, imageBaseUrl, isNew = false, onClick }: Props) {
   const imageUrl = game.image_path
     ? `${imageBaseUrl}/${game.image_path}`
     : null;
@@ -20,6 +20,17 @@ export function GameCard({ game, imageBaseUrl, onClick }: Props) {
     >
       {/* 画像 */}
       <div className="relative aspect-[4/3] w-full bg-gray-100">
+        {/* バッジ */}
+        {(isNew || game.is_popular) && (
+          <div className="absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
+            {isNew && (
+              <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold text-white shadow">NEW</span>
+            )}
+            {game.is_popular && (
+              <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-white shadow">人気</span>
+            )}
+          </div>
+        )}
         {imageUrl ? (
           <Image
             src={imageUrl}

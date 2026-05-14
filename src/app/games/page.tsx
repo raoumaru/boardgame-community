@@ -32,6 +32,15 @@ async function GamesContent({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   const supabase = await createClient();
 
+  // NEW判定: created_at が新しい順に上位5件のIDを取得
+  const { data: newGames } = await supabase
+    .from("games")
+    .select("id")
+    .eq("is_published", true)
+    .order("created_at", { ascending: false })
+    .limit(5);
+  const newGameIds = new Set((newGames ?? []).map((g: { id: string }) => g.id));
+
   let query = supabase
     .from("games")
     .select("*")
@@ -87,7 +96,7 @@ async function GamesContent({ searchParams }: { searchParams: SearchParams }) {
   const { data: games } = await query;
 
   return (
-    <GameGrid games={(games ?? []) as Game[]} imageBaseUrl={IMAGE_BASE_URL} />
+    <GameGrid games={(games ?? []) as Game[]} imageBaseUrl={IMAGE_BASE_URL} newGameIds={newGameIds} />
   );
 }
 

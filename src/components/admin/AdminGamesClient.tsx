@@ -13,6 +13,7 @@ import Link from 'next/link'
 import { DeleteButton } from '@/components/admin/DeleteButton'
 import { TogglePublishButton } from '@/components/admin/TogglePublishButton'
 import { ToggleRecommendButton } from '@/components/admin/ToggleRecommendButton'
+import { TogglePopularButton } from '@/components/admin/TogglePopularButton'
 
 type Game = {
   id: string
@@ -23,6 +24,7 @@ type Game = {
   play_time_max: number | null
   is_published: boolean
   is_recommendable: boolean
+  is_popular: boolean
   sort_order: number
   image_path: string | null
 }
@@ -120,6 +122,7 @@ export function AdminGamesClient({ games: initialGames }: Props) {
               <th className="px-4 py-3 text-left">画像</th>
               <th className="px-4 py-3 text-left">公開</th>
               <th className="px-4 py-3 text-left">占い</th>
+              <th className="px-4 py-3 text-left">人気</th>
               <th className="px-4 py-3 text-right">操作</th>
             </tr>
           </thead>
@@ -152,6 +155,15 @@ export function AdminGamesClient({ games: initialGames }: Props) {
                     isRecommendable={game.is_recommendable}
                     onToggle={next =>
                       setGames(prev => prev.map(g => g.id === game.id ? { ...g, is_recommendable: next } : g))
+                    }
+                  />
+                </td>
+                <td className="px-4 py-3">
+                  <TogglePopularButton
+                    id={game.id}
+                    isPopular={game.is_popular}
+                    onToggle={next =>
+                      setGames(prev => prev.map(g => g.id === game.id ? { ...g, is_popular: next } : g))
                     }
                   />
                 </td>

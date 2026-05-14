@@ -24,6 +24,7 @@ const schema = z.object({
   genres:          z.array(z.string()).optional(),
   is_published:      z.boolean(),
   is_recommendable:  z.boolean(),
+  is_popular:        z.boolean(),
   sort_order:        z.coerce.number().default(0),
 })
 
@@ -61,6 +62,7 @@ export function GameForm({ game }: Props) {
       genres:          game?.genres ?? [],
       is_published:      game?.is_published ?? true,
       is_recommendable:  game?.is_recommendable ?? true,
+      is_popular:        game?.is_popular ?? false,
       sort_order:        game?.sort_order ?? 0,
     },
   })
@@ -244,6 +246,10 @@ export function GameForm({ game }: Props) {
         <label className="flex cursor-pointer items-center gap-2">
           <input type="checkbox" {...register('is_recommendable')} className="rounded border-gray-300 text-purple-500" />
           <span className="text-sm font-medium text-gray-700">占い対象にする</span>
+        </label>
+        <label className="flex cursor-pointer items-center gap-2">
+          <input type="checkbox" {...register('is_popular')} className="rounded border-gray-300 text-amber-500" />
+          <span className="text-sm font-medium text-gray-700">人気バッジを付ける</span>
         </label>
       </div>
 
