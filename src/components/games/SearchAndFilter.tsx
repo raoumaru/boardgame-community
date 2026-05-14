@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useTransition, useState } from 'react'
+import type React from 'react'
+import { Users, Clock, Gamepad2, Trophy, Sparkles, Flame, Search, X } from 'lucide-react'
 import { GENRES } from '@/lib/types'
 
 const PLAYER_OPTIONS = [
@@ -81,14 +83,7 @@ export function SearchAndFilter() {
 
       {/* 検索バー */}
       <div className="relative">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
-          fill="none" viewBox="0 0 24 24" stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
         <input
           type="search"
           placeholder="ゲーム名で検索..."
@@ -102,25 +97,25 @@ export function SearchAndFilter() {
       {/* フィルターチップ群 */}
       <div className="divide-y divide-white/10 rounded-xl bg-black/20 backdrop-blur-sm">
         <FilterRow
-          label="👥 人数"
+          label={<><Users className="h-3.5 w-3.5 shrink-0" /><span>人数</span></>}
           options={PLAYER_OPTIONS}
           current={local.players}
           onChange={v => setLocal(prev => ({ ...prev, players: v }))}
         />
         <FilterRow
-          label="⏱ 時間"
+          label={<><Clock className="h-3.5 w-3.5 shrink-0" /><span>時間</span></>}
           options={TIME_OPTIONS}
           current={local.time}
           onChange={v => setLocal(prev => ({ ...prev, time: v }))}
         />
         <FilterRow
-          label="🎲 ジャンル"
+          label={<><Gamepad2 className="h-3.5 w-3.5 shrink-0" /><span>ジャンル</span></>}
           options={[{ label: 'すべて', value: '' }, ...GENRES.map(g => ({ label: g.label, value: g.value }))]}
           current={local.genre}
           onChange={v => setLocal(prev => ({ ...prev, genre: v }))}
         />
         <FilterRow
-          label="🏆 難易度"
+          label={<><Trophy className="h-3.5 w-3.5 shrink-0" /><span>難易度</span></>}
           options={DIFFICULTY_OPTIONS}
           current={local.difficulty}
           onChange={v => setLocal(prev => ({ ...prev, difficulty: v }))}
@@ -134,10 +129,7 @@ export function SearchAndFilter() {
           disabled={isPending}
           className="flex items-center gap-1.5 rounded-xl bg-amber-500 px-5 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-amber-600 disabled:opacity-60"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+          <Search className="h-4 w-4" />
           {isPending ? '検索中...' : '検索'}
         </button>
 
@@ -150,7 +142,8 @@ export function SearchAndFilter() {
               : 'bg-white/15 text-white hover:bg-white/25'
           }`}
         >
-          🆕 新規入荷
+          <Sparkles className="h-4 w-4" />
+          新規入荷
         </button>
 
         <button
@@ -162,7 +155,8 @@ export function SearchAndFilter() {
               : 'bg-white/15 text-white hover:bg-white/25'
           }`}
         >
-          🔥 人気
+          <Flame className="h-4 w-4" />
+          人気
         </button>
 
         {hasFilter && (
@@ -170,9 +164,7 @@ export function SearchAndFilter() {
             onClick={handleReset}
             className="flex items-center gap-1 text-xs text-amber-200/80 underline underline-offset-2 hover:text-amber-100"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="h-3 w-3" />
             リセット
           </button>
         )}
@@ -182,7 +174,7 @@ export function SearchAndFilter() {
 }
 
 type FilterRowProps = {
-  label: string
+  label: React.ReactNode
   options: { label: string; value: string }[]
   current: string
   onChange: (v: string) => void
@@ -191,7 +183,7 @@ type FilterRowProps = {
 function FilterRow({ label, options, current, onChange }: FilterRowProps) {
   return (
     <div className="flex items-start gap-2 p-3">
-      <span className="w-20 shrink-0 pt-1 text-xs text-amber-200/70">{label}</span>
+      <span className="flex w-20 shrink-0 items-center gap-1 pt-1 text-xs text-amber-200/70">{label}</span>
       <div className="flex flex-wrap gap-1.5">
         {options.map(opt => (
           <button

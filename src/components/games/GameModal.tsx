@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import Image from 'next/image'
+import { Users, Clock, Gamepad2, Sparkles } from 'lucide-react'
 import { GenreBadge, DifficultyBadge } from '@/components/ui/Badge'
 import { GENRES } from '@/lib/types'
 
@@ -87,11 +88,11 @@ export function GameModal({ game, imageBaseUrl, onClose }: Props) {
             <h2 className="text-2xl font-bold text-gray-900">{game.title}</h2>
             <div className="mt-2 flex flex-wrap gap-3 text-sm text-gray-500">
               <span className="flex items-center gap-1">
-                <span>👥</span>
+                <Users className="h-4 w-4 shrink-0" />
                 <span>{formatPlayers(game.min_players, game.max_players)}</span>
               </span>
               <span className="flex items-center gap-1">
-                <span>⏱</span>
+                <Clock className="h-4 w-4 shrink-0" />
                 <span>{formatPlayTime(game.play_time_min, game.play_time_max)}</span>
               </span>
             </div>
@@ -109,7 +110,7 @@ export function GameModal({ game, imageBaseUrl, onClose }: Props) {
           {game.rules && (
             <div className="rounded-xl bg-[#F8F5F0] p-4">
               <h3 className="mb-2 flex items-center gap-2 font-bold text-[#2D5A27]">
-                <span>🎲</span>
+                <Gamepad2 className="h-4 w-4 shrink-0" />
                 <span>どんなゲーム？</span>
               </h3>
               <p className="text-sm leading-relaxed text-gray-700">{game.rules}</p>
@@ -120,7 +121,7 @@ export function GameModal({ game, imageBaseUrl, onClose }: Props) {
           {game.recommended_for && (
             <div className="rounded-xl border border-[#C4892A]/30 bg-[#C4892A]/5 p-4">
               <h3 className="mb-2 flex items-center gap-2 font-bold text-[#C4892A]">
-                <span>✨</span>
+                <Sparkles className="h-4 w-4 shrink-0" />
                 <span>こんな人におすすめ</span>
               </h3>
               <p className="text-sm leading-relaxed text-gray-700">{game.recommended_for}</p>

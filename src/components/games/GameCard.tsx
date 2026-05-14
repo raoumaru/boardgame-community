@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Users, Clock } from "lucide-react";
 import { GenreBadge, DifficultyBadge } from "@/components/ui/Badge";
 import { formatPlayers, formatPlayTime } from "@/lib/utils";
 import type { Game, Difficulty } from "@/lib/types";
@@ -67,11 +68,11 @@ export function GameCard({ game, imageBaseUrl, isNew = false, onClick }: Props) 
 
         <div className="space-y-1 text-xs text-gray-500">
           <div className="flex items-center gap-1">
-            <span>👥</span>
+            <Users className="h-3 w-3 shrink-0" />
             <span>{formatPlayers(game.min_players, game.max_players)}</span>
           </div>
           <div className="flex items-center gap-1">
-            <span>⏱</span>
+            <Clock className="h-3 w-3 shrink-0" />
             <span>{formatPlayTime(game.play_time_min, game.play_time_max)}</span>
           </div>
         </div>

@@ -3,10 +3,18 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Gamepad2, Wand2 } from 'lucide-react'
+import type React from 'react'
 
-const NAV_ITEMS = [
-  { href: '/games',     label: 'ゲーム一覧', emoji: '🎲' },
-  { href: '/recommend', label: 'ゲーム占い', emoji: '🔮' },
+type NavItem = {
+  href: string
+  label: string
+  icon: React.FC<{ className?: string }>
+}
+
+const NAV_ITEMS: NavItem[] = [
+  { href: '/games',     label: 'ゲーム一覧', icon: Gamepad2 },
+  { href: '/recommend', label: 'ゲーム占い', icon: Wand2 },
 ]
 
 export function NavMenu() {
@@ -43,6 +51,7 @@ export function NavMenu() {
         <div className="animate-fade-in absolute right-0 mt-2 w-44 rounded-2xl border border-white/10 bg-black/70 backdrop-blur-md shadow-2xl overflow-hidden">
           {NAV_ITEMS.map(item => {
             const isActive = pathname === item.href
+            const Icon = item.icon
             return (
               <Link
                 key={item.href}
@@ -53,7 +62,7 @@ export function NavMenu() {
                     : 'text-white/70 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <span>{item.emoji}</span>
+                <Icon className="h-4 w-4 shrink-0" />
                 <span>{item.label}</span>
                 {isActive && <span className="ml-auto text-xs text-amber-400">●</span>}
               </Link>

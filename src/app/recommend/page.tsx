@@ -3,11 +3,23 @@
 import { useState, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import {
+  User, Users, UserPlus,
+  PartyPopper, Brain,
+  Handshake, EyeOff, Puzzle, Shield, Smile,
+  Zap, Clock, Moon,
+  Sprout, Leaf, TreePine,
+  Wand2, Sparkles, Star,
+  Gamepad2,
+} from 'lucide-react'
+import type React from 'react'
 import { GameModal } from '@/components/games/GameModal'
 import { NavMenu } from '@/components/ui/NavMenu'
 import type { Game } from '@/lib/types'
 
 const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-images`
+
+type IconFC = React.FC<{ className?: string }>
 
 // ─── Questions ──────────────────────────────────────────────────────────────
 
@@ -19,9 +31,9 @@ const STEPS = [
     sub: '仲間の数が、運命のゲームを決める',
     type: 'single' as const,
     options: [
-      { value: '2',   label: '2人',    emoji: '🫂' },
-      { value: '3-4', label: '3〜4人', emoji: '👥' },
-      { value: '5+',  label: '5人以上', emoji: '🎊' },
+      { value: '2',   label: '2人',    icon: User as IconFC },
+      { value: '3-4', label: '3〜4人', icon: Users as IconFC },
+      { value: '5+',  label: '5人以上', icon: UserPlus as IconFC },
     ],
   },
   {
@@ -31,8 +43,8 @@ const STEPS = [
     sub: '心の向かう先に、真の遊びがある',
     type: 'single' as const,
     options: [
-      { value: 'fun',   label: 'わいわい盛り上がりたい', emoji: '🎉' },
-      { value: 'think', label: 'じっくり頭を使いたい',   emoji: '🤔' },
+      { value: 'fun',   label: 'わいわい盛り上がりたい', icon: PartyPopper as IconFC },
+      { value: 'think', label: 'じっくり頭を使いたい',   icon: Brain as IconFC },
     ],
   },
   {
@@ -42,11 +54,11 @@ const STEPS = [
     sub: '複数選べます。直感で選んでください',
     type: 'multi' as const,
     options: [
-      { value: 'cooperative', label: 'みんなで協力',       emoji: '🤝' },
-      { value: 'bluff',       label: 'だまし合い・正体隠匿', emoji: '🎭' },
-      { value: 'puzzle',      label: 'パズル・謎解き',     emoji: '🧩' },
-      { value: 'strategy',    label: '戦略・陣取り',       emoji: '♟️' },
-      { value: 'party',       label: 'ワイワイ盛り上がり', emoji: '🥳' },
+      { value: 'cooperative', label: 'みんなで協力',       icon: Handshake as IconFC },
+      { value: 'bluff',       label: 'だまし合い・正体隠匿', icon: EyeOff as IconFC },
+      { value: 'puzzle',      label: 'パズル・謎解き',     icon: Puzzle as IconFC },
+      { value: 'strategy',    label: '戦略・陣取り',       icon: Shield as IconFC },
+      { value: 'party',       label: 'ワイワイ盛り上がり', icon: Smile as IconFC },
     ],
   },
   {
@@ -56,9 +68,9 @@ const STEPS = [
     sub: '運命は時の中に宿る',
     type: 'single' as const,
     options: [
-      { value: 'short',  label: 'サクッと（〜30分）',  emoji: '⚡' },
-      { value: 'medium', label: 'ふつう（30〜60分）',  emoji: '🕐' },
-      { value: 'long',   label: 'がっつり（60分〜）',  emoji: '🌙' },
+      { value: 'short',  label: 'サクッと（〜30分）',  icon: Zap as IconFC },
+      { value: 'medium', label: 'ふつう（30〜60分）',  icon: Clock as IconFC },
+      { value: 'long',   label: 'がっつり（60分〜）',  icon: Moon as IconFC },
     ],
   },
   {
@@ -68,9 +80,9 @@ const STEPS = [
     sub: '経験が深いほど、運命は複雑に絡み合う',
     type: 'single' as const,
     options: [
-      { value: 'beginner',  label: 'ほぼ初めて',        emoji: '🌱' },
-      { value: 'sometimes', label: 'たまにやる',        emoji: '🌿' },
-      { value: 'often',     label: 'よく遊んでいる',    emoji: '🌳' },
+      { value: 'beginner',  label: 'ほぼ初めて',     icon: Sprout as IconFC },
+      { value: 'sometimes', label: 'たまにやる',     icon: Leaf as IconFC },
+      { value: 'often',     label: 'よく遊んでいる', icon: TreePine as IconFC },
     ],
   },
 ] as const
@@ -79,7 +91,11 @@ type StepKey = typeof STEPS[number]['key']
 type Answers = Partial<Record<StepKey, string | string[]>>
 type Stage = 'intro' | 'quiz' | 'loading' | 'results'
 
-const MEDALS = ['🥇', '🥈', '🥉']
+const RANK_STYLES = [
+  { badge: '1', bgClass: 'bg-amber-400 text-amber-900',   label: 'いちばんのおすすめ' },
+  { badge: '2', bgClass: 'bg-gray-300 text-gray-700',     label: '2番目のおすすめ' },
+  { badge: '3', bgClass: 'bg-orange-700/80 text-orange-100', label: '3番目のおすすめ' },
+]
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -121,7 +137,6 @@ export default function RecommendPage() {
       setStepIndex(i => i + 1)
       setAnimKey(k => k + 1)
     } else {
-      // Last question → submit
       setStage('loading')
       try {
         const body = {
@@ -171,13 +186,23 @@ export default function RecommendPage() {
       <div className="flex min-h-dvh flex-col items-center justify-center px-4 py-12">
         <NavMenu />
         <div className="animate-fade-up w-full max-w-md text-center">
-          {/* Orbiting stars decoration */}
+          {/* Crystal ball decoration */}
           <div className="relative mx-auto mb-8 h-32 w-32">
-            <div className="absolute inset-0 flex items-center justify-center text-7xl">🔮</div>
-            <div className="animate-shimmer absolute -top-1 left-8 text-xl">✨</div>
-            <div className="animate-shimmer absolute right-4 top-4 text-sm" style={{ animationDelay: '0.7s' }}>⭐</div>
-            <div className="animate-shimmer absolute bottom-0 left-2 text-sm" style={{ animationDelay: '1.3s' }}>✨</div>
-            <div className="animate-shimmer absolute bottom-2 right-6 text-xl" style={{ animationDelay: '0.4s' }}>⭐</div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Wand2 className="h-16 w-16 text-amber-300 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]" />
+            </div>
+            <div className="animate-shimmer absolute -top-1 left-8">
+              <Sparkles className="h-5 w-5 text-amber-200/80" />
+            </div>
+            <div className="animate-shimmer absolute right-4 top-4" style={{ animationDelay: '0.7s' }}>
+              <Star className="h-3.5 w-3.5 text-amber-300/70" />
+            </div>
+            <div className="animate-shimmer absolute bottom-0 left-2" style={{ animationDelay: '1.3s' }}>
+              <Sparkles className="h-3.5 w-3.5 text-amber-200/60" />
+            </div>
+            <div className="animate-shimmer absolute bottom-2 right-6" style={{ animationDelay: '0.4s' }}>
+              <Star className="h-5 w-5 text-amber-300/60" />
+            </div>
           </div>
 
           <p className="mb-2 text-xs tracking-[0.3em] text-amber-400/60 uppercase">Board Game Oracle</p>
@@ -213,7 +238,9 @@ export default function RecommendPage() {
       <div className="flex min-h-dvh flex-col items-center justify-center px-4">
         <NavMenu />
         <div className="animate-fade-in text-center">
-          <div className="mb-6 text-7xl animate-shimmer">🔮</div>
+          <div className="mb-6 flex justify-center animate-shimmer">
+            <Wand2 className="h-16 w-16 text-amber-300 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]" />
+          </div>
           <p className="text-lg font-medium text-amber-200">運命のゲームを占っています</p>
           <p className="mt-1 text-sm text-amber-400/60">しばらくお待ちください...</p>
           <div className="mt-6 flex justify-center gap-1.5">
@@ -250,7 +277,6 @@ export default function RecommendPage() {
                 key={game.id}
                 game={game}
                 rank={i}
-                medal={MEDALS[i]}
                 imageBaseUrl={IMAGE_BASE_URL}
                 delay={i * 0.15}
                 onClick={() => setSelectedGame(game)}
@@ -264,7 +290,8 @@ export default function RecommendPage() {
               onClick={handleReset}
               className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 px-6 py-2.5 text-sm text-amber-400 transition-all hover:bg-amber-500/10 hover:border-amber-400"
             >
-              🔮 もう一度占う
+              <Wand2 className="h-4 w-4" />
+              もう一度占う
             </button>
             <div className="mt-4">
               <Link href="/games" className="text-xs text-amber-600/60 hover:text-amber-500/80 transition-colors">
@@ -330,6 +357,7 @@ export default function RecommendPage() {
                 currentStep.type === 'multi'
                   ? multiSelected.includes(opt.value)
                   : answers[currentStep.key as StepKey] === opt.value
+              const Icon = opt.icon
 
               return (
                 <button
@@ -341,7 +369,7 @@ export default function RecommendPage() {
                       : 'border-white/10 bg-white/5 text-white/70 hover:border-amber-400/40 hover:bg-amber-400/8 hover:text-white/90'
                   }`}
                 >
-                  <span className="text-2xl">{opt.emoji}</span>
+                  <Icon className="h-6 w-6 shrink-0" />
                   <span className="text-sm font-medium">{opt.label}</span>
                   {currentStep.type === 'multi' && (
                     <span className={`ml-auto flex h-5 w-5 items-center justify-center rounded-full border text-xs transition-all ${
@@ -369,7 +397,11 @@ export default function RecommendPage() {
               disabled={!canNext}
               className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-amber-900/40 transition-all hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-30"
             >
-              {stepIndex === STEPS.length - 1 ? '🔮 占う' : '次の問いへ →'}
+              {stepIndex === STEPS.length - 1 ? (
+                <><Wand2 className="h-4 w-4" /> 占う</>
+              ) : (
+                <>次の問いへ →</>
+              )}
             </button>
           </div>
 
@@ -388,19 +420,18 @@ export default function RecommendPage() {
 function ResultCard({
   game,
   rank,
-  medal,
   imageBaseUrl,
   delay,
   onClick,
 }: {
   game: Game
   rank: number
-  medal: string
   imageBaseUrl: string
   delay: number
   onClick: () => void
 }) {
   const imageUrl = game.image_path ? `${imageBaseUrl}/${game.image_path}` : null
+  const rankStyle = RANK_STYLES[rank]
 
   return (
     <button
@@ -421,21 +452,29 @@ function ResultCard({
                 className="h-full w-full object-contain"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-2xl text-white/20">🎲</div>
+              <div className="flex h-full w-full items-center justify-center text-white/20">
+                <Gamepad2 className="h-8 w-8" />
+              </div>
             )}
           </div>
-          <span className="absolute -right-2 -top-2 text-xl">{medal}</span>
+          <span className={`absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold shadow ${rankStyle.bgClass}`}>
+            {rankStyle.badge}
+          </span>
         </div>
 
         {/* Info */}
         <div className="min-w-0 flex-1">
-          <p className="mb-0.5 text-xs text-amber-400/50">
-            {rank === 0 ? 'いちばんのおすすめ' : rank === 1 ? '2番目のおすすめ' : '3番目のおすすめ'}
-          </p>
+          <p className="mb-0.5 text-xs text-amber-400/50">{rankStyle.label}</p>
           <h3 className="line-clamp-2 text-base font-bold text-amber-100">{game.title}</h3>
           <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-white/50">
-            <span>👥 {game.min_players}〜{game.max_players}人</span>
-            <span>⏱ {game.play_time_min}{game.play_time_max ? `〜${game.play_time_max}` : ''}分</span>
+            <span className="flex items-center gap-1">
+              <Users className="h-3 w-3 shrink-0" />
+              {game.min_players}〜{game.max_players}人
+            </span>
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3 shrink-0" />
+              {game.play_time_min}{game.play_time_max ? `〜${game.play_time_max}` : ''}分
+            </span>
           </div>
           {game.description && (
             <p className="mt-1.5 line-clamp-2 text-xs text-white/40">{game.description}</p>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { Gamepad2, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { GENRES, DIFFICULTY_LABELS } from '@/lib/types'
 import { slugify } from '@/lib/utils'
@@ -212,13 +213,13 @@ export function GameForm({ game }: Props) {
 
       {/* ルール */}
       <div>
-        <label className={labelClass}>🎲 どんなゲーム？（ルール説明）</label>
+        <label className={`${labelClass} flex items-center gap-1.5`}><Gamepad2 className="h-4 w-4" /> どんなゲーム？（ルール説明）</label>
         <textarea {...register('rules')} rows={4} className={inputClass} placeholder="ワクワクする文体でどんなゲームか書いてね！" />
       </div>
 
       {/* おすすめ */}
       <div>
-        <label className={labelClass}>✨ こんな人におすすめ</label>
+        <label className={`${labelClass} flex items-center gap-1.5`}><Sparkles className="h-4 w-4" /> こんな人におすすめ</label>
         <textarea {...register('recommended_for')} rows={2} className={inputClass} />
       </div>
 

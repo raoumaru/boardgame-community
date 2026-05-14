@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { KeyRound } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 function LoginForm() {
@@ -81,8 +82,8 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-dvh items-center justify-center px-4">
       <div className="w-full max-w-sm rounded-2xl bg-[#FEF3E8]/95 p-8 shadow-2xl">
-        <h1 className="mb-6 text-center text-xl font-bold text-gray-800">
-          🗝️ 管理者ログイン
+        <h1 className="mb-6 flex items-center justify-center gap-2 text-xl font-bold text-gray-800">
+          <KeyRound className="h-5 w-5" /> 管理者ログイン
         </h1>
         <Suspense fallback={<div className="h-48" />}>
           <LoginForm />
