@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useTransition } from 'react'
+import { useCallback, useTransition, useState } from 'react'
 import { GENRES } from '@/lib/types'
 
 const PLAYER_OPTIONS = [
@@ -33,33 +33,34 @@ const DIFFICULTY_OPTIONS = [
 export function SearchAndFilter() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition()
 
-  const update = useCallback(
-    (key: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString())
-      if (value) {
-        params.set(key, value)
-      } else {
-        params.delete(key)
-      }
-      // 別フィルターをリセットせず保持したままページ遷移
-      startTransition(() => {
-        router.push(`/games?${params.toString()}`, { scroll: false })
-      })
-    },
-    [router, searchParams]
-  )
-
-  const current = {
+  const [local, setLocal] = useState({
     q:          searchParams.get('q') ?? '',
     players:    searchParams.get('players') ?? '',
     time:       searchParams.get('time') ?? '',
     genre:      searchParams.get('genre') ?? '',
     difficulty: searchParams.get('difficulty') ?? '',
-  }
+  })
 
-  const hasFilter = current.players || current.time || current.genre || current.difficulty || current.q
+  const handleSearch = useCallback(() => {
+    const params = new URLSearchParams()
+    if (local.q)          params.set('q', local.q)
+    if (local.players)    params.set('players', local.players)
+    if (local.time)       params.set('time', local.time)
+    if (local.genre)      params.set('genre', local.genre)
+    if (local.difficulty) params.set('difficulty', local.difficulty)
+    startTransition(() => {
+      router.push(`/games?${params.toString()}`, { scroll: false })
+    })
+  }, [local, router])
+
+  const handleReset = useCallback(() => {
+    setLocal({ q: '', players: '', time: '', genre: '', difficulty: '' })
+    startTransition(() => router.push('/games', { scroll: false }))
+  }, [router])
+
+  const hasFilter = local.q || local.players || local.time || local.genre || local.difficulty
 
   return (
     <div className="mb-6 space-y-3">
@@ -77,55 +78,67 @@ export function SearchAndFilter() {
         <input
           type="search"
           placeholder="ゲーム名で検索..."
-          defaultValue={current.q}
-          onChange={e => update('q', e.target.value)}
+          value={local.q}
+          onChange={e => setLocal(prev => ({ ...prev, q: e.target.value }))}
+          onKeyDown={e => { if (e.key === 'Enter') handleSearch() }}
           className="w-full rounded-xl border-0 bg-white/90 py-2.5 pl-9 pr-4 text-sm text-gray-800 shadow-md placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
         />
       </div>
 
       {/* フィルターチップ群 */}
       <div className="space-y-2 rounded-xl bg-black/20 p-3 backdrop-blur-sm">
-
         <FilterRow
           label="👥 人数"
           options={PLAYER_OPTIONS}
-          current={current.players}
-          onChange={v => update('players', v)}
+          current={local.players}
+          onChange={v => setLocal(prev => ({ ...prev, players: v }))}
         />
         <FilterRow
           label="⏱ 時間"
           options={TIME_OPTIONS}
-          current={current.time}
-          onChange={v => update('time', v)}
+          current={local.time}
+          onChange={v => setLocal(prev => ({ ...prev, time: v }))}
         />
         <FilterRow
           label="🎲 ジャンル"
           options={[{ label: 'すべて', value: '' }, ...GENRES.map(g => ({ label: g.label, value: g.value }))]}
-          current={current.genre}
-          onChange={v => update('genre', v)}
+          current={local.genre}
+          onChange={v => setLocal(prev => ({ ...prev, genre: v }))}
         />
         <FilterRow
           label="🏆 難易度"
           options={DIFFICULTY_OPTIONS}
-          current={current.difficulty}
-          onChange={v => update('difficulty', v)}
+          current={local.difficulty}
+          onChange={v => setLocal(prev => ({ ...prev, difficulty: v }))}
         />
       </div>
 
-      {/* リセットボタン */}
-      {hasFilter && (
+      {/* 検索ボタン＋リセット */}
+      <div className="flex items-center gap-3">
         <button
-          onClick={() => {
-            startTransition(() => router.push('/games', { scroll: false }))
-          }}
-          className="flex items-center gap-1 text-xs text-amber-200/80 underline underline-offset-2 hover:text-amber-100"
+          onClick={handleSearch}
+          disabled={isPending}
+          className="flex items-center gap-1.5 rounded-xl bg-amber-500 px-5 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-amber-600 disabled:opacity-60"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          絞り込みをリセット
+          {isPending ? '検索中...' : '検索'}
         </button>
-      )}
+
+        {hasFilter && (
+          <button
+            onClick={handleReset}
+            className="flex items-center gap-1 text-xs text-amber-200/80 underline underline-offset-2 hover:text-amber-100"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            絞り込みをリセット
+          </button>
+        )}
+      </div>
     </div>
   )
 }
