@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes shimmer {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.15); }
+}
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(60px) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
+}
+.animate-fade-up  { animation: fadeUp  0.45s ease-out both; }
+.animate-fade-in  { animation: fadeIn  0.3s  ease-out both; }
+.animate-shimmer  { animation: shimmer 2s    ease-in-out infinite; }
+.animate-orbit    { animation: orbit   6s    linear infinite; }
+
 @layer base {
   body {
     background-color: #1A0A04 !important;

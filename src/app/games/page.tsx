@@ -1,7 +1,9 @@
 import { Suspense } from "react";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { GameGrid } from "@/components/games/GameGrid";
 import { SearchAndFilter } from "@/components/games/SearchAndFilter";
+import { NavMenu } from "@/components/ui/NavMenu";
 import type { Game } from "@/lib/types";
 
 type SearchParams = Promise<{
@@ -95,14 +97,22 @@ export default function GamesPage({
   searchParams: SearchParams;
 }) {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+      <NavMenu />
       {/* ヘッダー */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-amber-200 drop-shadow-[0_2px_8px_rgba(255,120,0,0.5)]">
-          ラ王のボドゲ倉庫
-        </h1>
-        <p className="mt-1 text-sm text-orange-200/80">
-          サークル用ボードゲーム一覧
+      <div className="relative mb-6 flex items-center justify-center pt-10">
+        <div className="absolute left-0 top-0">
+          <Image
+            src="/logo.png"
+            alt="ラ王のボドゲ倉庫"
+            width={157}
+            height={59}
+            className="object-contain drop-shadow-[0_2px_12px_rgba(255,120,0,0.4)]"
+            priority
+          />
+        </div>
+        <p className="text-lg font-bold tracking-widest text-amber-200 drop-shadow-[0_2px_8px_rgba(255,120,0,0.5)]">
+          ボードゲーム一覧
         </p>
       </div>
 
