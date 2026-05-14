@@ -1,0 +1,15 @@
+name: Keep Supabase Active
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 毎日 UTC 0時（日本時間 9時）に実行
+  workflow_dispatch:       # 手動実行も可能
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping games page to keep Supabase active
+        run: |
+          curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" \
+            https://boardgame-community-iota.vercel.app/games
