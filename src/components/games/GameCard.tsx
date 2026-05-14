@@ -70,7 +70,7 @@ export function GameCard({ game, imageBaseUrl, onClick }: Props) {
           {game.difficulty && (
             <DifficultyBadge difficulty={game.difficulty as Difficulty} />
           )}
-          {game.genres?.filter((g) => VALID_GENRES.has(g)).slice(0, 2).map((g) => (
+          {game.genres?.filter((g) => VALID_GENRES.has(g)).map((g) => (
             <GenreBadge key={g} genre={g} />
           ))}
         </div>
