@@ -117,24 +117,24 @@ export function AdminGamesClient({ games: initialGames }: Props) {
           <thead className="border-b border-gray-100 bg-gray-50 text-xs text-gray-500">
             <tr>
               <th className="px-4 py-3 text-left">タイトル</th>
-              <th className="px-4 py-3 text-left">人数</th>
-              <th className="px-4 py-3 text-left">時間</th>
-              <th className="px-4 py-3 text-left">画像</th>
-              <th className="px-4 py-3 text-left">公開</th>
-              <th className="px-4 py-3 text-left">占い</th>
-              <th className="px-4 py-3 text-left">人気</th>
-              <th className="px-4 py-3 text-right">操作</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap">人数</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap">時間</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap w-16">画像</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap w-20">公開</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap w-24">占い</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap w-16">人気</th>
+              <th className="px-4 py-3 text-right whitespace-nowrap">操作</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {filtered.map(game => (
               <tr key={game.id} className="hover:bg-gray-50">
                 <td className="px-4 py-3 font-medium text-gray-800">{game.title}</td>
-                <td className="px-4 py-3 text-gray-500">{game.min_players}〜{game.max_players}人</td>
-                <td className="px-4 py-3 text-gray-500">
+                <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{game.min_players}〜{game.max_players}人</td>
+                <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
                   {game.play_time_min}{game.play_time_max ? `〜${game.play_time_max}` : ''}分
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 whitespace-nowrap">
                   {game.image_path
                     ? <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">あり</span>
                     : <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-400">なし</span>
