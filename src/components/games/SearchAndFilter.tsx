@@ -16,10 +16,10 @@ const PLAYER_OPTIONS = [
 ]
 
 const TIME_OPTIONS = [
-  { label: 'すべて', value: '' },
-  { label: '〜30分', value: '30' },
-  { label: '〜60分', value: '60' },
-  { label: '〜90分', value: '90' },
+  { label: 'すべて',    value: '' },
+  { label: '〜30分',   value: '30' },
+  { label: '30〜60分', value: '30-60' },
+  { label: '60〜90分', value: '60-90' },
   { label: '90分以上', value: '91' },
 ]
 

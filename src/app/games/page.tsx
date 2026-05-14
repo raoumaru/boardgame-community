@@ -14,6 +14,18 @@ type SearchParams = Promise<{
 
 const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-images`;
 
+function toKatakana(str: string): string {
+  return str.replace(/[ぁ-ゖ]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) + 0x60)
+  )
+}
+
+function toHiragana(str: string): string {
+  return str.replace(/[ァ-ヶ]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) - 0x60)
+  )
+}
+
 async function GamesContent({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   const supabase = await createClient();
@@ -25,7 +37,14 @@ async function GamesContent({ searchParams }: { searchParams: SearchParams }) {
     .order("sort_order", { ascending: true });
 
   if (params.q) {
-    query = query.ilike("title", `%${params.q}%`);
+    const kata = toKatakana(params.q)
+    const hira = toHiragana(params.q)
+    const terms = [...new Set([params.q, kata, hira])]
+    const filters = [
+      ...terms.map(t => `title.ilike.%${t}%`),
+      ...terms.map(t => `title_kana.ilike.%${t}%`),
+    ].join(",")
+    query = query.or(filters)
   }
   if (params.genre) {
     query = query.contains("genres", [params.genre]);
@@ -34,10 +53,8 @@ async function GamesContent({ searchParams }: { searchParams: SearchParams }) {
     const n = parseInt(params.players);
     if (!isNaN(n)) {
       if (n === 8) {
-        // 8人以上：max_players が8以上のゲーム
         query = query.gte("max_players", 8);
       } else {
-        // ちょうどN人で遊べるゲーム
         query = query.lte("min_players", n).gte("max_players", n);
       }
     }
@@ -46,14 +63,22 @@ async function GamesContent({ searchParams }: { searchParams: SearchParams }) {
     query = query.eq("difficulty", params.difficulty);
   }
   if (params.time) {
-    const t = parseInt(params.time);
-    if (!isNaN(t)) {
-      if (t === 91) {
-        // 90分以上
-        query = query.gte("play_time_min", 90);
-      } else {
-        query = query.lte("play_time_min", t);
-      }
+    if (params.time === "91") {
+      // 90分以上
+      query = query.gte("play_time_min", 90);
+    } else if (params.time === "30") {
+      // 〜30分：最短時間が30分以内
+      query = query.lte("play_time_min", 30);
+    } else if (params.time === "30-60") {
+      // 30〜60分：時間範囲が[30,60]と重複
+      query = query
+        .lte("play_time_min", 60)
+        .or("play_time_max.gte.30,and(play_time_max.is.null,play_time_min.gte.30)")
+    } else if (params.time === "60-90") {
+      // 60〜90分：時間範囲が[60,90]と重複
+      query = query
+        .lte("play_time_min", 90)
+        .or("play_time_max.gte.60,and(play_time_max.is.null,play_time_min.gte.60)")
     }
   }
 

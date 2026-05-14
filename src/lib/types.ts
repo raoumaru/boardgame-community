@@ -12,6 +12,7 @@ export type Game = {
   difficulty: Difficulty | null
   genres: string[] | null
   image_path: string | null
+  title_kana: string | null
   rules: string | null
   recommended_for: string | null
   is_published: boolean
