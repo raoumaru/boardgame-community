@@ -10,6 +10,9 @@ const notoSansJP = Noto_Sans_JP({
 export const metadata: Metadata = {
   title: "ラ王のボドゲ倉庫",
   description: "サークル用ボードゲーム一覧",
+  icons: {
+    icon: '/favicon.jpg',
+  },
 };
 
 const warmBrickStyle = {
