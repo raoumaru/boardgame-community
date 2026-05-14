@@ -12,6 +12,8 @@ type SearchParams = Promise<{
   players?: string;
   time?: string;
   difficulty?: string;
+  new?: string;
+  popular?: string;
 }>;
 
 const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-images`;
@@ -32,7 +34,7 @@ async function GamesContent({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   const supabase = await createClient();
 
-  // NEW判定: created_at が新しい順に上位5件のIDを取得
+  // NEW判定用: created_at 降順上位5件のIDをSETで保持
   const { data: newGames } = await supabase
     .from("games")
     .select("id")
@@ -72,6 +74,13 @@ async function GamesContent({ searchParams }: { searchParams: SearchParams }) {
   }
   if (params.difficulty) {
     query = query.eq("difficulty", params.difficulty);
+  }
+  if (params.new === "true") {
+    // NEWフィルター: newGameIds に含まれるものだけ
+    query = query.in("id", [...newGameIds]);
+  }
+  if (params.popular === "true") {
+    query = query.eq("is_popular", true);
   }
   if (params.time) {
     if (params.time === "91") {

@@ -42,6 +42,8 @@ export function SearchAndFilter() {
     genre:      searchParams.get('genre') ?? '',
     difficulty: searchParams.get('difficulty') ?? '',
   })
+  const isNew     = searchParams.get('new') === 'true'
+  const isPopular = searchParams.get('popular') === 'true'
 
   const handleSearch = useCallback(() => {
     const params = new URLSearchParams()
@@ -55,12 +57,24 @@ export function SearchAndFilter() {
     })
   }, [local, router])
 
+  const handleNewToggle = useCallback(() => {
+    const params = new URLSearchParams()
+    if (!isNew) params.set('new', 'true')
+    startTransition(() => router.push(`/games?${params.toString()}`, { scroll: false }))
+  }, [isNew, router])
+
+  const handlePopularToggle = useCallback(() => {
+    const params = new URLSearchParams()
+    if (!isPopular) params.set('popular', 'true')
+    startTransition(() => router.push(`/games?${params.toString()}`, { scroll: false }))
+  }, [isPopular, router])
+
   const handleReset = useCallback(() => {
     setLocal({ q: '', players: '', time: '', genre: '', difficulty: '' })
     startTransition(() => router.push('/games', { scroll: false }))
   }, [router])
 
-  const hasFilter = local.q || local.players || local.time || local.genre || local.difficulty
+  const hasFilter = local.q || local.players || local.time || local.genre || local.difficulty || isNew || isPopular
 
   return (
     <div className="mb-6 space-y-3">
@@ -113,8 +127,8 @@ export function SearchAndFilter() {
         />
       </div>
 
-      {/* 検索ボタン＋リセット */}
-      <div className="flex items-center gap-3">
+      {/* 検索ボタン＋クイックフィルター＋リセット */}
+      <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={handleSearch}
           disabled={isPending}
@@ -127,6 +141,30 @@ export function SearchAndFilter() {
           {isPending ? '検索中...' : '検索'}
         </button>
 
+        <button
+          onClick={handleNewToggle}
+          disabled={isPending}
+          className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold shadow-md transition disabled:opacity-60 ${
+            isNew
+              ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+              : 'bg-white/15 text-white hover:bg-white/25'
+          }`}
+        >
+          🆕 新規入荷
+        </button>
+
+        <button
+          onClick={handlePopularToggle}
+          disabled={isPending}
+          className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold shadow-md transition disabled:opacity-60 ${
+            isPopular
+              ? 'bg-amber-500 text-white hover:bg-amber-600'
+              : 'bg-white/15 text-white hover:bg-white/25'
+          }`}
+        >
+          🔥 人気
+        </button>
+
         {hasFilter && (
           <button
             onClick={handleReset}
@@ -135,7 +173,7 @@ export function SearchAndFilter() {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
-            絞り込みをリセット
+            リセット
           </button>
         )}
       </div>
