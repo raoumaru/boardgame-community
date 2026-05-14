@@ -100,18 +100,18 @@ export default function GamesPage({
     <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
       <NavMenu />
       {/* ヘッダー */}
-      <div className="relative mb-6 flex items-center justify-center pt-10">
-        <div className="absolute left-0 top-0">
+      <div className="relative mb-6 flex flex-col items-start gap-1 sm:flex-row sm:items-center sm:justify-center sm:pt-10">
+        <div className="sm:absolute sm:left-0 sm:top-0">
           <Image
             src="/logo.png"
             alt="ラ王のボドゲ倉庫"
             width={157}
             height={59}
-            className="object-contain drop-shadow-[0_2px_12px_rgba(255,120,0,0.4)]"
+            className="w-[79px] sm:w-[157px] h-auto object-contain drop-shadow-[0_2px_12px_rgba(255,120,0,0.4)]"
             priority
           />
         </div>
-        <p className="text-lg font-bold tracking-widest text-amber-200 drop-shadow-[0_2px_8px_rgba(255,120,0,0.5)]">
+        <p className="w-full text-center text-lg font-bold tracking-widest text-amber-200 drop-shadow-[0_2px_8px_rgba(255,120,0,0.5)]">
           ボードゲーム一覧
         </p>
       </div>

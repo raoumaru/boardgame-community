@@ -86,7 +86,7 @@ export function SearchAndFilter() {
       </div>
 
       {/* フィルターチップ群 */}
-      <div className="space-y-2 rounded-xl bg-black/20 p-3 backdrop-blur-sm">
+      <div className="divide-y divide-white/10 rounded-xl bg-black/20 backdrop-blur-sm">
         <FilterRow
           label="👥 人数"
           options={PLAYER_OPTIONS}
@@ -152,9 +152,9 @@ type FilterRowProps = {
 
 function FilterRow({ label, options, current, onChange }: FilterRowProps) {
   return (
-    <div className="flex items-center gap-2">
-      <span className="w-20 shrink-0 text-xs text-amber-200/70">{label}</span>
-      <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+    <div className="flex items-start gap-2 p-3">
+      <span className="w-20 shrink-0 pt-1 text-xs text-amber-200/70">{label}</span>
+      <div className="flex flex-wrap gap-1.5">
         {options.map(opt => (
           <button
             key={opt.value}
