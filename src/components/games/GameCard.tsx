@@ -2,6 +2,9 @@ import Image from "next/image";
 import { GenreBadge, DifficultyBadge } from "@/components/ui/Badge";
 import { formatPlayers, formatPlayTime } from "@/lib/utils";
 import type { Game, Difficulty } from "@/lib/types";
+import { GENRES } from "@/lib/types";
+
+const VALID_GENRES = new Set<string>(GENRES.map((g) => g.value));
 
 type Props = { game: Game; imageBaseUrl: string; onClick: () => void };
 
@@ -67,7 +70,7 @@ export function GameCard({ game, imageBaseUrl, onClick }: Props) {
           {game.difficulty && (
             <DifficultyBadge difficulty={game.difficulty as Difficulty} />
           )}
-          {game.genres?.slice(0, 2).map((g) => (
+          {game.genres?.filter((g) => VALID_GENRES.has(g)).slice(0, 2).map((g) => (
             <GenreBadge key={g} genre={g} />
           ))}
         </div>
