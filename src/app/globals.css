@@ -23,19 +23,11 @@
 
 @layer base {
   body {
-    background-color: #1A0A04 !important;
+    background-color: #7A3018 !important;
     background-image:
-      radial-gradient(ellipse 90% 55% at 50% 115%, rgba(230, 90, 10, 0.55) 0%, rgba(160, 40, 0, 0.25) 40%, transparent 65%),
-      radial-gradient(ellipse 50% 35% at 10% 95%,  rgba(200, 70, 0, 0.2)   0%, transparent 55%),
-      radial-gradient(ellipse 50% 35% at 90% 95%,  rgba(200, 70, 0, 0.2)   0%, transparent 55%),
-      radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.5) 100%),
-      repeating-linear-gradient(
-        180deg,
-        transparent         0px,
-        transparent         28px,
-        rgba(0,0,0,0.2)     28px,
-        rgba(0,0,0,0.2)     31px
-      ) !important;
+      linear-gradient(rgba(8, 2, 0, 0.38), rgba(8, 2, 0, 0.38)),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='62'%3E%3Crect width='128' height='62' fill='%23C0AFA0'/%3E%3Crect x='2' y='2' width='59' height='27' fill='%23C4703A'/%3E%3Crect x='65' y='2' width='61' height='27' fill='%23BE6432'/%3E%3Crect x='2' y='33' width='29' height='27' fill='%23CA7840'/%3E%3Crect x='35' y='33' width='58' height='27' fill='%23B86030'/%3E%3Crect x='97' y='33' width='29' height='27' fill='%23C26838'/%3E%3C/svg%3E") !important;
+    background-size: auto, 128px 62px !important;
     background-attachment: fixed !important;
     min-height: 100dvh;
   }
