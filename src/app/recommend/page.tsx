@@ -76,13 +76,13 @@ const STEPS = [
   {
     key: 'experience',
     label: '第五の問い',
-    question: 'ボードゲームの経験はありますか？',
-    sub: '経験が深いほど、運命は複雑に絡み合う',
+    question: 'どのくらいの難しさがお好みですか？',
+    sub: '求める深さに、運命のゲームは宿る',
     type: 'single' as const,
     options: [
-      { value: 'beginner',  label: 'ほぼ初めて',     icon: Sprout as IconFC },
-      { value: 'sometimes', label: 'たまにやる',     icon: Leaf as IconFC },
-      { value: 'often',     label: 'よく遊んでいる', icon: TreePine as IconFC },
+      { value: 'beginner',  label: '気軽に楽しみたい',       icon: Smile as IconFC },
+      { value: 'sometimes', label: 'ちょうどいい歯ごたえで', icon: Leaf as IconFC },
+      { value: 'often',     label: 'フル回転で行ける',       icon: Zap as IconFC },
     ],
   },
 ] as const
