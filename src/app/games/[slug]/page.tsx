@@ -160,7 +160,10 @@ function GameDetailSkeleton() {
 export default function GameDetailPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
-      <NavMenu />
+      {/* NavMenu は usePathname() を使うため Suspense で包む */}
+      <Suspense fallback={null}>
+        <NavMenu />
+      </Suspense>
       <Link
         href="/games"
         className="mb-6 inline-flex items-center gap-1.5 text-sm text-amber-200/80 hover:text-amber-200 transition-colors"
@@ -169,7 +172,6 @@ export default function GameDetailPage({ params }: Props) {
         ゲーム一覧に戻る
       </Link>
       <Suspense fallback={<GameDetailSkeleton />}>
-        {/* params Promise をそのまま渡し、中で await する */}
         <GameDetailContent params={params} />
       </Suspense>
     </div>
