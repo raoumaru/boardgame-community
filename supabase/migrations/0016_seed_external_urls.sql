@@ -1,0 +1,72 @@
+-- 外部リンク（公式サイト）の一括設定
+UPDATE games SET external_url = 'https://www.gp-inc.jp/boardgame_catan.html'                                    WHERE slug = 'catan';
+UPDATE games SET external_url = 'https://sugorokuya.jp/p/nanjamonja'                                            WHERE slug = 'nanjamo';
+UPDATE games SET external_url = 'https://hobbyjapan.games/pandemic_new/'                                        WHERE slug = 'pandemic';
+UPDATE games SET external_url = 'https://arclightgames.jp/product/ito/'                                         WHERE slug = 'ito';
+UPDATE games SET external_url = 'https://hobbyjapan.games/dominion/'                                            WHERE slug = 'dominion';
+UPDATE games SET external_url = 'https://www.gentosha-edu.co.jp/book/b506749.html'                              WHERE slug = 'word-wolf';
+UPDATE games SET external_url = 'https://hobbyjapan.games/agricola/'                                            WHERE slug = 'agricola';
+UPDATE games SET external_url = 'https://hobbyjapan.games/codename/'                                            WHERE slug = 'codenames';
+UPDATE games SET external_url = 'https://arclightgames.jp/product/%E3%83%86%E3%83%A9%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9F%E3%83%B3%E3%82%B0%E3%83%9E%E3%83%BC%E3%82%BA/' WHERE slug = 'terraforming-mars';
+
+UPDATE games SET external_url = 'https://www.gentosha-edu.co.jp/book/b651789.html'                              WHERE slug = 'san-ren-tan';
+UPDATE games SET external_url = 'https://oinkgames.com/ja/games/analog/nine-tiles-panic/'                       WHERE slug = 'nine-tiles-panic';
+UPDATE games SET external_url = 'https://www.newgamesorder.jp/games/penguinparty'                               WHERE slug = 'penguin-party';
+UPDATE games SET external_url = 'https://sugorokuya.jp/p/hannin-ha-odoru'                                       WHERE slug = 'hannin-wa-odoru';
+UPDATE games SET external_url = 'https://www.clagla.jp/view/item/000000000001'                                  WHERE slug = 'propose-kotoba';
+UPDATE games SET external_url = 'https://sugorokuya.jp/p/gobblet-gobblers'                                      WHERE slug = 'gobblet-gobblers';
+UPDATE games SET external_url = 'https://arclightgames.jp/product/%E3%82%AB%E3%82%B9%E3%82%BF%E3%83%A0%E3%83%92%E3%83%BC%E3%83%AD%E3%83%BC%E3%82%BA/' WHERE slug = 'custom-heroes';
+UPDATE games SET external_url = 'https://www.ensky.co.jp/item/14454.html'                                       WHERE slug = 'stroop-card-expert';
+UPDATE games SET external_url = 'https://arclightgames.jp/product/606tigerdragon/'                              WHERE slug = 'tiger-and-dragon';
+UPDATE games SET external_url = 'https://www.ensky.co.jp/item/12208.html'                                       WHERE slug = 'goi-no-oosama';
+UPDATE games SET external_url = 'https://sugorokuya.jp/p/schlafmuetze/'                                         WHERE slug = 'sotto-oyasumi';
+UPDATE games SET external_url = 'https://mobius-games.co.jp/Zoch/GeistersBlitz.html'                            WHERE slug = 'geistesblitz';
+UPDATE games SET external_url = 'https://www.mobius-games.co.jp/Zoch/Geistes_Blitz2.html'                      WHERE slug = 'geistesblitz-2';
+
+UPDATE games SET external_url = 'https://arclightgames.jp/product/699quickshot/'                                WHERE slug = 'quick-shot';
+UPDATE games SET external_url = 'https://www.gentosha-edu.co.jp/book/b640622.html'                              WHERE slug = 'aiue-battle';
+UPDATE games SET external_url = 'https://sugorokuya.jp/p/onsoku-hanten'                                         WHERE slug = 'sonic-chahan';
+UPDATE games SET external_url = 'https://www.mobius-games.co.jp/Amigo/Saboteur.htm'                             WHERE slug = 'saboteur';
+UPDATE games SET external_url = 'https://mattel.co.jp/toys/mattel_games/mattel_games-10961/'                    WHERE slug = 'uno-flip';
+UPDATE games SET external_url = 'https://www.mobius-games.co.jp/Amigo/6nimmt.htm'                               WHERE slug = 'six-nimmt';
+UPDATE games SET external_url = 'https://www.gentosha-edu.co.jp/book/b530117.html'                              WHERE slug = 'yomen';
+UPDATE games SET external_url = 'https://oinkgames.com/ja/games/analog/insider-black/'                          WHERE slug = 'insider-game-black';
+UPDATE games SET external_url = 'https://www.megahouse.co.jp/megatoy/products/item/485/'                        WHERE slug = 'othello';
+UPDATE games SET external_url = 'https://arclightgames.jp/product/%E3%82%A6%E3%82%A4%E3%83%B3%E3%82%B0%E3%82%B9%E3%83%91%E3%83%B3/' WHERE slug = 'wingspan';
+UPDATE games SET external_url = 'https://www.mobius-games.co.jp/DreiMagier/KakerLakenPoker.htm'                 WHERE slug = 'cockroach-poker';
+UPDATE games SET external_url = 'https://hobbyjapan.games/resistance_avalon/'                                   WHERE slug = 'resistance-avalon';
+UPDATE games SET external_url = 'https://www.algoclub.com/math/'                                                WHERE slug = 'math-magician';
+UPDATE games SET external_url = 'https://www.gp-inc.jp/cardgame_thecrew.html'                                   WHERE slug = 'the-crew';
+UPDATE games SET external_url = 'https://www.gp-inc.jp/boardgame_ubongo_mini_extrem.html'                       WHERE slug = 'ubongo-extreme';
+UPDATE games SET external_url = 'https://caracolu.com/boardgame/'                                               WHERE slug = 'the-zangyo';
+UPDATE games SET external_url = 'https://arclightgames.jp/product/246loveletter/'                               WHERE slug = 'love-letter';
+
+UPDATE games SET external_url = 'https://arclightgames.jp/product/%E3%82%BF%E3%82%A4%E3%83%A0%E3%83%9C%E3%83%A0/' WHERE slug = 'time-bomb';
+UPDATE games SET external_url = 'https://arclightgames.jp/product/767toridori/'                                 WHERE slug = 'nana-toridori';
+UPDATE games SET external_url = 'https://hobbyjapan.games/mascarade/'                                           WHERE slug = 'mascarade';
+UPDATE games SET external_url = 'https://www.mobius-games.co.jp/DreiMagier/DoDeLIDo.html'                       WHERE slug = 'doderido';
+UPDATE games SET external_url = 'https://www.gentosha.co.jp/s/haa-game/'                                        WHERE slug = 'haa-game';
+UPDATE games SET external_url = 'https://sugorokuya.jp/p/hellapagos'                                            WHERE slug = 'herpagos';
+UPDATE games SET external_url = 'https://jelly2games.com/tagiron'                                               WHERE slug = 'tagiron';
+UPDATE games SET external_url = 'https://arclightgames.jp/product/%E3%82%AA%E3%83%AA%E3%83%95%E3%83%A9%E3%83%A0/' WHERE slug = 'oriflamme';
+UPDATE games SET external_url = 'https://megahouse.co.jp/megatoy/products/item/3039/'                           WHERE slug = 'rubiks-cage';
+UPDATE games SET external_url = 'https://hobbyjapan.games/dobble/'                                              WHERE slug = 'dobble';
+UPDATE games SET external_url = 'https://cmonjapan.shop/products/nana'                                          WHERE slug = 'nana';
+UPDATE games SET external_url = 'https://hobbyjapan.games/skull/'                                               WHERE slug = 'skull';
+UPDATE games SET external_url = 'https://www.mobius-games.co.jp/Amigo/geschenkt.htm'                            WHERE slug = 'geschenkt';
+UPDATE games SET external_url = 'https://oinkgames.com/ja/games/analog/scout/'                                  WHERE slug = 'scout';
+UPDATE games SET external_url = 'https://www.newgamesorder.jp/games/coyote'                                     WHERE slug = 'coyote';
+UPDATE games SET external_url = 'https://www.newgamesorder.jp/games/pieceofcake-1'                              WHERE slug = 'piece-of-cake';
+UPDATE games SET external_url = 'https://www.mobius-games.co.jp/mobiusgames/Hagetaka.html'                      WHERE slug = 'hagetaka';
+UPDATE games SET external_url = 'https://hobbyjapan.games/hanabi/'                                              WHERE slug = 'hanabi';
+UPDATE games SET external_url = 'https://www.xaquinel.com/works/caruuta-basic-set/'                             WHERE slug = 'karuta-uta';
+UPDATE games SET external_url = 'https://www.xaquinel.com/works/caruuta-paradigm-shift/'                        WHERE slug = 'karuta-uta-paradigm-shift';
+
+UPDATE games SET external_url = 'https://rigoler.wixsite.com/rigoler/blank-18'                                  WHERE slug = 'word-sniper';
+UPDATE games SET external_url = 'https://arclightgames.jp/product/%E3%82%B8%E3%83%A3%E3%82%B9%E3%83%88%E3%83%AF%E3%83%B3/' WHERE slug = 'just-one';
+
+UPDATE games SET external_url = 'https://arclightgames.jp/product/016pictell/'                                  WHERE slug = 'pictell';
+UPDATE games SET external_url = 'https://www.engames-s.com/product/3490'                                        WHERE slug = 'business-jargon-game';
+UPDATE games SET external_url = 'https://arclightgames.jp/product/842rlv/'                                      WHERE slug = 'renso-bingo';
+UPDATE games SET external_url = 'https://oinkgames.com/ja/games/analog/maskmen/'                                WHERE slug = 'maskmen';
+UPDATE games SET external_url = 'https://oinkgames.com/ja/games/analog/a-fake-artist-goes-to-new-york/'         WHERE slug = 'fake-artist-new-york';

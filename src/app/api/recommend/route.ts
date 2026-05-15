@@ -87,7 +87,28 @@ export async function POST(req: NextRequest) {
   })
 
   scored.sort((a, b) => b.score - a.score)
-  const top3 = scored.slice(0, 3).map(s => s.game)
 
-  return NextResponse.json({ games: top3 })
+  // A-2: スコア重み付きランダム抽出（上位20件のプールから3本選ぶ）
+  const POOL_SIZE = 20
+  const pool = scored.slice(0, POOL_SIZE)
+  const minScore = Math.min(...pool.map(x => x.score))
+  // スコアをシフトして全て正にし、重みとして使用
+  const weighted = pool.map(x => ({ ...x, weight: Math.max(x.score - minScore + 1, 1) }))
+
+  const result = []
+  const available = [...weighted]
+  for (let pick = 0; pick < 3 && available.length > 0; pick++) {
+    const totalWeight = available.reduce((s, x) => s + x.weight, 0)
+    let rand = Math.random() * totalWeight
+    for (let i = 0; i < available.length; i++) {
+      rand -= available[i].weight
+      if (rand <= 0) {
+        result.push(available[i].game)
+        available.splice(i, 1)
+        break
+      }
+    }
+  }
+
+  return NextResponse.json({ games: result })
 }
