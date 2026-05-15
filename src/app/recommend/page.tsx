@@ -10,7 +10,7 @@ import {
   Zap, Clock, Moon,
   Sprout, Leaf, TreePine,
   Wand2, Sparkles, Star,
-  Gamepad2,
+  Gamepad2, RefreshCw,
 } from 'lucide-react'
 import type React from 'react'
 import { GameModal } from '@/components/games/GameModal'
@@ -107,6 +107,7 @@ export default function RecommendPage() {
   const [results, setResults]       = useState<Game[]>([])
   const [selectedGame, setSelectedGame] = useState<Game | null>(null)
   const [error, setError]           = useState('')
+  const [isReshuffling, setIsReshuffling] = useState(false)
 
   const currentStep = STEPS[stepIndex]
 
@@ -179,6 +180,31 @@ export default function RecommendPage() {
     setResults([])
     setError('')
   }
+
+  const handleReshuffle = useCallback(async () => {
+    setIsReshuffling(true)
+    try {
+      const body = {
+        players:    answers.players    as string,
+        mood:       answers.mood       as string,
+        categories: answers.categories as string[] ?? [],
+        time:       answers.time       as string,
+        experience: answers.experience as string,
+      }
+      const res  = await fetch('/api/recommend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setResults(data.games)
+    } catch {
+      // 失敗しても結果は据え置き
+    } finally {
+      setIsReshuffling(false)
+    }
+  }, [answers])
 
   // ── Intro ──────────────────────────────────────────────────────────────────
   if (stage === 'intro') {
@@ -287,13 +313,23 @@ export default function RecommendPage() {
           {/* Reset */}
           <div className="mt-10 text-center">
             <button
-              onClick={handleReset}
-              className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 px-6 py-2.5 text-sm text-amber-400 transition-all hover:bg-amber-500/10 hover:border-amber-400"
+              onClick={handleReshuffle}
+              disabled={isReshuffling}
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-6 py-2.5 text-sm text-white/70 transition-all hover:border-amber-400/50 hover:text-amber-300 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <Wand2 className="h-4 w-4" />
-              もう一度占う
+              <RefreshCw className={`h-4 w-4 ${isReshuffling ? 'animate-spin' : ''}`} />
+              {isReshuffling ? '別の運命を探しています...' : '違う3本を見る'}
             </button>
-            <div className="mt-4">
+            <div className="mt-3">
+              <button
+                onClick={handleReset}
+                className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 px-6 py-2.5 text-sm text-amber-400 transition-all hover:bg-amber-500/10 hover:border-amber-400"
+              >
+                <Wand2 className="h-4 w-4" />
+                最初から占い直す
+              </button>
+            </div>
+            <div className="mt-3">
               <Link href="/games" className="text-xs text-amber-600/60 hover:text-amber-500/80 transition-colors">
                 ← ゲーム一覧に戻る
               </Link>
