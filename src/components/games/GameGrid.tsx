@@ -1,8 +1,4 @@
-'use client'
-
-import { useState } from 'react'
 import { GameCard } from './GameCard'
-import { GameModal } from './GameModal'
 import type { Game } from '@/lib/types'
 
 type Props = {
@@ -12,8 +8,6 @@ type Props = {
 }
 
 export function GameGrid({ games, imageBaseUrl, newGameIds }: Props) {
-  const [selectedGame, setSelectedGame] = useState<Game | null>(null)
-
   if (games.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-gray-400">
@@ -27,26 +21,15 @@ export function GameGrid({ games, imageBaseUrl, newGameIds }: Props) {
   }
 
   return (
-    <>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {games.map((game) => (
-          <GameCard
-            key={game.id}
-            game={game}
-            imageBaseUrl={imageBaseUrl}
-            isNew={newGameIds?.has(game.id) ?? false}
-            onClick={() => setSelectedGame(game)}
-          />
-        ))}
-      </div>
-
-      {selectedGame && (
-        <GameModal
-          game={selectedGame}
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      {games.map((game) => (
+        <GameCard
+          key={game.id}
+          game={game}
           imageBaseUrl={imageBaseUrl}
-          onClose={() => setSelectedGame(null)}
+          isNew={newGameIds?.has(game.id) ?? false}
         />
-      )}
-    </>
+      ))}
+    </div>
   )
 }

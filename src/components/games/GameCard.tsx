@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 import { Users, Clock } from "lucide-react";
 import { GenreBadge, DifficultyBadge } from "@/components/ui/Badge";
@@ -7,16 +8,16 @@ import { GENRES } from "@/lib/types";
 
 const VALID_GENRES = new Set<string>(GENRES.map((g) => g.value));
 
-type Props = { game: Game; imageBaseUrl: string; isNew?: boolean; onClick: () => void };
+type Props = { game: Game; imageBaseUrl: string; isNew?: boolean };
 
-export function GameCard({ game, imageBaseUrl, isNew = false, onClick }: Props) {
+export function GameCard({ game, imageBaseUrl, isNew = false }: Props) {
   const imageUrl = game.image_path
     ? `${imageBaseUrl}/${game.image_path}`
     : null;
 
   return (
-    <button
-      onClick={onClick}
+    <Link
+      href={`/games/${game.slug}`}
       className="flex w-full flex-col overflow-hidden rounded-xl bg-[#FEF3E8]/95 shadow-lg shadow-black/30 transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40 text-left cursor-pointer"
     >
       {/* 画像 */}
@@ -87,6 +88,6 @@ export function GameCard({ game, imageBaseUrl, isNew = false, onClick }: Props) 
           ))}
         </div>
       </div>
-    </button>
+    </Link>
   );
 }
