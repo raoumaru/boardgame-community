@@ -366,7 +366,7 @@ export default function RecommendPage() {
                   className={`flex items-center gap-3 rounded-xl border px-4 py-3.5 text-left transition-all duration-200 ${
                     isSelected
                       ? 'border-amber-400 bg-amber-400/15 text-amber-100 shadow-[0_0_16px_rgba(251,191,36,0.15)]'
-                      : 'border-white/10 bg-white/5 text-white/70 hover:border-amber-400/40 hover:bg-amber-400/8 hover:text-white/90'
+                      : 'border-white/20 bg-black/40 text-white/85 hover:border-amber-400/50 hover:bg-black/55 hover:text-white'
                   }`}
                 >
                   <Icon className="h-6 w-6 shrink-0" />
