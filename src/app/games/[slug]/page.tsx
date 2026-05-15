@@ -1,10 +1,10 @@
 import { Suspense } from 'react'
-import { connection } from 'next/server'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Users, Clock, Gamepad2, Sparkles, ExternalLink, ArrowLeft } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { GenreBadge, DifficultyBadge } from '@/components/ui/Badge'
 import { NavMenu } from '@/components/ui/NavMenu'
 import { formatPlayers, formatPlayTime } from '@/lib/utils'
@@ -18,9 +18,8 @@ const VALID_GENRES = new Set<string>(GENRES.map(g => g.value))
 type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  await connection()
   const { slug } = await params
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data: game } = await supabase
     .from('games')
     .select('title, description, difficulty, min_players, max_players, play_time_min, play_time_max, image_path')
