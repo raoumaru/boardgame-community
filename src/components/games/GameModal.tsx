@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import Image from 'next/image'
-import { Users, Clock, Gamepad2, Sparkles } from 'lucide-react'
+import { Users, Clock, Gamepad2, Sparkles, ExternalLink } from 'lucide-react'
 import { GenreBadge, DifficultyBadge } from '@/components/ui/Badge'
 import { GENRES } from '@/lib/types'
 
@@ -126,6 +126,19 @@ export function GameModal({ game, imageBaseUrl, onClose }: Props) {
               </h3>
               <p className="text-sm leading-relaxed text-gray-700">{game.recommended_for}</p>
             </div>
+          )}
+
+          {/* 外部リンク */}
+          {game.external_url && (
+            <a
+              href={game.external_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-xl border border-amber-400/40 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-700 transition hover:bg-amber-100 hover:border-amber-500/60"
+            >
+              <ExternalLink className="h-4 w-4 shrink-0" />
+              詳しく調べる
+            </a>
           )}
         </div>
       </div>

@@ -27,6 +27,7 @@ const schema = z.object({
   is_recommendable:  z.boolean(),
   is_popular:        z.boolean(),
   sort_order:        z.coerce.number().default(0),
+  external_url:      z.string().url('正しいURLを入力してください').optional().or(z.literal('')),
 })
 
 type FormValues = z.infer<typeof schema>
@@ -65,6 +66,7 @@ export function GameForm({ game }: Props) {
       is_recommendable:  game?.is_recommendable ?? true,
       is_popular:        game?.is_popular ?? false,
       sort_order:        game?.sort_order ?? 0,
+      external_url:      game?.external_url ?? '',
     },
   })
 
@@ -221,6 +223,18 @@ export function GameForm({ game }: Props) {
       <div>
         <label className={`${labelClass} flex items-center gap-1.5`}><Sparkles className="h-4 w-4" /> こんな人におすすめ</label>
         <textarea {...register('recommended_for')} rows={2} className={inputClass} />
+      </div>
+
+      {/* 外部リンク */}
+      <div>
+        <label className={labelClass}>外部リンク（公式サイトなど）</label>
+        <input
+          {...register('external_url')}
+          type="url"
+          className={inputClass}
+          placeholder="https://example.com"
+        />
+        {errors.external_url && <p className={errorClass}>{errors.external_url.message}</p>}
       </div>
 
       {/* 画像 */}
