@@ -17,6 +17,9 @@ export const metadata: Metadata = {
       { url: '/favicon.png', type: 'image/png' },
     ],
   },
+  verification: {
+    google: '7XHn00Bwt7q6JPxnI9y3Lwqic4v3HU60',
+  },
 };
 
 // globals.css の !important が背景を制御しているため、ここはフォールバック
