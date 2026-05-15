@@ -351,7 +351,7 @@ export default function RecommendPage() {
           </p>
 
           {/* Options */}
-          <div className={`grid gap-3 ${currentStep.options.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          <div className="grid gap-3 grid-cols-1">
             {currentStep.options.map(opt => {
               const isSelected =
                 currentStep.type === 'multi'
