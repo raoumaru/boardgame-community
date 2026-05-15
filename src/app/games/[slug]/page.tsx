@@ -1,12 +1,12 @@
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import Link from 'next/link'
-import { Users, Clock, Gamepad2, Sparkles, ExternalLink, ArrowLeft } from 'lucide-react'
+import { Users, Clock, Gamepad2, Sparkles, ExternalLink } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { GenreBadge, DifficultyBadge } from '@/components/ui/Badge'
 import { NavMenu } from '@/components/ui/NavMenu'
+import { BackButton } from '@/components/games/BackButton'
 import { formatPlayers, formatPlayTime } from '@/lib/utils'
 import { GENRES, DIFFICULTY_LABELS } from '@/lib/types'
 import type { Game, Difficulty } from '@/lib/types'
@@ -164,13 +164,7 @@ export default function GameDetailPage({ params }: Props) {
       <Suspense fallback={null}>
         <NavMenu />
       </Suspense>
-      <Link
-        href="/games"
-        className="mb-6 inline-flex items-center gap-1.5 text-sm text-amber-200/80 hover:text-amber-200 transition-colors"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        ゲーム一覧に戻る
-      </Link>
+      <BackButton />
       <Suspense fallback={<GameDetailSkeleton />}>
         <GameDetailContent params={params} />
       </Suspense>
