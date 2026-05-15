@@ -88,14 +88,15 @@ export async function POST(req: NextRequest) {
 
   scored.sort((a, b) => b.score - a.score)
 
-  // A-2: スコア重み付きランダム抽出（上位20件のプールから3本選ぶ）
-  const POOL_SIZE = 20
+  // A-2: スコア重み付きランダム抽出（上位15件のプールから3本選ぶ）
+  // 同じ回答でも毎回違うゲームが出やすく、かつ高スコアのゲームが出やすい
+  const POOL_SIZE = 15
   const pool = scored.slice(0, POOL_SIZE)
   const minScore = Math.min(...pool.map(x => x.score))
-  // スコアをシフトして全て正にし、重みとして使用
+  // スコアをシフトして全て正にし、重みとして使用（低スコアも確率0にならない）
   const weighted = pool.map(x => ({ ...x, weight: Math.max(x.score - minScore + 1, 1) }))
 
-  const result = []
+  const result: typeof scored[0]['game'][] = []
   const available = [...weighted]
   for (let pick = 0; pick < 3 && available.length > 0; pick++) {
     const totalWeight = available.reduce((s, x) => s + x.weight, 0)
