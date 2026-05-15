@@ -17,6 +17,7 @@ const VALID_GENRES = new Set<string>(GENRES.map(g => g.value))
 
 type Props = { params: Promise<{ slug: string }> }
 
+// generateMetadata: adminClient で cookies() を使わずに取得
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const supabase = createAdminClient()
@@ -46,8 +47,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-async function GameDetailContent({ slug }: { slug: string }) {
-  const supabase = await createClient()
+// データ取得コンポーネント: params の await も含め Suspense の中で完結させる
+async function GameDetailContent({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params  // ← Suspense 内で await
+  const supabase = await createClient()  // ← cookies() も Suspense 内
   const { data: game } = await supabase
     .from('games')
     .select('*')
@@ -153,9 +156,8 @@ function GameDetailSkeleton() {
   )
 }
 
-export default async function GameDetailPage({ params }: Props) {
-  const { slug } = await params
-
+// ページシェルは同期関数 — 一切のランタイムAPIにアクセスしない
+export default function GameDetailPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
       <NavMenu />
@@ -167,7 +169,8 @@ export default async function GameDetailPage({ params }: Props) {
         ゲーム一覧に戻る
       </Link>
       <Suspense fallback={<GameDetailSkeleton />}>
-        <GameDetailContent slug={slug} />
+        {/* params Promise をそのまま渡し、中で await する */}
+        <GameDetailContent params={params} />
       </Suspense>
     </div>
   )
