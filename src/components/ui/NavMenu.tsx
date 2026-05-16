@@ -14,7 +14,7 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { href: '/games',     label: 'ゲーム一覧', icon: Gamepad2 },
-  { href: '/recommend', label: 'ゲーム占い', icon: Wand2 },
+  { href: '/recommend', label: 'ボドゲーター', icon: Wand2 },
 ]
 
 export function NavMenu() {
