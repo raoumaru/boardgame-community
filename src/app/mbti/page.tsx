@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, Suspense } from 'react'
 import Link from 'next/link'
-import { Swords, RotateCcw, ThumbsUp, ThumbsDown, Zap, ImageDown } from 'lucide-react'
+import { Dna, RotateCcw, ThumbsUp, ThumbsDown, Zap, ImageDown } from 'lucide-react'
 import { NavMenu } from '@/components/ui/NavMenu'
 import { GameCard } from '@/components/games/GameCard'
 import { TYPES, getAxisLabels, AXIS_COLORS, type TypeCode } from './data'
@@ -351,7 +351,7 @@ export default function MbtiPage() {
         <div className="mb-12 text-center">
           <div className="mb-4 flex justify-center">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-amber-500/20 border border-amber-400/30">
-              <Swords className="h-10 w-10 text-amber-300" />
+              <Dna className="h-10 w-10 text-amber-300" />
             </div>
           </div>
           <p className="mb-1 text-xs tracking-[0.3em] text-amber-400/60 uppercase">Board Game MBTI</p>
@@ -405,7 +405,7 @@ export default function MbtiPage() {
                     />
                   ) : (
                     <div className="flex flex-col items-center justify-center gap-1">
-                      <Swords className="h-8 w-8 text-amber-400/20" />
+                      <Dna className="h-8 w-8 text-amber-400/20" />
                       <p className="text-[9px] text-white/20">準備中</p>
                     </div>
                   )}
@@ -463,7 +463,7 @@ export default function MbtiPage() {
                 <img src={typeData.image} alt={typeData.name} className="h-52 w-52 object-contain" />
               ) : (
                 <div className="flex h-52 w-52 items-center justify-center">
-                  <Swords className="h-20 w-20 text-amber-400/20" />
+                  <Dna className="h-20 w-20 text-amber-400/20" />
                 </div>
               )}
             </div>
@@ -541,7 +541,7 @@ export default function MbtiPage() {
           {/* プレイスタイル */}
           <div className="mb-4 rounded-2xl border border-white/10 bg-white/5 p-5">
             <h3 className="mb-3 flex items-center gap-2 text-xs font-bold tracking-widest text-amber-400/70 uppercase">
-              <Swords className="h-3.5 w-3.5" />プレイスタイル
+              <Dna className="h-3.5 w-3.5" />プレイスタイル
             </h3>
             <p className="text-sm leading-relaxed text-white/70">{typeData.playStyle}</p>
           </div>
@@ -747,7 +747,7 @@ export default function MbtiPage() {
             disabled={!allAnswered}
             className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-10 py-4 text-base font-bold text-white shadow-lg shadow-amber-900/40 transition-all hover:bg-amber-400 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-30"
           >
-            <Swords className="h-5 w-5" />
+            <Dna className="h-5 w-5" />
             診断する
           </button>
           {!allAnswered && (

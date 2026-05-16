@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Suspense } from 'react'
-import { ExternalLink, ChevronLeft, Swords, Zap, Shield, ThumbsUp, ThumbsDown } from 'lucide-react'
+import { ExternalLink, ChevronLeft, Dna, Zap, Shield, ThumbsUp, ThumbsDown } from 'lucide-react'
 import { NavMenu } from '@/components/ui/NavMenu'
 import { TYPES, getAxisLabels, AXIS_COLORS, type TypeCode } from '../data'
 import type { Metadata } from 'next'
@@ -62,7 +62,7 @@ export default async function MbtiDetailPage({ params }: Props) {
               />
             ) : (
               <div className="flex h-52 w-52 items-center justify-center">
-                <Swords className="h-20 w-20 text-amber-400/20" />
+                <Dna className="h-20 w-20 text-amber-400/20" />
               </div>
             )}
           </div>
@@ -96,7 +96,7 @@ export default async function MbtiDetailPage({ params }: Props) {
         {/* ── プレイスタイル ── */}
         <div className="mb-4 rounded-2xl border border-white/10 bg-white/5 p-5">
           <h2 className="mb-3 flex items-center gap-2 text-xs font-bold tracking-widest text-amber-400/70 uppercase">
-            <Swords className="h-3.5 w-3.5" />
+            <Dna className="h-3.5 w-3.5" />
             プレイスタイル
           </h2>
           <p className="text-sm leading-relaxed text-white/70">{type.playStyle}</p>
@@ -190,7 +190,7 @@ export default async function MbtiDetailPage({ params }: Props) {
               href="/mbti"
               className="group inline-flex items-center gap-2 rounded-full bg-amber-500 px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-amber-900/50 transition-all hover:bg-amber-400 hover:-translate-y-0.5"
             >
-              <Swords className="h-4 w-4" />
+              <Dna className="h-4 w-4" />
               <span>自分のタイプを診断する</span>
               <span className="transition-transform group-hover:translate-x-1">→</span>
             </Link>
