@@ -73,6 +73,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+function AmazonLink({ title }: { title: string }) {
+  const tag = process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG
+  if (!tag) return null
+
+  const amazonUrl = `https://www.amazon.co.jp/s?k=${encodeURIComponent(title + ' ボードゲーム')}&tag=${tag}`
+
+  return (
+    <a
+      href={amazonUrl}
+      target="_blank"
+      rel="noopener noreferrer sponsored"
+      className="flex items-center justify-center gap-2 rounded-xl border border-orange-300/60 bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-700 transition hover:bg-orange-100 hover:border-orange-400/80"
+    >
+      <ShoppingCart className="h-4 w-4 shrink-0" />
+      Amazonで購入する
+    </a>
+  )
+}
+
 function RakutenLink({ title }: { title: string }) {
   const aId = process.env.NEXT_PUBLIC_MOSHIMO_A_ID
   const pId = process.env.NEXT_PUBLIC_MOSHIMO_P_ID
@@ -202,7 +221,10 @@ async function GameDetailContent({ params }: { params: Promise<{ slug: string }>
         )}
 
         {/* 購入リンク */}
-        <RakutenLink title={g.title} />
+        <div className="grid grid-cols-2 gap-2">
+          <AmazonLink title={g.title} />
+          <RakutenLink title={g.title} />
+        </div>
       </div>
     </div>
     </>
