@@ -13,10 +13,6 @@ export const metadata: Metadata = {
   description: "サークル用ボードゲーム一覧",
   applicationName: "ラ王のボドゲ倉庫",
   icons: {
-    icon: [
-      { url: '/logo.png', type: 'image/png' },
-    ],
-    shortcut: '/logo.png',
     apple: '/logo.png',
   },
   openGraph: {
