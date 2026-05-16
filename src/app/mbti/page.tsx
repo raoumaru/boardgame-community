@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback, useEffect, Suspense } from 'react'
 import Link from 'next/link'
-import html2canvas from 'html2canvas'
 import { Swords, RotateCcw, ThumbsUp, ThumbsDown, Zap, ImageDown } from 'lucide-react'
 import { NavMenu } from '@/components/ui/NavMenu'
 import { GameCard } from '@/components/games/GameCard'
@@ -21,6 +20,129 @@ function getMbtiRecommendParams(code: TypeCode) {
     time:       h === 'H' ? 'long' : 'short',
     experience: d === 'D' && h === 'H' ? 'often' : d === 'W' && h === 'L' ? 'beginner' : 'sometimes',
   }
+}
+
+// ─── Canvas直接描画でシェア画像を生成（html2canvas不使用・iOS含む全ブラウザ対応） ──────────
+const BADGE_COLORS_CANVAS: Record<string, { bg: string; text: string }> = {
+  D: { bg: 'rgba(245,158,11,0.25)',  text: '#fcd34d' },
+  W: { bg: 'rgba(59,130,246,0.25)', text: '#93c5fd' },
+  R: { bg: 'rgba(239,68,68,0.25)',  text: '#fca5a5' },
+  U: { bg: 'rgba(34,197,94,0.25)',  text: '#86efac' },
+  I: { bg: 'rgba(168,85,247,0.25)', text: '#d8b4fe' },
+  G: { bg: 'rgba(249,115,22,0.25)', text: '#fdba74' },
+  H: { bg: 'rgba(120,113,108,0.25)',text: '#d6d3d1' },
+  L: { bg: 'rgba(20,184,166,0.25)', text: '#5eead4' },
+}
+
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.lineTo(x + w - r, y)
+  ctx.arcTo(x + w, y, x + w, y + r, r)
+  ctx.lineTo(x + w, y + h - r)
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r)
+  ctx.lineTo(x + r, y + h)
+  ctx.arcTo(x, y + h, x, y + h - r, r)
+  ctx.lineTo(x, y + r)
+  ctx.arcTo(x, y, x + r, y, r)
+  ctx.closePath()
+}
+
+async function generateMbtiShareImage(
+  code: TypeCode,
+  name: string,
+  catchcopy: string,
+  axisLabels: string[],
+  imageSrc: string | undefined
+): Promise<Blob | null> {
+  const W = 600
+  const IMG_H = 340   // 白背景の画像エリア
+  const INFO_H = 300  // テキスト・バッジエリア
+  const H = IMG_H + INFO_H
+
+  const canvas = document.createElement('canvas')
+  canvas.width = W
+  canvas.height = H
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+
+  // ── 上半分：白背景 ──
+  ctx.fillStyle = '#ffffff'
+  ctx.fillRect(0, 0, W, IMG_H)
+
+  // キャラクター画像
+  if (imageSrc) {
+    try {
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const el = new Image()
+        el.crossOrigin = 'anonymous'
+        el.onload = () => resolve(el)
+        el.onerror = reject
+        // 絶対URLに変換（相対パスだとiOSで失敗することがある）
+        el.src = imageSrc.startsWith('http') ? imageSrc : `${window.location.origin}${imageSrc}`
+      })
+      const scale = Math.min((W - 60) / img.naturalWidth, (IMG_H - 40) / img.naturalHeight)
+      const dw = img.naturalWidth * scale
+      const dh = img.naturalHeight * scale
+      ctx.drawImage(img, (W - dw) / 2, (IMG_H - dh) / 2, dw, dh)
+    } catch {
+      // 画像読み込み失敗時はスキップ
+    }
+  }
+
+  // ── 下半分：ダークレッドグラデーション ──
+  const grad = ctx.createLinearGradient(0, IMG_H, W * 0.6, H)
+  grad.addColorStop(0, '#3a0a0a')
+  grad.addColorStop(0.5, '#1a0505')
+  grad.addColorStop(1, '#0d0205')
+  ctx.fillStyle = grad
+  ctx.fillRect(0, IMG_H, W, INFO_H)
+
+  const cx = W / 2
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+
+  // "BOARD GAME MBTI" ラベル
+  ctx.fillStyle = 'rgba(251,191,36,0.5)'
+  ctx.font = '600 13px -apple-system, "Hiragino Sans", sans-serif'
+  ctx.fillText('BOARD  GAME  MBTI', cx, IMG_H + 30)
+
+  // タイプコード
+  ctx.fillStyle = '#fbbf24'
+  ctx.font = 'bold 72px -apple-system, "Hiragino Sans", sans-serif'
+  ctx.fillText(code, cx, IMG_H + 95)
+
+  // 名前
+  ctx.fillStyle = '#fef3c7'
+  ctx.font = 'bold 30px -apple-system, "Hiragino Sans", sans-serif'
+  ctx.fillText(name, cx, IMG_H + 155)
+
+  // キャッチコピー
+  ctx.fillStyle = 'rgba(253,230,138,0.55)'
+  ctx.font = '17px -apple-system, "Hiragino Sans", sans-serif'
+  ctx.fillText(`「${catchcopy}」`, cx, IMG_H + 195)
+
+  // 軸バッジ
+  ctx.font = 'bold 14px -apple-system, "Hiragino Sans", sans-serif'
+  const letters = code.split('')
+  const PAD_X = 16, BADGE_H = 28, GAP = 8
+  const badgeWidths = axisLabels.map(l => ctx.measureText(l).width + PAD_X * 2)
+  const totalW = badgeWidths.reduce((a, b) => a + b, 0) + GAP * (letters.length - 1)
+  let bx = (W - totalW) / 2
+  const by = IMG_H + 245
+
+  for (let i = 0; i < letters.length; i++) {
+    const bw = badgeWidths[i]
+    const colors = BADGE_COLORS_CANVAS[letters[i]] ?? { bg: 'rgba(255,255,255,0.1)', text: '#ffffff' }
+    ctx.fillStyle = colors.bg
+    roundRect(ctx, bx, by - BADGE_H / 2, bw, BADGE_H, BADGE_H / 2)
+    ctx.fill()
+    ctx.fillStyle = colors.text
+    ctx.fillText(axisLabels[i], bx + bw / 2, by)
+    bx += bw + GAP
+  }
+
+  return new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/png'))
 }
 
 // ─── データ定義 ────────────────────────────────────────────────────────────────
@@ -111,7 +233,6 @@ export default function MbtiPage() {
   const [mbtiGamesLoading, setMbtiGamesLoading] = useState(false)
 
   const questionRefs = useRef<Array<HTMLDivElement | null>>(Array(QUESTIONS.length).fill(null))
-  const shareCardRef = useRef<HTMLDivElement | null>(null)
 
   // 前回の診断結果をlocalStorageから読み込む
   useEffect(() => {
@@ -174,24 +295,13 @@ export default function MbtiPage() {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
   }
 
-  const handleShareImage = async (name: string) => {
-    if (!shareCardRef.current) return
+  const handleShareImage = async (code: TypeCode, name: string, catchcopy: string, axisLabels: string[], imageSrc?: string) => {
     setSharing(true)
     try {
-      const canvas = await html2canvas(shareCardRef.current, {
-        useCORS: true,
-        allowTaint: false,
-        scale: 2,
-        backgroundColor: '#0d0205',
-        logging: false,
-        imageTimeout: 10000,
-      })
-
-      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'))
+      const blob = await generateMbtiShareImage(code, name, catchcopy, axisLabels, imageSrc)
       if (!blob) return
 
-      // iOS（Safari・Chrome共通）: Web Share APIのジェスチャータイムアウト問題があるため
-      // オーバーレイで画像表示 → 長押し保存に誘導する
+      // iOS（Safari・Chrome共通）: ジェスチャータイムアウト問題のためオーバーレイ表示
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
       if (isIOS) {
         const url = URL.createObjectURL(blob)
@@ -199,14 +309,14 @@ export default function MbtiPage() {
         return
       }
 
-      // Android など: Web Share API でファイル共有
+      // Android: Web Share API でファイル共有
       const file = new File([blob], `boardgame-mbti-${name}.png`, { type: 'image/png' })
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], title: `ボドゲMBTI：${name}` })
         return
       }
 
-      // PC など: ダウンロード
+      // PC: ダウンロード
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -338,7 +448,6 @@ export default function MbtiPage() {
 
           {/* ── ヘッダーカード（詳細ページと同じデザイン・シェア対象） ── */}
           <div
-            ref={shareCardRef}
             className="mb-2 overflow-hidden rounded-2xl border border-white/10"
             style={{ background: 'linear-gradient(160deg, #3a0a0a 0%, #1a0505 40%, #0d0205 100%)' }}
           >
@@ -372,7 +481,7 @@ export default function MbtiPage() {
           {/* 画像シェアボタン */}
           <div className="mb-5 text-center">
             <button
-              onClick={() => handleShareImage(typeData.name)}
+              onClick={() => handleShareImage(result.code, typeData.name, typeData.catchcopy, axisLabels, typeData.image)}
               disabled={sharing}
               className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-500/10 px-5 py-2 text-xs font-bold text-amber-300 transition-all hover:bg-amber-500/20 disabled:opacity-50"
             >
