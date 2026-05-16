@@ -82,14 +82,34 @@ async function GameDetailContent({ params }: { params: Promise<{ slug: string }>
   const g = game as Game
   const imageUrl = g.image_path ? `${IMAGE_BASE_URL}/${g.image_path}` : null
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Game',
+    name: g.title,
+    description: g.description ?? g.rules ?? undefined,
+    image: imageUrl ?? undefined,
+    url: `https://www.boardgame-raou.com/games/${g.slug}`,
+    numberOfPlayers: {
+      '@type': 'QuantitativeValue',
+      minValue: g.min_players ?? undefined,
+      maxValue: g.max_players ?? undefined,
+    },
+    ...(g.genres?.length ? { genre: g.genres } : {}),
+  }
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="overflow-hidden rounded-2xl bg-[#FEF3E8]/95 shadow-2xl shadow-black/40">
       {/* 画像 */}
       <div className="relative aspect-[16/9] w-full bg-gray-100">
         {imageUrl ? (
           <Image
             src={imageUrl}
-            alt={g.title}
+            alt={`${g.title} - ${formatPlayers(g.min_players, g.max_players)}で遊べるボードゲーム`}
             fill
             className="object-contain"
             sizes="(max-width: 640px) 100vw, 672px"
@@ -159,6 +179,7 @@ async function GameDetailContent({ params }: { params: Promise<{ slug: string }>
         )}
       </div>
     </div>
+    </>
   )
 }
 
