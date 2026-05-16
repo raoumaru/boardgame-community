@@ -11,11 +11,18 @@ const notoSansJP = Noto_Sans_JP({
 export const metadata: Metadata = {
   title: "ラ王のボドゲ倉庫",
   description: "サークル用ボードゲーム一覧",
+  applicationName: "ラ王のボドゲ倉庫",
   icons: {
     icon: [
-      { url: '/favicon.ico' },
-      { url: '/favicon.png', type: 'image/png' },
+      { url: '/logo.png', type: 'image/png' },
     ],
+    shortcut: '/logo.png',
+    apple: '/logo.png',
+  },
+  openGraph: {
+    siteName: 'ラ王のボドゲ倉庫',
+    locale: 'ja_JP',
+    type: 'website',
   },
   verification: {
     google: '7XHn00Bwt7q6JPxnI9y3Lwqic4v3HU60-4xgdGiyLOg',
@@ -27,6 +34,14 @@ const warmBrickStyle = {
   backgroundColor: "#7A3018",
 } as React.CSSProperties;
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'ラ王のボドゲ倉庫',
+  url: 'https://boardgame-community-iota.vercel.app',
+  description: 'サークル用ボードゲーム一覧',
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,6 +49,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" className={`${notoSansJP.variable} h-full`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         className="min-h-dvh font-[var(--font-noto-sans-jp)] antialiased"
         style={warmBrickStyle}
