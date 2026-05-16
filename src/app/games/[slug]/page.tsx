@@ -17,9 +17,6 @@ const VALID_GENRES = new Set<string>(GENRES.map(g => g.value))
 
 type Props = { params: Promise<{ slug: string }> }
 
-// ISR: 1時間後に再生成（管理APIでの revalidatePath でも即時反映可能）
-export const revalidate = 3600
-
 // ビルド時に全公開ゲームのページを静的生成
 export async function generateStaticParams() {
   const supabase = createAdminClient()
