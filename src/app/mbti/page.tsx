@@ -2,9 +2,9 @@
 
 import { useState, useRef, useCallback, useEffect, Suspense } from 'react'
 import Link from 'next/link'
-import { Swords, ExternalLink, RotateCcw, Share2, ThumbsUp, ThumbsDown, Zap, Copy, Check } from 'lucide-react'
+import { Swords, ExternalLink, RotateCcw, Share2, ThumbsUp, ThumbsDown, Zap, Copy, Check, ImageDown } from 'lucide-react'
 import { NavMenu } from '@/components/ui/NavMenu'
-import { TYPES, type TypeCode } from './data'
+import { TYPES, getAxisLabels, AXIS_COLORS, type TypeCode } from './data'
 
 // ─── データ定義 ────────────────────────────────────────────────────────────────
 
@@ -89,8 +89,10 @@ export default function MbtiPage() {
   const [result, setResult] = useState<DiagResult | null>(null)
   const [savedResult, setSavedResult] = useState<DiagResult | null>(null)
   const [copied, setCopied] = useState(false)
+  const [sharing, setSharing] = useState(false)
 
   const questionRefs = useRef<Array<HTMLDivElement | null>>(Array(QUESTIONS.length).fill(null))
+  const shareCardRef = useRef<HTMLDivElement | null>(null)
 
   // 前回の診断結果をlocalStorageから読み込む
   useEffect(() => {
@@ -141,6 +143,30 @@ export default function MbtiPage() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     })
+  }
+
+  const handleShareImage = async (name: string) => {
+    if (!shareCardRef.current) return
+    setSharing(true)
+    try {
+      const { toPng } = await import('html-to-image')
+      const dataUrl = await toPng(shareCardRef.current, { pixelRatio: 2, cacheBust: true })
+      const res = await fetch(dataUrl)
+      const blob = await res.blob()
+      const file = new File([blob], `boardgame-mbti-${name}.png`, { type: 'image/png' })
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: `ボドゲMBTI：${name}` })
+      } else {
+        const a = document.createElement('a')
+        a.href = dataUrl
+        a.download = `boardgame-mbti-${name}.png`
+        a.click()
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setSharing(false)
+    }
   }
 
   // ── イントロ画面 ─────────────────────────────────────────────────────────────
@@ -247,27 +273,55 @@ export default function MbtiPage() {
   // ── 結果画面 ──────────────────────────────────────────────────────────────────
   if (stage === 'result' && result) {
     const typeData = TYPES[result.code]
+    const axisLabels = getAxisLabels(result.code)
     return (
       <div className="min-h-dvh px-4 py-12">
         <Suspense fallback={null}><NavMenu /></Suspense>
         <div className="mx-auto max-w-lg">
 
-          {/* タイプコード・名前 */}
-          <div className="mb-6 text-center">
-            <p className="mb-1 text-xs tracking-[0.3em] text-amber-400/60 uppercase">Your Type</p>
-            <div className="mb-2 text-6xl font-black tracking-widest text-amber-300">{result.code}</div>
-            <h2 className="mb-1 text-2xl font-bold text-amber-100">{typeData.name}</h2>
-            <p className="text-sm text-amber-200/50">「{typeData.catchcopy}」</p>
+          {/* ── ヘッダーカード（詳細ページと同じデザイン・シェア対象） ── */}
+          <div
+            ref={shareCardRef}
+            className="mb-2 overflow-hidden rounded-2xl border border-white/10"
+            style={{ background: 'linear-gradient(160deg, #3a0a0a 0%, #1a0505 40%, #0d0205 100%)' }}
+          >
+            {/* キャラクター画像 */}
+            <div className="flex justify-center bg-white px-6 pt-6 pb-2">
+              {typeData.image ? (
+                <img src={typeData.image} alt={typeData.name} className="h-52 w-52 object-contain" />
+              ) : (
+                <div className="flex h-52 w-52 items-center justify-center">
+                  <Swords className="h-20 w-20 text-amber-400/20" />
+                </div>
+              )}
+            </div>
+            {/* タイプ情報 */}
+            <div className="p-5 text-center">
+              <p className="mb-1 text-xs tracking-[0.3em] text-amber-400/50 uppercase">Board Game MBTI</p>
+              <div className="mb-1 text-4xl font-black tracking-widest text-amber-300">{result.code}</div>
+              <h2 className="mb-2 text-2xl font-bold text-amber-100">{typeData.name}</h2>
+              <p className="text-sm text-amber-200/60">「{typeData.catchcopy}」</p>
+            </div>
+            {/* 軸バッジ */}
+            <div className="flex flex-wrap justify-center gap-2 px-5 pb-5">
+              {result.code.split('').map((letter, i) => (
+                <span key={i} className={`rounded-full border px-3 py-1 text-xs font-bold ${AXIS_COLORS[letter]}`}>
+                  {axisLabels[i]}
+                </span>
+              ))}
+            </div>
           </div>
 
-          {/* キャラクター画像 */}
-          <div className="mb-5 flex justify-center">
-            <div className="relative h-52 w-52 overflow-hidden rounded-2xl border border-amber-400/20 bg-white">
-              {typeData.image
-                ? <img src={typeData.image} alt={typeData.name} className="h-full w-full object-contain" />
-                : <div className="flex h-full items-center justify-center"><Swords className="h-16 w-16 text-amber-400/30" /></div>
-              }
-            </div>
+          {/* 画像シェアボタン */}
+          <div className="mb-5 text-center">
+            <button
+              onClick={() => handleShareImage(typeData.name)}
+              disabled={sharing}
+              className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-500/10 px-5 py-2 text-xs font-bold text-amber-300 transition-all hover:bg-amber-500/20 disabled:opacity-50"
+            >
+              <ImageDown className="h-3.5 w-3.5" />
+              {sharing ? '生成中...' : '結果画像をシェア・保存'}
+            </button>
           </div>
 
           {/* 説明 */}
@@ -283,6 +337,7 @@ export default function MbtiPage() {
               const aRatio = Math.round(((s.a + 15) / 30) * 100)
               const bRatio = 100 - aRatio
               const aWins = aRatio >= 50
+              const fillPct = aWins ? aRatio : bRatio
               return (
                 <div key={axis.key} className="mb-4 last:mb-0">
                   <div className="mb-1.5 flex justify-between text-xs">
@@ -295,8 +350,11 @@ export default function MbtiPage() {
                       {axis.labelB}
                     </span>
                   </div>
-                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-white/10">
-                    <div className="h-full rounded-full bg-amber-400 transition-all duration-700" style={{ width: `${aRatio}%` }} />
+                  <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-white/10">
+                    <div
+                      className={`h-full rounded-full bg-amber-400 transition-all duration-700 ${!aWins ? 'ml-auto' : ''}`}
+                      style={{ width: `${fillPct}%` }}
+                    />
                   </div>
                 </div>
               )
