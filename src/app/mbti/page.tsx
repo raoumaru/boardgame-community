@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect, Suspense } from 'react'
 import Link from 'next/link'
-import { toPng } from 'html-to-image'
+import html2canvas from 'html2canvas'
 import { Swords, RotateCcw, ThumbsUp, ThumbsDown, Zap, ImageDown } from 'lucide-react'
 import { NavMenu } from '@/components/ui/NavMenu'
 import { GameCard } from '@/components/games/GameCard'
@@ -177,43 +177,32 @@ export default function MbtiPage() {
     if (!shareCardRef.current) return
     setSharing(true)
     try {
-      // キャプチャ前に画像をbase64に変換（html-to-imageが確実に描画できるようにする）
-      const imgEl = shareCardRef.current.querySelector('img')
-      const originalSrc = imgEl?.getAttribute('src') ?? ''
-      if (imgEl && originalSrc) {
-        const fetchRes = await fetch(originalSrc)
-        const imgBlob = await fetchRes.blob()
-        const base64 = await new Promise<string>(resolve => {
-          const reader = new FileReader()
-          reader.onloadend = () => resolve(reader.result as string)
-          reader.readAsDataURL(imgBlob)
-        })
-        imgEl.src = base64
-        await new Promise(r => setTimeout(r, 50))
-      }
-
-      const dataUrl = await toPng(shareCardRef.current, {
-        pixelRatio: 2,
-        style: { borderRadius: '0' },
+      const canvas = await html2canvas(shareCardRef.current, {
+        useCORS: true,
+        allowTaint: false,
+        scale: 2,
+        backgroundColor: null,
+        logging: false,
+        imageTimeout: 10000,
       })
 
-      // 元のsrcを戻す
-      if (imgEl && originalSrc) imgEl.src = originalSrc
-
-      const res = await fetch(dataUrl)
-      const blob = await res.blob()
-      const file = new File([blob], `boardgame-mbti-${name}.png`, { type: 'image/png' })
-      if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: `ボドゲMBTI：${name}` })
-      } else {
-        const a = document.createElement('a')
-        a.href = dataUrl
-        a.download = `boardgame-mbti-${name}.png`
-        a.click()
-      }
+      canvas.toBlob(async blob => {
+        if (!blob) return
+        const file = new File([blob], `boardgame-mbti-${name}.png`, { type: 'image/png' })
+        if (navigator.canShare?.({ files: [file] })) {
+          await navigator.share({ files: [file], title: `ボドゲMBTI：${name}` })
+        } else {
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = `boardgame-mbti-${name}.png`
+          a.click()
+          URL.revokeObjectURL(url)
+        }
+        setSharing(false)
+      }, 'image/png')
     } catch (e) {
       console.error(e)
-    } finally {
       setSharing(false)
     }
   }
