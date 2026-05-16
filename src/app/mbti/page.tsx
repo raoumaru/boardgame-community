@@ -75,18 +75,18 @@ async function generateMbtiShareImage(
     try {
       const img = await new Promise<HTMLImageElement>((resolve, reject) => {
         const el = new Image()
-        el.crossOrigin = 'anonymous'
+        // crossOrigin は設定しない（同一オリジン画像に設定するとiOS Chromeでcanvasが tainted になりtoBlob()がnullを返す）
         el.onload = () => resolve(el)
-        el.onerror = reject
-        // 絶対URLに変換（相対パスだとiOSで失敗することがある）
+        el.onerror = (e) => reject(new Error(`image load failed: ${String(e)}`))
         el.src = imageSrc.startsWith('http') ? imageSrc : `${window.location.origin}${imageSrc}`
       })
       const scale = Math.min((W - 60) / img.naturalWidth, (IMG_H - 40) / img.naturalHeight)
       const dw = img.naturalWidth * scale
       const dh = img.naturalHeight * scale
       ctx.drawImage(img, (W - dw) / 2, (IMG_H - dh) / 2, dw, dh)
-    } catch {
-      // 画像読み込み失敗時はスキップ
+    } catch (imgErr) {
+      // 画像読み込み失敗時はスキップ（テキストのみで生成続行）
+      console.warn('share image: character image failed to load', imgErr)
     }
   }
 
@@ -229,6 +229,7 @@ export default function MbtiPage() {
   const [savedResult, setSavedResult] = useState<DiagResult | null>(null)
   const [sharing, setSharing] = useState(false)
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null)
+  const [shareErrorMsg, setShareErrorMsg] = useState<string | null>(null)
   const [mbtiGames, setMbtiGames] = useState<Game[]>([])
   const [mbtiGamesLoading, setMbtiGamesLoading] = useState(false)
 
@@ -297,9 +298,13 @@ export default function MbtiPage() {
 
   const handleShareImage = async (code: TypeCode, name: string, catchcopy: string, axisLabels: string[], imageSrc?: string) => {
     setSharing(true)
+    setShareErrorMsg(null)
     try {
       const blob = await generateMbtiShareImage(code, name, catchcopy, axisLabels, imageSrc)
-      if (!blob) return
+      if (!blob) {
+        setShareErrorMsg('画像の生成に失敗しました（blob null）')
+        return
+      }
 
       // iOS（Safari・Chrome共通）: ジェスチャータイムアウト問題のためオーバーレイ表示
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
@@ -325,6 +330,7 @@ export default function MbtiPage() {
       URL.revokeObjectURL(url)
     } catch (e) {
       console.error(e)
+      setShareErrorMsg(`エラー: ${e instanceof Error ? e.message : String(e)}`)
     } finally {
       setSharing(false)
     }
@@ -488,6 +494,9 @@ export default function MbtiPage() {
               <ImageDown className="h-3.5 w-3.5" />
               {sharing ? '生成中...' : '結果画像をシェア・保存'}
             </button>
+            {shareErrorMsg && (
+              <p className="mt-2 text-[10px] text-red-400">{shareErrorMsg}</p>
+            )}
           </div>
 
           {/* 説明 */}
