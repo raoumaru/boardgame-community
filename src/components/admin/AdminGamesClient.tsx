@@ -19,6 +19,7 @@ import { TogglePopularButton } from '@/components/admin/TogglePopularButton'
 type Game = {
   id: string
   title: string
+  title_kana: string | null
   min_players: number
   max_players: number
   play_time_min: number
@@ -66,7 +67,10 @@ export function AdminGamesClient({ games: initialGames }: Props) {
       const qKata = toKatakana(q)
       const qHira = toHiragana(q)
       const t = g.title.toLowerCase()
-      const matchTitle = !q || t.includes(q) || t.includes(qKata) || t.includes(qHira)
+      const kana = (g.title_kana ?? '').toLowerCase()
+      const matchTitle = !q ||
+        t.includes(q) || t.includes(qKata) || t.includes(qHira) ||
+        kana.includes(q) || kana.includes(qKata) || kana.includes(qHira)
       const matchImage =
         imageFilter === 'all' ? true :
         imageFilter === 'has' ? !!g.image_path :
