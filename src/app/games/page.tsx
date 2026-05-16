@@ -5,6 +5,16 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { GamesClient } from "@/components/games/GamesClient";
 import { NavMenu } from "@/components/ui/NavMenu";
 import type { Game } from "@/lib/types";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: 'ボードゲーム一覧',
+  description: 'ボードゲームの一覧・おすすめ検索ができます。人数・プレイ時間・ジャンル・難易度でフィルタリング。ボドゲーターでぴったりのボードゲーム占いも。',
+  openGraph: {
+    title: 'ボードゲーム一覧 | ラ王のボドゲ倉庫',
+    description: 'ボードゲームの一覧・おすすめ検索ができます。人数・プレイ時間・ジャンル・難易度でフィルタリング。',
+  },
+};
 
 const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-images`;
 

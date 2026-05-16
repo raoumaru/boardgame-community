@@ -9,9 +9,13 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "ラ王のボドゲ倉庫",
-  description: "サークル用ボードゲーム一覧",
+  title: {
+    default: 'ラ王のボドゲ倉庫',
+    template: '%s | ラ王のボドゲ倉庫',
+  },
+  description: 'ラ王のボドゲ倉庫 — ボードゲーム一覧・おすすめ検索・ボドゲーター（ボードゲーム占い）が使えるサイト。人数・時間・ジャンルで絞り込んでぴったりのボードゲームを見つけよう。',
   applicationName: "ラ王のボドゲ倉庫",
+  keywords: ['ボドゲーター', 'ボードゲーム一覧', 'ボードゲームおすすめ', 'ボードゲーム占い', 'ラ王ボドゲ倉庫', 'ボードゲーム検索'],
   icons: {
     apple: '/logo.png',
   },
@@ -35,7 +39,7 @@ const jsonLd = {
   '@type': 'WebSite',
   name: 'ラ王のボドゲ倉庫',
   url: 'https://www.boardgame-raou.com',
-  description: 'サークル用ボードゲーム一覧',
+  description: 'ボードゲーム一覧・おすすめ・占いで探せるボードゲームサイト。ボドゲーターでぴったりのゲームを見つけよう。',
 }
 
 export default function RootLayout({
