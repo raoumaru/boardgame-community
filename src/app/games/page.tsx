@@ -7,7 +7,8 @@ import type { Game } from "@/lib/types";
 
 const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-images`;
 
-export default async function GamesPage() {
+// DB fetch は Suspense 内の async コンポーネントで行う
+async function GamesWithData() {
   const supabase = createAdminClient();
   const { data: games } = await supabase
     .from("games")
@@ -15,6 +16,16 @@ export default async function GamesPage() {
     .eq("is_published", true)
     .order("sort_order", { ascending: true });
 
+  return (
+    <GamesClient
+      allGames={(games ?? []) as Game[]}
+      imageBaseUrl={IMAGE_BASE_URL}
+    />
+  );
+}
+
+// ページシェルは同期関数（ランタイムAPIにアクセスしない）
+export default function GamesPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
       <NavMenu />
@@ -35,9 +46,9 @@ export default async function GamesPage() {
         </p>
       </div>
 
-      {/* 検索・フィルター＋ゲーム一覧（クライアントサイド） */}
+      {/* DB fetch + フィルタリング（Suspense 内で完結） */}
       <Suspense fallback={<GamesLoadingSkeleton />}>
-        <GamesClient allGames={(games ?? []) as Game[]} imageBaseUrl={IMAGE_BASE_URL} />
+        <GamesWithData />
       </Suspense>
     </div>
   );
