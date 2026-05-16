@@ -80,7 +80,7 @@ function RakutenLink({ title }: { title: string }) {
   const plId = process.env.NEXT_PUBLIC_MOSHIMO_PL_ID
   if (!aId) return null
 
-  const rakutenSearchUrl = `https://search.rakuten.co.jp/search/mall/${encodeURIComponent(title)}/`
+  const rakutenSearchUrl = `https://search.rakuten.co.jp/search/mall/${encodeURIComponent(title + ' ボードゲーム')}/`
   const affiliateUrl = `https://af.moshimo.com/af/c/click?a_id=${aId}&p_id=${pId}&pc_id=${pcId}&pl_id=${plId}&url=${encodeURIComponent(rakutenSearchUrl)}`
 
   return (
