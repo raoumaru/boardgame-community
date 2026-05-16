@@ -68,7 +68,7 @@ export function SearchAndFilter({ filters, onChange }: Props) {
       >
         <span className="flex items-center gap-2">
           <Wand2 className="h-4 w-4 shrink-0" />
-          気分でゲームを占う
+          ボドゲーター（ゲームを占う）
         </span>
         <span className="text-amber-400">→</span>
       </Link>

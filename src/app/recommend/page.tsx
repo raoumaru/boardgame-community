@@ -209,34 +209,27 @@ export default function RecommendPage() {
   // ── Intro ──────────────────────────────────────────────────────────────────
   if (stage === 'intro') {
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center px-4 py-12">
+      <div className="flex min-h-dvh flex-col items-center justify-center px-4 py-4">
         <NavMenu />
         <div className="animate-fade-up w-full max-w-md text-center">
-          {/* Crystal ball decoration */}
-          <div className="relative mx-auto mb-8 h-32 w-32">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Wand2 className="h-16 w-16 text-amber-300 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]" />
-            </div>
-            <div className="animate-shimmer absolute -top-1 left-8">
-              <Sparkles className="h-5 w-5 text-amber-200/80" />
-            </div>
-            <div className="animate-shimmer absolute right-4 top-4" style={{ animationDelay: '0.7s' }}>
-              <Star className="h-3.5 w-3.5 text-amber-300/70" />
-            </div>
-            <div className="animate-shimmer absolute bottom-0 left-2" style={{ animationDelay: '1.3s' }}>
-              <Sparkles className="h-3.5 w-3.5 text-amber-200/60" />
-            </div>
-            <div className="animate-shimmer absolute bottom-2 right-6" style={{ animationDelay: '0.4s' }}>
-              <Star className="h-5 w-5 text-amber-300/60" />
-            </div>
+          <p className="mb-1 text-xs tracking-[0.3em] text-amber-400/60 uppercase">Board Game Oracle</p>
+          <h1 className="mb-0 text-4xl font-bold tracking-wide text-amber-100">ボドゲーター</h1>
+
+          {/* ボドゲーターキャラクター */}
+          <div className="relative mx-auto h-56 w-full max-w-sm">
+            <Image
+              src="/bodogater.png"
+              alt="ボドゲーター"
+              fill
+              className="object-contain drop-shadow-[0_0_24px_rgba(251,191,36,0.3)]"
+              priority
+            />
           </div>
 
-          <p className="mb-2 text-xs tracking-[0.3em] text-amber-400/60 uppercase">Board Game Oracle</p>
-          <h1 className="mb-3 text-4xl font-bold tracking-wide text-amber-100">ゲーム占い</h1>
-          <p className="mb-2 text-base text-amber-200/80">
+          <p className="mb-1 text-base text-amber-200/80">
             5つの問いに答えるだけで
           </p>
-          <p className="mb-8 text-base text-amber-200/80">
+          <p className="mb-6 text-base text-amber-200/80">
             あなたにぴったりのゲームを導き出します
           </p>
 
@@ -248,7 +241,7 @@ export default function RecommendPage() {
             <span className="transition-transform group-hover:translate-x-1">→</span>
           </button>
 
-          <div className="mt-6">
+          <div className="mt-4">
             <Link href="/games" className="text-xs text-amber-600/60 hover:text-amber-500/80 transition-colors">
               ← ゲーム一覧に戻る
             </Link>
