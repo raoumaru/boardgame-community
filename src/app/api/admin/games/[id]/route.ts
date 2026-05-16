@@ -1,3 +1,4 @@
+import { revalidateTag } from 'next/cache'
 import { NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
@@ -15,6 +16,7 @@ export async function PUT(request: Request, { params }: Params) {
   const admin = createAdminClient()
   const { data, error } = await admin.from('games').update(body).eq('id', id).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  revalidateTag('games-list', 'max')
   return NextResponse.json(data)
 }
 
@@ -34,5 +36,6 @@ export async function DELETE(_: Request, { params }: Params) {
 
   const { error } = await admin.from('games').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  revalidateTag('games-list', 'max')
   return NextResponse.json({ ok: true })
 }

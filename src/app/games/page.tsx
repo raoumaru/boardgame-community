@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Image from "next/image";
+import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { GamesClient } from "@/components/games/GamesClient";
 import { NavMenu } from "@/components/ui/NavMenu";
@@ -7,20 +8,29 @@ import type { Game } from "@/lib/types";
 
 const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-images`;
 
-// DB fetch は Suspense 内の async コンポーネントで行う
-async function GamesWithData() {
-  const supabase = createAdminClient();
-  const { data: games } = await supabase
-    .from("games")
-    .select("*")
-    .eq("is_published", true)
-    .order("sort_order", { ascending: true });
+// 一覧表示に必要なカラムのみ取得（rules・description・recommended_for は除外）
+const GAMES_SELECT =
+  "id, title, slug, title_kana, min_players, max_players, play_time_min, play_time_max, difficulty, genres, image_path, is_popular, is_recommendable, sort_order, created_at, external_url";
 
+// 1時間キャッシュ。管理画面でゲームを保存・削除すると自動でリセット
+const fetchPublishedGames = unstable_cache(
+  async () => {
+    const supabase = createAdminClient();
+    const { data } = await supabase
+      .from("games")
+      .select(GAMES_SELECT)
+      .eq("is_published", true)
+      .order("sort_order", { ascending: true });
+    return data ?? [];
+  },
+  ["games-list"],
+  { revalidate: 3600, tags: ["games-list"] }
+);
+
+async function GamesWithData() {
+  const games = await fetchPublishedGames();
   return (
-    <GamesClient
-      allGames={(games ?? []) as Game[]}
-      imageBaseUrl={IMAGE_BASE_URL}
-    />
+    <GamesClient allGames={games as Game[]} imageBaseUrl={IMAGE_BASE_URL} />
   );
 }
 

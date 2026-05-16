@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
+import { RefreshCw } from 'lucide-react'
 
 function toKatakana(str: string): string {
   return str.replace(/[ぁ-ゖ]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60))
@@ -38,6 +39,26 @@ export function AdminGamesClient({ games: initialGames }: Props) {
   const [titleFilter, setTitleFilter] = useState('')
   const [imageFilter, setImageFilter] = useState<'all' | 'has' | 'none'>('all')
   const [publishFilter, setPublishFilter] = useState<'all' | 'published' | 'unpublished'>('all')
+  const [isClearingCache, setIsClearingCache] = useState(false)
+  const [cacheMessage, setCacheMessage] = useState('')
+
+  const handleClearCache = useCallback(async () => {
+    setIsClearingCache(true)
+    setCacheMessage('')
+    try {
+      const res = await fetch('/api/admin/revalidate', { method: 'POST' })
+      if (res.ok) {
+        setCacheMessage('✓ キャッシュをクリアしました')
+      } else {
+        setCacheMessage('✗ クリアに失敗しました')
+      }
+    } catch {
+      setCacheMessage('✗ クリアに失敗しました')
+    } finally {
+      setIsClearingCache(false)
+      setTimeout(() => setCacheMessage(''), 3000)
+    }
+  }, [])
 
   const filtered = useMemo(() => {
     return games.filter(g => {
@@ -62,12 +83,30 @@ export function AdminGamesClient({ games: initialGames }: Props) {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-bold text-gray-800">ゲーム管理</h1>
-        <Link
-          href="/admin/games/new"
-          className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600"
-        >
-          ＋ 新規追加
-        </Link>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {cacheMessage && (
+              <span className={`text-xs font-medium ${cacheMessage.startsWith('✓') ? 'text-green-600' : 'text-red-500'}`}>
+                {cacheMessage}
+              </span>
+            )}
+            <button
+              onClick={handleClearCache}
+              disabled={isClearingCache}
+              title="ゲーム一覧のキャッシュをクリア（1時間キャッシュ）"
+              className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-600 shadow-sm transition hover:bg-gray-50 disabled:opacity-50"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isClearingCache ? 'animate-spin' : ''}`} />
+              {isClearingCache ? 'クリア中...' : 'キャッシュクリア'}
+            </button>
+          </div>
+          <Link
+            href="/admin/games/new"
+            className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600"
+          >
+            ＋ 新規追加
+          </Link>
+        </div>
       </div>
 
       {/* フィルター */}

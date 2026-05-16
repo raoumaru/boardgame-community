@@ -1,18 +1,13 @@
 import { revalidateTag } from 'next/cache'
 import { NextResponse } from 'next/server'
-import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { isAdmin } from '@/lib/auth'
 
-export async function POST(request: Request) {
+export async function POST() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!isAdmin(user)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await request.json()
-  const admin = createAdminClient()
-  const { data, error } = await admin.from('games').insert(body).select().single()
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   revalidateTag('games-list', 'max')
-  return NextResponse.json(data)
+  return NextResponse.json({ ok: true })
 }
