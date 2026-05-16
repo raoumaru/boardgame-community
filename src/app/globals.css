@@ -23,12 +23,7 @@
 
 @layer base {
   body {
-    background-color: #7A3018 !important;
-    background-image:
-      linear-gradient(rgba(8, 2, 0, 0.38), rgba(8, 2, 0, 0.38)),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='62'%3E%3Crect width='128' height='62' fill='%23C0AFA0'/%3E%3Crect x='2' y='2' width='59' height='27' fill='%23C4703A'/%3E%3Crect x='65' y='2' width='61' height='27' fill='%23BE6432'/%3E%3Crect x='2' y='33' width='29' height='27' fill='%23CA7840'/%3E%3Crect x='35' y='33' width='58' height='27' fill='%23B86030'/%3E%3Crect x='97' y='33' width='29' height='27' fill='%23C26838'/%3E%3C/svg%3E") !important;
-    background-size: auto, 128px 62px !important;
-    background-attachment: fixed !important;
+    background: linear-gradient(160deg, #3a0a0a 0%, #1a0505 40%, #0d0205 100%) fixed !important;
     min-height: 100dvh;
   }
 }
