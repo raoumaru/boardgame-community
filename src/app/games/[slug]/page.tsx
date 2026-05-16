@@ -1,8 +1,8 @@
+import { cache } from 'react'
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { Users, Clock, Gamepad2, Sparkles, ExternalLink } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { GenreBadge, DifficultyBadge } from '@/components/ui/Badge'
 import { NavMenu } from '@/components/ui/NavMenu'
@@ -17,16 +17,35 @@ const VALID_GENRES = new Set<string>(GENRES.map(g => g.value))
 
 type Props = { params: Promise<{ slug: string }> }
 
-// generateMetadata: adminClient で cookies() を使わずに取得
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params
+// ISR: 1時間後に再生成（管理APIでの revalidatePath でも即時反映可能）
+export const revalidate = 3600
+
+// ビルド時に全公開ゲームのページを静的生成
+export async function generateStaticParams() {
   const supabase = createAdminClient()
-  const { data: game } = await supabase
+  const { data: games } = await supabase
     .from('games')
-    .select('title, description, difficulty, min_players, max_players, play_time_min, play_time_max, image_path')
+    .select('slug')
+    .eq('is_published', true)
+  return (games ?? []).map(g => ({ slug: g.slug }))
+}
+
+// React.cache: 同一リクエスト内でのDB呼び出しを1回に集約
+// generateMetadata と GameDetailContent が同じslugで呼んでも DB は1回だけ
+const getGame = cache(async (slug: string) => {
+  const supabase = createAdminClient()
+  const { data } = await supabase
+    .from('games')
+    .select('*')
     .eq('slug', slug)
     .eq('is_published', true)
     .single()
+  return data ?? null
+})
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const game = await getGame(slug)
 
   if (!game) return { title: 'ゲームが見つかりません' }
 
@@ -47,16 +66,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-// データ取得コンポーネント: params の await も含め Suspense の中で完結させる
 async function GameDetailContent({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params  // ← Suspense 内で await
-  const supabase = await createClient()  // ← cookies() も Suspense 内
-  const { data: game } = await supabase
-    .from('games')
-    .select('*')
-    .eq('slug', slug)
-    .eq('is_published', true)
-    .single()
+  const { slug } = await params
+  const game = await getGame(slug) // React.cache により2回目はDBアクセスなし
 
   if (!game) notFound()
 
@@ -156,11 +168,9 @@ function GameDetailSkeleton() {
   )
 }
 
-// ページシェルは同期関数 — 一切のランタイムAPIにアクセスしない
 export default function GameDetailPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
-      {/* NavMenu は usePathname() を使うため Suspense で包む */}
       <Suspense fallback={null}>
         <NavMenu />
       </Suspense>
