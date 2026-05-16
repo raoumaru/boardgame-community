@@ -150,7 +150,11 @@ export default function MbtiPage() {
     setSharing(true)
     try {
       const { toPng } = await import('html-to-image')
-      const dataUrl = await toPng(shareCardRef.current, { pixelRatio: 2, cacheBust: true })
+      const dataUrl = await toPng(shareCardRef.current, {
+        pixelRatio: 2,
+        cacheBust: true,
+        style: { borderRadius: '0' },
+      })
       const res = await fetch(dataUrl)
       const blob = await res.blob()
       const file = new File([blob], `boardgame-mbti-${name}.png`, { type: 'image/png' })
