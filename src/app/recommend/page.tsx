@@ -10,7 +10,7 @@ import {
   Zap, Clock, Moon,
   Sprout, Leaf, TreePine,
   Wand2, Sparkles, Star,
-  Gamepad2, RefreshCw,
+  Gamepad2, RefreshCw, ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import type React from 'react'
 import { GameModal } from '@/components/games/GameModal'
@@ -104,10 +104,17 @@ export default function RecommendPage() {
   const [stepIndex, setStepIndex]   = useState(0)
   const [answers, setAnswers]       = useState<Answers>({})
   const [animKey, setAnimKey]       = useState(0)
-  const [results, setResults]       = useState<Game[]>([])
+  // resultsStack: 表示した結果の履歴（インデックス0が最初）
+  const [resultsStack, setResultsStack] = useState<Game[][]>([])
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedGame, setSelectedGame] = useState<Game | null>(null)
   const [error, setError]           = useState('')
   const [isReshuffling, setIsReshuffling] = useState(false)
+
+  // 現在表示中の結果
+  const results = resultsStack[currentIndex] ?? []
+  // これまでに表示したゲームIDの一覧（除外用）
+  const shownIds = resultsStack.flat().map(g => g.id)
 
   const currentStep = STEPS[stepIndex]
 
@@ -154,7 +161,8 @@ export default function RecommendPage() {
         })
         const data = await res.json()
         if (!res.ok) throw new Error(data.error)
-        setResults(data.games)
+        setResultsStack([[...data.games]])
+        setCurrentIndex(0)
         setStage('results')
       } catch {
         setError('占いに失敗しました。もう一度お試しください。')
@@ -177,7 +185,8 @@ export default function RecommendPage() {
     setStepIndex(0)
     setAnswers({})
     setAnimKey(0)
-    setResults([])
+    setResultsStack([])
+    setCurrentIndex(0)
     setError('')
   }
 
@@ -190,6 +199,7 @@ export default function RecommendPage() {
         categories: answers.categories as string[] ?? [],
         time:       answers.time       as string,
         experience: answers.experience as string,
+        excludeIds: shownIds,  // これまでに表示したゲームを除外
       }
       const res  = await fetch('/api/recommend', {
         method: 'POST',
@@ -198,13 +208,15 @@ export default function RecommendPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
-      setResults(data.games)
+      // 現在位置以降を切り捨てて新しい結果を追加
+      setResultsStack(prev => [...prev.slice(0, currentIndex + 1), [...data.games]])
+      setCurrentIndex(prev => prev + 1)
     } catch {
       // 失敗しても結果は据え置き
     } finally {
       setIsReshuffling(false)
     }
-  }, [answers])
+  }, [answers, shownIds, currentIndex])
 
   // ── Intro ──────────────────────────────────────────────────────────────────
   if (stage === 'intro') {
@@ -303,8 +315,31 @@ export default function RecommendPage() {
             ))}
           </div>
 
+          {/* ナビゲーション（前後の結果） */}
+          {resultsStack.length > 1 && (
+            <div className="mt-6 flex items-center justify-center gap-3">
+              <button
+                onClick={() => setCurrentIndex(i => i - 1)}
+                disabled={currentIndex === 0}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-4 py-2 text-sm text-white/60 transition-all hover:border-white/40 hover:text-white/90 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                前の3本
+              </button>
+              <span className="text-xs text-white/30">{currentIndex + 1} / {resultsStack.length}</span>
+              <button
+                onClick={() => setCurrentIndex(i => i + 1)}
+                disabled={currentIndex === resultsStack.length - 1}
+                className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-4 py-2 text-sm text-white/60 transition-all hover:border-white/40 hover:text-white/90 disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                次の3本
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+
           {/* Reset */}
-          <div className="mt-10 text-center">
+          <div className="mt-6 text-center">
             <button
               onClick={handleReshuffle}
               disabled={isReshuffling}

@@ -19,11 +19,12 @@ type Body = {
   categories: string[]   // genre categories selected
   time:       'short' | 'medium' | 'long'
   experience: 'beginner' | 'sometimes' | 'often'
+  excludeIds?: string[]  // すでに表示したゲームのID（違う3本を見る用）
 }
 
 export async function POST(req: NextRequest) {
   const body: Body = await req.json()
-  const { players, mood, categories, time, experience } = body
+  const { players, mood, categories, time, experience, excludeIds } = body
 
   const supabase = createAdminClient()
   const { data: games, error } = await supabase
@@ -91,10 +92,16 @@ export async function POST(req: NextRequest) {
   // A-2: スコア重み付きランダム抽出（上位15件のプールから3本選ぶ）
   // 同じ回答でも毎回違うゲームが出やすく、かつ高スコアのゲームが出やすい
   const POOL_SIZE = 15
-  const pool = scored.slice(0, POOL_SIZE)
-  const minScore = Math.min(...pool.map(x => x.score))
+  const rawPool = scored.slice(0, POOL_SIZE)
+  // すでに表示したゲームをプールから除外（違う3本を見る）
+  const pool = excludeIds?.length
+    ? rawPool.filter(x => !excludeIds.includes(x.game.id))
+    : rawPool
+  // プールが空になった場合はフル rawPool にフォールバック
+  const effectivePool = pool.length >= 3 ? pool : rawPool
+  const minScore = Math.min(...effectivePool.map(x => x.score))
   // スコアをシフトして全て正にし、重みとして使用（低スコアも確率0にならない）
-  const weighted = pool.map(x => ({ ...x, weight: Math.max(x.score - minScore + 1, 1) }))
+  const weighted = effectivePool.map(x => ({ ...x, weight: Math.max(x.score - minScore + 1, 1) }))
 
   const result: typeof scored[0]['game'][] = []
   const available = [...weighted]

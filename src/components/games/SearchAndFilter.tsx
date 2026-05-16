@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Users, Clock, Gamepad2, Trophy, Sparkles, Flame, Search, X, Wand2 } from 'lucide-react'
+import { Users, Clock, Gamepad2, Trophy, Sparkles, Flame, Search, X, Wand2, Swords } from 'lucide-react'
 import { GENRES } from '@/lib/types'
 import type { FilterState } from '@/components/games/GamesClient'
 
@@ -61,17 +61,29 @@ export function SearchAndFilter({ filters, onChange }: Props) {
   return (
     <div className="mb-6 space-y-3">
 
-      {/* 占いバナー */}
-      <Link
-        href="/recommend"
-        className="flex items-center justify-between rounded-xl bg-amber-500/20 border border-amber-400/30 px-4 py-3 text-sm font-semibold text-amber-200 transition hover:bg-amber-500/30 hover:border-amber-400/50"
-      >
-        <span className="flex items-center gap-2">
-          <Wand2 className="h-4 w-4 shrink-0" />
-          ボドゲーター（ゲームを占う）
-        </span>
-        <span className="text-amber-400">→</span>
-      </Link>
+      {/* バナーエリア */}
+      <div className="flex gap-2">
+        <Link
+          href="/recommend"
+          className="flex flex-1 items-center justify-between rounded-xl bg-amber-500/20 border border-amber-400/30 px-4 py-3 text-sm font-semibold text-amber-200 transition hover:bg-amber-500/30 hover:border-amber-400/50"
+        >
+          <span className="flex items-center gap-2">
+            <Wand2 className="h-4 w-4 shrink-0" />
+            ボドゲーター
+          </span>
+          <span className="text-amber-400">→</span>
+        </Link>
+        <Link
+          href="/mbti"
+          className="flex flex-1 items-center justify-between rounded-xl bg-red-900/30 border border-red-700/40 px-4 py-3 text-sm font-semibold text-amber-200 transition hover:bg-red-900/50 hover:border-red-600/60"
+        >
+          <span className="flex items-center gap-2">
+            <Swords className="h-4 w-4 shrink-0" />
+            ボドゲMBTI
+          </span>
+          <span className="text-amber-400">→</span>
+        </Link>
+      </div>
 
       {/* 検索バー */}
       <div className="relative">

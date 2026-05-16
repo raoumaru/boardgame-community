@@ -3,9 +3,25 @@
 import { useState, useRef, useCallback, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { toPng } from 'html-to-image'
-import { Swords, ExternalLink, RotateCcw, ThumbsUp, ThumbsDown, Zap, ImageDown } from 'lucide-react'
+import { Swords, RotateCcw, ThumbsUp, ThumbsDown, Zap, ImageDown } from 'lucide-react'
 import { NavMenu } from '@/components/ui/NavMenu'
+import { GameCard } from '@/components/games/GameCard'
 import { TYPES, getAxisLabels, AXIS_COLORS, type TypeCode } from './data'
+import type { Game } from '@/lib/types'
+
+const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-images`
+
+// MBTIタイプコードから /api/recommend へのパラメータを導出
+function getMbtiRecommendParams(code: TypeCode) {
+  const d = code[0], r = code[1], i = code[2], h = code[3]
+  return {
+    players:    i === 'I' ? '2' : i === 'G' ? '5+' : '3-4',
+    mood:       d === 'D' ? 'think' : 'fun',
+    categories: r === 'R' ? ['strategy', 'bluff'] : ['cooperative', 'party'],
+    time:       h === 'H' ? 'long' : 'short',
+    experience: d === 'D' && h === 'H' ? 'often' : d === 'W' && h === 'L' ? 'beginner' : 'sometimes',
+  }
+}
 
 // ─── データ定義 ────────────────────────────────────────────────────────────────
 
@@ -90,6 +106,8 @@ export default function MbtiPage() {
   const [result, setResult] = useState<DiagResult | null>(null)
   const [savedResult, setSavedResult] = useState<DiagResult | null>(null)
   const [sharing, setSharing] = useState(false)
+  const [mbtiGames, setMbtiGames] = useState<Game[]>([])
+  const [mbtiGamesLoading, setMbtiGamesLoading] = useState(false)
 
   const questionRefs = useRef<Array<HTMLDivElement | null>>(Array(QUESTIONS.length).fill(null))
   const shareCardRef = useRef<HTMLDivElement | null>(null)
@@ -130,10 +148,28 @@ export default function MbtiPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // 診断結果が出たらタイプに合うゲームをDBから取得
+  useEffect(() => {
+    if (!result) return
+    setMbtiGames([])
+    setMbtiGamesLoading(true)
+    const params = getMbtiRecommendParams(result.code)
+    fetch('/api/recommend', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(params),
+    })
+      .then(r => r.json())
+      .then(data => setMbtiGames(data.games ?? []))
+      .catch(() => {})
+      .finally(() => setMbtiGamesLoading(false))
+  }, [result])
+
   const handleReset = () => {
     setStage('intro')
     setAnswers({})
     setResult(null)
+    setMbtiGames([])
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
   }
 
@@ -433,20 +469,28 @@ export default function MbtiPage() {
             </div>
           </div>
 
-          {/* おすすめゲーム */}
-          <div className="mb-4 rounded-2xl border border-amber-400/20 bg-amber-500/5 p-5">
-            <h3 className="mb-3 text-xs font-bold tracking-widest text-amber-400/70 uppercase">おすすめゲーム</h3>
-            <div className="space-y-2">
-              {typeData.games.map(game => (
-                <a key={game} href={`https://www.google.com/search?q=${encodeURIComponent(game + ' ボードゲーム')}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-amber-100 transition hover:border-amber-400/40 hover:bg-amber-400/10"
-                >
-                  <span className="font-medium">{game}</span>
-                  <ExternalLink className="h-3.5 w-3.5 shrink-0 text-amber-400/50" />
-                </a>
-              ))}
-            </div>
+          {/* おすすめゲーム（DBから取得） */}
+          <div className="mb-4">
+            <h3 className="mb-3 text-xs font-bold tracking-widest text-amber-400/70 uppercase">おすすめボードゲーム</h3>
+            {mbtiGamesLoading ? (
+              <div className="grid grid-cols-3 gap-2">
+                {[0, 1, 2].map(i => (
+                  <div key={i} className="overflow-hidden rounded-xl bg-white/10 shadow-md">
+                    <div className="aspect-[4/3] animate-pulse bg-white/20" />
+                    <div className="space-y-2 p-3">
+                      <div className="h-3 animate-pulse rounded bg-white/20" />
+                      <div className="h-2.5 w-2/3 animate-pulse rounded bg-white/20" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : mbtiGames.length > 0 ? (
+              <div className="grid grid-cols-3 gap-2">
+                {mbtiGames.map(game => (
+                  <GameCard key={game.id} game={game} imageBaseUrl={IMAGE_BASE_URL} />
+                ))}
+              </div>
+            ) : null}
           </div>
 
           {/* ボタン */}
