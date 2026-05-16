@@ -141,11 +141,29 @@ export default function MbtiPage() {
     if (!shareCardRef.current) return
     setSharing(true)
     try {
+      // キャプチャ前に画像をbase64に変換（html-to-imageが確実に描画できるようにする）
+      const imgEl = shareCardRef.current.querySelector('img')
+      const originalSrc = imgEl?.getAttribute('src') ?? ''
+      if (imgEl && originalSrc) {
+        const fetchRes = await fetch(originalSrc)
+        const imgBlob = await fetchRes.blob()
+        const base64 = await new Promise<string>(resolve => {
+          const reader = new FileReader()
+          reader.onloadend = () => resolve(reader.result as string)
+          reader.readAsDataURL(imgBlob)
+        })
+        imgEl.src = base64
+        await new Promise(r => setTimeout(r, 50))
+      }
+
       const dataUrl = await toPng(shareCardRef.current, {
         pixelRatio: 2,
-        cacheBust: true,
         style: { borderRadius: '0' },
       })
+
+      // 元のsrcを戻す
+      if (imgEl && originalSrc) imgEl.src = originalSrc
+
       const res = await fetch(dataUrl)
       const blob = await res.blob()
       const file = new File([blob], `boardgame-mbti-${name}.png`, { type: 'image/png' })
