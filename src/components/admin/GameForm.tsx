@@ -72,9 +72,23 @@ export function GameForm({ game }: Props) {
 
   const watchedGenres = watch('genres') ?? []
 
+  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+  const MAX_IMAGE_SIZE_MB = 5
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setError('画像はJPEG・PNG・WebP・GIF形式のみアップロードできます')
+      e.target.value = ''
+      return
+    }
+    if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+      setError(`画像は${MAX_IMAGE_SIZE_MB}MB以下にしてください`)
+      e.target.value = ''
+      return
+    }
+    setError('')
     setImageFile(file)
     setPreviewUrl(URL.createObjectURL(file))
   }

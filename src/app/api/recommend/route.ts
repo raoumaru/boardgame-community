@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
 
 // genre category → actual genre values
@@ -10,21 +11,39 @@ const GENRE_CATEGORY_MAP: Record<string, string[]> = {
   party:       ['party', 'family', 'word_sense'],
 }
 
+const VALID_CATEGORIES = Object.keys(GENRE_CATEGORY_MAP) as [string, ...string[]]
+
 const FUN_GENRES   = ['party', 'family', 'word_sense', 'bluffing', 'hidden_role']
 const THINK_GENRES = ['strategy', 'puzzle', 'deck_building', 'drafting', 'cooperative']
 
-type Body = {
-  players:    '2' | '3-4' | '5+'
-  mood:       'fun' | 'think'
-  categories: string[]   // genre categories selected
-  time:       'short' | 'medium' | 'long'
-  experience: 'beginner' | 'sometimes' | 'often'
-  excludeIds?: string[]  // すでに表示したゲームのID（違う3本を見る用）
-}
+// リクエストボディのバリデーションスキーマ（公開エンドポイントなのでサーバー側検証必須）
+const bodySchema = z.object({
+  players:    z.enum(['2', '3-4', '5+']),
+  mood:       z.enum(['fun', 'think']),
+  categories: z.array(z.enum(VALID_CATEGORIES)).min(0).max(5),
+  time:       z.enum(['short', 'medium', 'long']),
+  experience: z.enum(['beginner', 'sometimes', 'often']),
+  excludeIds: z.array(z.string().uuid()).max(50).optional(),
+})
 
 export async function POST(req: NextRequest) {
-  const body: Body = await req.json()
-  const { players, mood, categories, time, experience, excludeIds } = body
+  // サーバー側バリデーション
+  let rawBody: unknown
+  try {
+    rawBody = await req.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
+  }
+
+  const parsed = bodySchema.safeParse(rawBody)
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'Invalid request', details: parsed.error.flatten().fieldErrors },
+      { status: 400 }
+    )
+  }
+
+  const { players, mood, categories, time, experience, excludeIds } = parsed.data
 
   const supabase = createAdminClient()
   const { data: games, error } = await supabase
@@ -34,11 +53,14 @@ export async function POST(req: NextRequest) {
     .eq('is_recommendable', true)
 
   if (error || !games) {
+    console.error('[POST /api/recommend]', error?.message)
     return NextResponse.json({ error: 'Failed to fetch games' }, { status: 500 })
   }
 
-  // Expand selected categories to individual genre values
-  const selectedGenres = categories.flatMap(c => GENRE_CATEGORY_MAP[c] ?? [])
+  // プロトタイプ汚染防止: Object.hasOwn でキーが存在することを確認してからアクセス
+  const selectedGenres = categories.flatMap(c =>
+    Object.hasOwn(GENRE_CATEGORY_MAP, c) ? GENRE_CATEGORY_MAP[c] : []
+  )
 
   // Player count hard filter
   const playerNum = players === '2' ? 2 : players === '3-4' ? 3 : 5
@@ -90,7 +112,6 @@ export async function POST(req: NextRequest) {
   scored.sort((a, b) => b.score - a.score)
 
   // A-2: スコア重み付きランダム抽出（上位15件のプールから3本選ぶ）
-  // 同じ回答でも毎回違うゲームが出やすく、かつ高スコアのゲームが出やすい
   const POOL_SIZE = 15
   const rawPool = scored.slice(0, POOL_SIZE)
   // すでに表示したゲームをプールから除外（違う3本を見る）
@@ -100,7 +121,7 @@ export async function POST(req: NextRequest) {
   // プールが空になった場合はフル rawPool にフォールバック
   const effectivePool = pool.length >= 3 ? pool : rawPool
   const minScore = Math.min(...effectivePool.map(x => x.score))
-  // スコアをシフトして全て正にし、重みとして使用（低スコアも確率0にならない）
+  // スコアをシフトして全て正にし、重みとして使用
   const weighted = effectivePool.map(x => ({ ...x, weight: Math.max(x.score - minScore + 1, 1) }))
 
   const result: typeof scored[0]['game'][] = []
