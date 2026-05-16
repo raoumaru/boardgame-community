@@ -2,7 +2,8 @@
 
 import { useState, useRef, useCallback, useEffect, Suspense } from 'react'
 import Link from 'next/link'
-import { Swords, ExternalLink, RotateCcw, Share2, ThumbsUp, ThumbsDown, Zap, Copy, Check, ImageDown } from 'lucide-react'
+import { toPng } from 'html-to-image'
+import { Swords, ExternalLink, RotateCcw, ThumbsUp, ThumbsDown, Zap, ImageDown } from 'lucide-react'
 import { NavMenu } from '@/components/ui/NavMenu'
 import { TYPES, getAxisLabels, AXIS_COLORS, type TypeCode } from './data'
 
@@ -88,7 +89,6 @@ export default function MbtiPage() {
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [result, setResult] = useState<DiagResult | null>(null)
   const [savedResult, setSavedResult] = useState<DiagResult | null>(null)
-  const [copied, setCopied] = useState(false)
   const [sharing, setSharing] = useState(false)
 
   const questionRefs = useRef<Array<HTMLDivElement | null>>(Array(QUESTIONS.length).fill(null))
@@ -137,19 +137,10 @@ export default function MbtiPage() {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
   }
 
-  const handleCopyForInstagram = (code: TypeCode, name: string, catchcopy: string) => {
-    const text = `ボドゲMBTI診断で【${code}：${name}】でした！\n「${catchcopy}」\n\n#ボドゲMBTI #ボードゲーム\nhttps://www.boardgame-raou.com/mbti`
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
-  }
-
   const handleShareImage = async (name: string) => {
     if (!shareCardRef.current) return
     setSharing(true)
     try {
-      const { toPng } = await import('html-to-image')
       const dataUrl = await toPng(shareCardRef.current, {
         pixelRatio: 2,
         cacheBust: true,
@@ -438,44 +429,6 @@ export default function MbtiPage() {
                 </a>
               ))}
             </div>
-          </div>
-
-          {/* SNSシェア */}
-          <div className="mb-5 rounded-2xl border border-white/10 bg-white/5 p-5">
-            <h3 className="mb-3 flex items-center gap-2 text-xs font-bold tracking-widest text-amber-400/70 uppercase">
-              <Share2 className="h-3.5 w-3.5" />シェアする
-            </h3>
-            <div className="flex gap-2">
-              {/* X */}
-              <a href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`ボドゲMBTI診断で【${result.code}：${typeData.name}】でした！\n「${typeData.catchcopy}」\n\nあなたのタイプは？\n#ボドゲMBTI #ボードゲーム`)}&url=${encodeURIComponent('https://www.boardgame-raou.com/mbti')}`}
-                target="_blank" rel="noopener noreferrer"
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-white/20 bg-black px-3 py-2.5 text-xs font-bold text-white transition hover:bg-white/10"
-              >
-                <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.766l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                Xでシェア
-              </a>
-              {/* LINE */}
-              <a href={`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent('https://www.boardgame-raou.com/mbti')}&text=${encodeURIComponent(`ボドゲMBTI診断で【${result.code}：${typeData.name}】でした！あなたのタイプは？`)}`}
-                target="_blank" rel="noopener noreferrer"
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[#06C755] px-3 py-2.5 text-xs font-bold text-white transition hover:bg-[#05b34c]"
-              >
-                <svg className="h-3.5 w-3.5 fill-current" viewBox="0 0 24 24"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.630 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.630 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-                LINE
-              </a>
-              {/* Instagram（コピー） */}
-              <button
-                onClick={() => handleCopyForInstagram(result.code, typeData.name, typeData.catchcopy)}
-                className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 px-3 py-2.5 text-xs font-bold text-white transition hover:opacity-90"
-              >
-                {copied
-                  ? <><Check className="h-3.5 w-3.5" />コピー済</>
-                  : <><Copy className="h-3.5 w-3.5" />インスタ用</>
-                }
-              </button>
-            </div>
-            {copied && (
-              <p className="mt-2 text-center text-[10px] text-white/40">テキストをコピーしました。インスタの投稿に貼り付けてね！</p>
-            )}
           </div>
 
           {/* ボタン */}
