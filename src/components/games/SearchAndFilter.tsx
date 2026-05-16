@@ -1,35 +1,46 @@
 'use client'
 
-import type React from 'react'
 import { Users, Clock, Gamepad2, Trophy, Sparkles, Flame, Search, X } from 'lucide-react'
 import { GENRES } from '@/lib/types'
 import type { FilterState } from '@/components/games/GamesClient'
 
 const PLAYER_OPTIONS = [
-  { label: 'すべて',  value: '' },
-  { label: '2人',    value: '2' },
-  { label: '3人',    value: '3' },
-  { label: '4人',    value: '4' },
-  { label: '5人',    value: '5' },
-  { label: '6人',    value: '6' },
-  { label: '7人',    value: '7' },
-  { label: '8人以上', value: '8' },
+  { label: 'すべての人数', value: '' },
+  { label: '2人',         value: '2' },
+  { label: '3人',         value: '3' },
+  { label: '4人',         value: '4' },
+  { label: '5人',         value: '5' },
+  { label: '6人',         value: '6' },
+  { label: '7人',         value: '7' },
+  { label: '8人以上',     value: '8' },
 ]
 
 const TIME_OPTIONS = [
-  { label: 'すべて',    value: '' },
-  { label: '〜30分',   value: '30' },
-  { label: '30〜60分', value: '30-60' },
-  { label: '60〜90分', value: '60-90' },
-  { label: '90分以上', value: '91' },
+  { label: 'すべての時間', value: '' },
+  { label: '〜30分',      value: '30' },
+  { label: '30〜60分',    value: '30-60' },
+  { label: '60〜90分',    value: '60-90' },
+  { label: '90分以上',    value: '91' },
 ]
 
 const DIFFICULTY_OPTIONS = [
-  { label: 'すべて',   value: '' },
-  { label: 'かんたん', value: 'easy' },
-  { label: '普通',     value: 'medium' },
-  { label: '難しい',   value: 'hard' },
+  { label: 'すべての難易度', value: '' },
+  { label: 'かんたん',      value: 'easy' },
+  { label: '普通',          value: 'medium' },
+  { label: '難しい',        value: 'hard' },
 ]
+
+const GENRE_OPTIONS = [
+  { label: 'すべてのジャンル', value: '' },
+  ...GENRES.map(g => ({ label: g.label, value: g.value })),
+]
+
+const selectClass = `
+  w-full appearance-none rounded-xl border-0 bg-white/90 px-3 py-2.5 pr-8 text-sm text-gray-800
+  shadow-md focus:outline-none focus:ring-2 focus:ring-amber-400 cursor-pointer
+  bg-[url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")]
+  bg-no-repeat bg-[right_0.75rem_center]
+`.replace(/\s+/g, ' ').trim()
 
 type Props = {
   filters: FilterState
@@ -61,32 +72,59 @@ export function SearchAndFilter({ filters, onChange }: Props) {
         />
       </div>
 
-      {/* フィルターチップ群 */}
-      <div className="divide-y divide-white/10 rounded-xl bg-black/20 backdrop-blur-sm">
-        <FilterRow
-          label={<><Users className="h-3.5 w-3.5 shrink-0" /><span>人数</span></>}
-          options={PLAYER_OPTIONS}
-          current={players}
-          onChange={v => update({ players: v })}
-        />
-        <FilterRow
-          label={<><Clock className="h-3.5 w-3.5 shrink-0" /><span>時間</span></>}
-          options={TIME_OPTIONS}
-          current={time}
-          onChange={v => update({ time: v })}
-        />
-        <FilterRow
-          label={<><Gamepad2 className="h-3.5 w-3.5 shrink-0" /><span>ジャンル</span></>}
-          options={[{ label: 'すべて', value: '' }, ...GENRES.map(g => ({ label: g.label, value: g.value }))]}
-          current={genre}
-          onChange={v => update({ genre: v })}
-        />
-        <FilterRow
-          label={<><Trophy className="h-3.5 w-3.5 shrink-0" /><span>難易度</span></>}
-          options={DIFFICULTY_OPTIONS}
-          current={difficulty}
-          onChange={v => update({ difficulty: v })}
-        />
+      {/* プルダウンフィルター（2×2グリッド） */}
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <div className="relative">
+          <Users className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+          <select
+            value={players}
+            onChange={e => update({ players: e.target.value })}
+            className={`${selectClass} pl-8`}
+          >
+            {PLAYER_OPTIONS.map(o => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="relative">
+          <Clock className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+          <select
+            value={time}
+            onChange={e => update({ time: e.target.value })}
+            className={`${selectClass} pl-8`}
+          >
+            {TIME_OPTIONS.map(o => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="relative">
+          <Gamepad2 className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+          <select
+            value={genre}
+            onChange={e => update({ genre: e.target.value })}
+            className={`${selectClass} pl-8`}
+          >
+            {GENRE_OPTIONS.map(o => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="relative">
+          <Trophy className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+          <select
+            value={difficulty}
+            onChange={e => update({ difficulty: e.target.value })}
+            className={`${selectClass} pl-8`}
+          >
+            {DIFFICULTY_OPTIONS.map(o => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* クイックフィルター＋リセット */}
@@ -124,36 +162,6 @@ export function SearchAndFilter({ filters, onChange }: Props) {
             リセット
           </button>
         )}
-      </div>
-    </div>
-  )
-}
-
-type FilterRowProps = {
-  label: React.ReactNode
-  options: { label: string; value: string }[]
-  current: string
-  onChange: (v: string) => void
-}
-
-function FilterRow({ label, options, current, onChange }: FilterRowProps) {
-  return (
-    <div className="flex items-start gap-2 p-3">
-      <span className="flex w-20 shrink-0 items-center gap-1 pt-1 text-xs text-amber-200/70">{label}</span>
-      <div className="flex flex-wrap gap-1.5">
-        {options.map(opt => (
-          <button
-            key={opt.value}
-            onClick={() => onChange(opt.value)}
-            className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-              current === opt.value
-                ? 'bg-amber-400 text-amber-900 shadow'
-                : 'bg-white/20 text-white hover:bg-white/30'
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
       </div>
     </div>
   )
