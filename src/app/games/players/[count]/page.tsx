@@ -89,7 +89,7 @@ async function GamesWithData({ count }: { count: CountParam }) {
   const games = await fetchGamesByPlayers(count)
   return (
     <GamesClient
-      games={games as Game[]}
+      allGames={games as Game[]}
       imageBaseUrl={IMAGE_BASE_URL}
     />
   )
