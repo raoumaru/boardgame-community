@@ -1,6 +1,6 @@
 export default function robots() {
   return {
     rules: { userAgent: '*', allow: '/' },
-    sitemap: 'https://boardgame-community-iota.vercel.app/sitemap.xml',
+    sitemap: 'https://www.boardgame-raou.com/sitemap.xml',
   }
 }

@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 
-const BASE_URL = 'https://boardgame-community-iota.vercel.app'
+const BASE_URL = 'https://www.boardgame-raou.com'
 
 export default async function sitemap() {
   const supabase = await createClient()

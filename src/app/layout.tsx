@@ -38,7 +38,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'ラ王のボドゲ倉庫',
-  url: 'https://boardgame-community-iota.vercel.app',
+  url: 'https://www.boardgame-raou.com',
   description: 'サークル用ボードゲーム一覧',
 }
 
