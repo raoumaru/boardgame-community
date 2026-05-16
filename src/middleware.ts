@@ -1,15 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
 
-/**
- * シンプルなインメモリ・レート制限
- *
- * Vercelのサーバーレス環境では関数インスタンスごとに独立したメモリ空間を持つため、
- * 同一インスタンス内での急激なバースト攻撃を防ぐ。
- * 本格的な分散レート制限が必要な場合は Upstash Redis (@upstash/ratelimit) を使用すること。
- */
+// ─── レート制限（/api/recommend 向け） ──────────────────────────────────────
+// シンプルなインメモリ実装（サーバーレスインスタンス内でのバースト攻撃を防ぐ）
+// 本格的な分散レート制限が必要な場合は Upstash Redis を使用すること
+
 const rateMap = new Map<string, { count: number; expiresAt: number }>()
+let lastCleanup = Date.now()
 
-/** 古いエントリを定期クリーンアップ（メモリリーク防止） */
 function cleanupExpired() {
   const now = Date.now()
   for (const [key, entry] of rateMap.entries()) {
@@ -17,22 +15,9 @@ function cleanupExpired() {
   }
 }
 
-let lastCleanup = Date.now()
-
-/**
- * @param key      識別キー（IPアドレスなど）
- * @param limit    ウィンドウ内の最大リクエスト数
- * @param windowMs ウィンドウ幅（ミリ秒）
- * @returns true = 許可 / false = レート超過
- */
 function checkRateLimit(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now()
-
-  // 1分ごとにクリーンアップ
-  if (now - lastCleanup > 60_000) {
-    cleanupExpired()
-    lastCleanup = now
-  }
+  if (now - lastCleanup > 60_000) { cleanupExpired(); lastCleanup = now }
 
   const entry = rateMap.get(key)
   if (!entry || now > entry.expiresAt) {
@@ -44,7 +29,6 @@ function checkRateLimit(key: string, limit: number, windowMs: number): boolean {
   return true
 }
 
-/** リクエスト元のIPを取得 */
 function getClientIp(req: NextRequest): string {
   return (
     req.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
@@ -53,32 +37,58 @@ function getClientIp(req: NextRequest): string {
   )
 }
 
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl
-  const ip = getClientIp(req)
+// ─── メインミドルウェア ────────────────────────────────────────────────────
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
 
   // /api/recommend: 1分間に15リクエストまで
   if (pathname === '/api/recommend') {
-    const allowed = checkRateLimit(`recommend:${ip}`, 15, 60_000)
+    const allowed = checkRateLimit(`recommend:${getClientIp(request)}`, 15, 60_000)
     if (!allowed) {
       return NextResponse.json(
         { error: 'Too many requests. Please wait a moment.' },
-        {
-          status: 429,
-          headers: {
-            'Retry-After': '60',
-            'X-RateLimit-Limit': '15',
-            'X-RateLimit-Window': '60',
-          },
-        }
+        { status: 429, headers: { 'Retry-After': '60', 'X-RateLimit-Limit': '15' } }
       )
     }
+  }
+
+  // /admin/* の認証チェック（Supabase セッション検証）
+  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
+    let supabaseResponse = NextResponse.next({ request })
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return request.cookies.getAll() },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+            supabaseResponse = NextResponse.next({ request })
+            cookiesToSet.forEach(({ name, value, options }) =>
+              supabaseResponse.cookies.set(name, value, options)
+            )
+          },
+        },
+      }
+    )
+
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.redirect(new URL('/admin/login', request.url))
+    }
+    if (user.email !== process.env.ADMIN_EMAIL) {
+      await supabase.auth.signOut()
+      return NextResponse.redirect(new URL('/admin/login?error=unauthorized', request.url))
+    }
+
+    return supabaseResponse
   }
 
   return NextResponse.next()
 }
 
 export const config = {
-  // /api/recommend のみ適用（管理APIは認証で十分に保護されている）
-  matcher: ['/api/recommend'],
+  matcher: ['/admin/:path*', '/api/recommend'],
 }
