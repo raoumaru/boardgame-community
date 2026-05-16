@@ -11,5 +11,9 @@ export const metadata: Metadata = {
 }
 
 export default function MbtiLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return (
+    <div style={{ background: 'linear-gradient(160deg, #3a0a0a 0%, #1a0505 40%, #0d0205 100%)', minHeight: '100dvh' }}>
+      {children}
+    </div>
+  )
 }
