@@ -30,11 +30,6 @@ export const metadata: Metadata = {
   },
 };
 
-// globals.css の !important が背景を制御しているため、ここはフォールバック
-const warmBrickStyle = {
-  backgroundColor: "#7A3018",
-} as React.CSSProperties;
-
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -58,7 +53,6 @@ export default function RootLayout({
       </head>
       <body
         className="min-h-dvh font-[var(--font-noto-sans-jp)] antialiased"
-        style={warmBrickStyle}
       >
         {children}
         <Analytics />
