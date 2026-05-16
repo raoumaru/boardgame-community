@@ -181,28 +181,30 @@ export default function MbtiPage() {
         useCORS: true,
         allowTaint: false,
         scale: 2,
-        backgroundColor: null,
+        backgroundColor: '#0d0205',
         logging: false,
         imageTimeout: 10000,
       })
 
-      canvas.toBlob(async blob => {
-        if (!blob) return
-        const file = new File([blob], `boardgame-mbti-${name}.png`, { type: 'image/png' })
-        if (navigator.canShare?.({ files: [file] })) {
-          await navigator.share({ files: [file], title: `ボドゲMBTI：${name}` })
-        } else {
-          const url = URL.createObjectURL(blob)
-          const a = document.createElement('a')
-          a.href = url
-          a.download = `boardgame-mbti-${name}.png`
-          a.click()
-          URL.revokeObjectURL(url)
-        }
-        setSharing(false)
-      }, 'image/png')
+      // toBlob を Promise 化してasync/awaitチェーンを維持
+      // （コールバックに渡すとiOS Safariのユーザージェスチャー文脈が切れてshareがブロックされる）
+      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'))
+      if (!blob) return
+
+      const file = new File([blob], `boardgame-mbti-${name}.png`, { type: 'image/png' })
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: `ボドゲMBTI：${name}` })
+      } else {
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `boardgame-mbti-${name}.png`
+        a.click()
+        URL.revokeObjectURL(url)
+      }
     } catch (e) {
       console.error(e)
+    } finally {
       setSharing(false)
     }
   }
