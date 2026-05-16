@@ -1,120 +1,20 @@
 import { Suspense } from "react";
 import Image from "next/image";
-import { createClient } from "@/lib/supabase/server";
-import { GameGrid } from "@/components/games/GameGrid";
-import { SearchAndFilter } from "@/components/games/SearchAndFilter";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { GamesClient } from "@/components/games/GamesClient";
 import { NavMenu } from "@/components/ui/NavMenu";
 import type { Game } from "@/lib/types";
 
-type SearchParams = Promise<{
-  q?: string;
-  genre?: string;
-  players?: string;
-  time?: string;
-  difficulty?: string;
-  new?: string;
-  popular?: string;
-}>;
-
 const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-images`;
 
-function toKatakana(str: string): string {
-  return str.replace(/[ぁ-ゖ]/g, ch =>
-    String.fromCharCode(ch.charCodeAt(0) + 0x60)
-  )
-}
-
-function toHiragana(str: string): string {
-  return str.replace(/[ァ-ヶ]/g, ch =>
-    String.fromCharCode(ch.charCodeAt(0) - 0x60)
-  )
-}
-
-async function GamesContent({ searchParams }: { searchParams: SearchParams }) {
-  const params = await searchParams;
-  const supabase = await createClient();
-
-  // NEW判定用: created_at 降順上位5件のIDをSETで保持
-  const { data: newGames } = await supabase
-    .from("games")
-    .select("id")
-    .eq("is_published", true)
-    .order("created_at", { ascending: false })
-    .limit(5);
-  const newGameIds = new Set((newGames ?? []).map((g: { id: string }) => g.id));
-
-  const orderByNew = params.new === "true";
-  let query = supabase
+export default async function GamesPage() {
+  const supabase = createAdminClient();
+  const { data: games } = await supabase
     .from("games")
     .select("*")
     .eq("is_published", true)
-    .order(orderByNew ? "created_at" : "sort_order", { ascending: !orderByNew });
+    .order("sort_order", { ascending: true });
 
-  if (params.q) {
-    const kata = toKatakana(params.q)
-    const hira = toHiragana(params.q)
-    const terms = [...new Set([params.q, kata, hira])]
-    const filters = [
-      ...terms.map(t => `title.ilike.%${t}%`),
-      ...terms.map(t => `title_kana.ilike.%${t}%`),
-    ].join(",")
-    query = query.or(filters)
-  }
-  if (params.genre) {
-    query = query.contains("genres", [params.genre]);
-  }
-  if (params.players) {
-    const n = parseInt(params.players);
-    if (!isNaN(n)) {
-      if (n === 8) {
-        query = query.gte("max_players", 8);
-      } else {
-        query = query.lte("min_players", n).gte("max_players", n);
-      }
-    }
-  }
-  if (params.difficulty) {
-    query = query.eq("difficulty", params.difficulty);
-  }
-  if (params.new === "true") {
-    // NEWフィルター: newGameIds に含まれるものだけ
-    query = query.in("id", [...newGameIds]);
-  }
-  if (params.popular === "true") {
-    query = query.eq("is_popular", true);
-  }
-  if (params.time) {
-    if (params.time === "91") {
-      // 90分以上
-      query = query.gte("play_time_min", 90);
-    } else if (params.time === "30") {
-      // 〜30分：最短時間が30分以内
-      query = query.lte("play_time_min", 30);
-    } else if (params.time === "30-60") {
-      // 30〜60分：時間範囲が[30,60]と重複
-      query = query
-        .lte("play_time_min", 60)
-        .or("play_time_max.gte.30,and(play_time_max.is.null,play_time_min.gte.30)")
-    } else if (params.time === "60-90") {
-      // 60〜90分：時間範囲が[60,90]と重複
-      query = query
-        .lte("play_time_min", 90)
-        .or("play_time_max.gte.60,and(play_time_max.is.null,play_time_min.gte.60)")
-    }
-  }
-
-  const { data: games } = await query;
-
-  return (
-    <GameGrid games={(games ?? []) as Game[]} imageBaseUrl={IMAGE_BASE_URL} newGameIds={newGameIds} />
-  );
-}
-
-export default function GamesPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
       <NavMenu />
@@ -135,14 +35,9 @@ export default function GamesPage({
         </p>
       </div>
 
-      {/* 検索・フィルター */}
-      <Suspense>
-        <SearchAndFilter />
-      </Suspense>
-
-      {/* ゲーム一覧 */}
+      {/* 検索・フィルター＋ゲーム一覧（クライアントサイド） */}
       <Suspense fallback={<GamesLoadingSkeleton />}>
-        <GamesContent searchParams={searchParams} />
+        <GamesClient allGames={(games ?? []) as Game[]} imageBaseUrl={IMAGE_BASE_URL} />
       </Suspense>
     </div>
   );

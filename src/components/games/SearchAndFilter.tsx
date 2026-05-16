@@ -1,10 +1,9 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useTransition, useState } from 'react'
 import type React from 'react'
 import { Users, Clock, Gamepad2, Trophy, Sparkles, Flame, Search, X } from 'lucide-react'
 import { GENRES } from '@/lib/types'
+import type { FilterState } from '@/components/games/GamesClient'
 
 const PLAYER_OPTIONS = [
   { label: 'すべて',  value: '' },
@@ -32,51 +31,20 @@ const DIFFICULTY_OPTIONS = [
   { label: '難しい',   value: 'hard' },
 ]
 
-export function SearchAndFilter() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [isPending, startTransition] = useTransition()
+type Props = {
+  filters: FilterState
+  onChange: (filters: FilterState) => void
+}
 
-  const [local, setLocal] = useState({
-    q:          searchParams.get('q') ?? '',
-    players:    searchParams.get('players') ?? '',
-    time:       searchParams.get('time') ?? '',
-    genre:      searchParams.get('genre') ?? '',
-    difficulty: searchParams.get('difficulty') ?? '',
-  })
-  const isNew     = searchParams.get('new') === 'true'
-  const isPopular = searchParams.get('popular') === 'true'
+export function SearchAndFilter({ filters, onChange }: Props) {
+  const { q, players, time, genre, difficulty, isNew, isPopular } = filters
 
-  const handleSearch = useCallback(() => {
-    const params = new URLSearchParams()
-    if (local.q)          params.set('q', local.q)
-    if (local.players)    params.set('players', local.players)
-    if (local.time)       params.set('time', local.time)
-    if (local.genre)      params.set('genre', local.genre)
-    if (local.difficulty) params.set('difficulty', local.difficulty)
-    startTransition(() => {
-      router.push(`/games?${params.toString()}`, { scroll: false })
-    })
-  }, [local, router])
+  const update = (patch: Partial<FilterState>) => onChange({ ...filters, ...patch })
 
-  const handleNewToggle = useCallback(() => {
-    const params = new URLSearchParams()
-    if (!isNew) params.set('new', 'true')
-    startTransition(() => router.push(`/games?${params.toString()}`, { scroll: false }))
-  }, [isNew, router])
+  const handleReset = () =>
+    onChange({ q: '', players: '', time: '', genre: '', difficulty: '', isNew: false, isPopular: false })
 
-  const handlePopularToggle = useCallback(() => {
-    const params = new URLSearchParams()
-    if (!isPopular) params.set('popular', 'true')
-    startTransition(() => router.push(`/games?${params.toString()}`, { scroll: false }))
-  }, [isPopular, router])
-
-  const handleReset = useCallback(() => {
-    setLocal({ q: '', players: '', time: '', genre: '', difficulty: '' })
-    startTransition(() => router.push('/games', { scroll: false }))
-  }, [router])
-
-  const hasFilter = local.q || local.players || local.time || local.genre || local.difficulty || isNew || isPopular
+  const hasFilter = q || players || time || genre || difficulty || isNew || isPopular
 
   return (
     <div className="mb-6 space-y-3">
@@ -87,9 +55,8 @@ export function SearchAndFilter() {
         <input
           type="search"
           placeholder="ゲーム名で検索..."
-          value={local.q}
-          onChange={e => setLocal(prev => ({ ...prev, q: e.target.value }))}
-          onKeyDown={e => { if (e.key === 'Enter') handleSearch() }}
+          value={q}
+          onChange={e => update({ q: e.target.value })}
           className="w-full rounded-xl border-0 bg-white/90 py-2.5 pl-9 pr-4 text-sm text-gray-800 shadow-md placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
         />
       </div>
@@ -99,44 +66,34 @@ export function SearchAndFilter() {
         <FilterRow
           label={<><Users className="h-3.5 w-3.5 shrink-0" /><span>人数</span></>}
           options={PLAYER_OPTIONS}
-          current={local.players}
-          onChange={v => setLocal(prev => ({ ...prev, players: v }))}
+          current={players}
+          onChange={v => update({ players: v })}
         />
         <FilterRow
           label={<><Clock className="h-3.5 w-3.5 shrink-0" /><span>時間</span></>}
           options={TIME_OPTIONS}
-          current={local.time}
-          onChange={v => setLocal(prev => ({ ...prev, time: v }))}
+          current={time}
+          onChange={v => update({ time: v })}
         />
         <FilterRow
           label={<><Gamepad2 className="h-3.5 w-3.5 shrink-0" /><span>ジャンル</span></>}
           options={[{ label: 'すべて', value: '' }, ...GENRES.map(g => ({ label: g.label, value: g.value }))]}
-          current={local.genre}
-          onChange={v => setLocal(prev => ({ ...prev, genre: v }))}
+          current={genre}
+          onChange={v => update({ genre: v })}
         />
         <FilterRow
           label={<><Trophy className="h-3.5 w-3.5 shrink-0" /><span>難易度</span></>}
           options={DIFFICULTY_OPTIONS}
-          current={local.difficulty}
-          onChange={v => setLocal(prev => ({ ...prev, difficulty: v }))}
+          current={difficulty}
+          onChange={v => update({ difficulty: v })}
         />
       </div>
 
-      {/* 検索ボタン＋クイックフィルター＋リセット */}
+      {/* クイックフィルター＋リセット */}
       <div className="flex flex-wrap items-center gap-2">
         <button
-          onClick={handleSearch}
-          disabled={isPending}
-          className="flex items-center gap-1.5 rounded-xl bg-amber-500 px-5 py-2 text-sm font-semibold text-white shadow-md transition hover:bg-amber-600 disabled:opacity-60"
-        >
-          <Search className="h-4 w-4" />
-          {isPending ? '検索中...' : '検索'}
-        </button>
-
-        <button
-          onClick={handleNewToggle}
-          disabled={isPending}
-          className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold shadow-md transition disabled:opacity-60 ${
+          onClick={() => update({ isNew: !isNew, isPopular: false })}
+          className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold shadow-md transition ${
             isNew
               ? 'bg-emerald-500 text-white hover:bg-emerald-600'
               : 'bg-white/15 text-white hover:bg-white/25'
@@ -147,9 +104,8 @@ export function SearchAndFilter() {
         </button>
 
         <button
-          onClick={handlePopularToggle}
-          disabled={isPending}
-          className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold shadow-md transition disabled:opacity-60 ${
+          onClick={() => update({ isPopular: !isPopular, isNew: false })}
+          className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold shadow-md transition ${
             isPopular
               ? 'bg-amber-500 text-white hover:bg-amber-600'
               : 'bg-white/15 text-white hover:bg-white/25'
