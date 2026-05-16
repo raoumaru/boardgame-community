@@ -509,7 +509,9 @@ export default function MbtiPage() {
             <h3 className="mb-4 text-xs font-bold tracking-widest text-amber-400/70 uppercase">診断スコア</h3>
             {AXES.map(axis => {
               const s = result.scores[axis.key]
-              const aRatio = Math.round(((s.a + 15) / 30) * 100)
+              // net = s.a - s.b は全軸で -15〜+15 の範囲になる
+              // タイプ判定（a >= b）と必ず一致する
+              const aRatio = Math.round(((s.a - s.b + 15) / 30) * 100)
               const bRatio = 100 - aRatio
               const aWins = aRatio >= 50
               const fillPct = aWins ? aRatio : bRatio
