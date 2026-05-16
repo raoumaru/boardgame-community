@@ -1,4 +1,5 @@
 import { cache } from 'react'
+import { unstable_cache } from 'next/cache'
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
@@ -27,18 +28,27 @@ export async function generateStaticParams() {
   return (games ?? []).map(g => ({ slug: g.slug }))
 }
 
-// React.cache: 同一リクエスト内でのDB呼び出しを1回に集約
-// generateMetadata と GameDetailContent が同じslugで呼んでも DB は1回だけ
-const getGame = cache(async (slug: string) => {
-  const supabase = createAdminClient()
-  const { data } = await supabase
-    .from('games')
-    .select('*')
-    .eq('slug', slug)
-    .eq('is_published', true)
-    .single()
-  return data ?? null
-})
+// unstable_cache: リクエストをまたいでデータをキャッシュ（slug ごとにキャッシュエントリを作成）
+// 管理APIでゲーム更新・削除時に revalidateTag('games-detail', 'max') で一括クリア可能
+const getGameCached = (slug: string) =>
+  unstable_cache(
+    async () => {
+      const supabase = createAdminClient()
+      const { data } = await supabase
+        .from('games')
+        .select('*')
+        .eq('slug', slug)
+        .eq('is_published', true)
+        .single()
+      return data ?? null
+    },
+    [`game-detail-${slug}`],
+    { tags: [`game-detail-${slug}`, 'games-detail'] }
+  )()
+
+// React.cache: 同一リクエスト内の重複呼び出しを1回に集約
+// generateMetadata と GameDetailContent が同じ slug で呼んでも DB は1回だけ
+const getGame = cache((slug: string) => getGameCached(slug))
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params

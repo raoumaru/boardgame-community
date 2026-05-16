@@ -17,9 +17,9 @@ export async function PUT(request: Request, { params }: Params) {
   const { data, error } = await admin.from('games').update(body).eq('id', id).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  // ゲーム一覧キャッシュ + 該当詳細ページを即時リビルド
+  // ゲーム一覧 + 詳細ページのキャッシュをクリア
   revalidateTag('games-list', 'max')
-  revalidatePath(`/games/${data.slug}`, 'page')
+  revalidateTag(`game-detail-${data.slug}`, 'max')
 
   return NextResponse.json(data)
 }
@@ -41,9 +41,9 @@ export async function DELETE(_: Request, { params }: Params) {
   const { error } = await admin.from('games').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  // ゲーム一覧キャッシュ + 該当詳細ページを無効化
+  // ゲーム一覧 + 詳細ページのキャッシュをクリア
   revalidateTag('games-list', 'max')
-  if (game?.slug) revalidatePath(`/games/${game.slug}`, 'page')
+  if (game?.slug) revalidateTag(`game-detail-${game.slug}`, 'max')
 
   return NextResponse.json({ ok: true })
 }
