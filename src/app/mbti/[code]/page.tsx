@@ -1,10 +1,16 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Suspense } from 'react'
-import { ExternalLink, ChevronLeft, Dna, Zap, Shield, ThumbsUp, ThumbsDown } from 'lucide-react'
+import { ChevronLeft, Dna, Zap, ThumbsUp } from 'lucide-react'
 import { NavMenu } from '@/components/ui/NavMenu'
+import { GameCard } from '@/components/games/GameCard'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { TYPES, getAxisLabels, AXIS_COLORS, type TypeCode } from '../data'
 import type { Metadata } from 'next'
+import type { Game } from '@/lib/types'
+
+const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-images`
+
 
 type Props = { params: Promise<{ code: string }> }
 
@@ -27,6 +33,90 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+// ── ジャンルマッピング（/api/recommend と共通のロジック） ──────────────────
+const GENRE_CATEGORY_MAP: Record<string, string[]> = {
+  cooperative: ['cooperative'],
+  bluff:       ['bluffing', 'hidden_role'],
+  puzzle:      ['puzzle'],
+  strategy:    ['strategy', 'drafting', 'deck_building'],
+  party:       ['party', 'family', 'word_sense'],
+}
+const FUN_GENRES   = ['party', 'family', 'word_sense', 'bluffing', 'hidden_role']
+const THINK_GENRES = ['strategy', 'puzzle', 'deck_building', 'drafting', 'cooperative']
+
+function getMbtiRecommendParams(code: TypeCode) {
+  const d = code[0], r = code[1], i = code[2], h = code[3]
+  return {
+    players:    i === 'I' ? '2' : i === 'G' ? '5+' : '3-4',
+    mood:       d === 'D' ? 'think' : 'fun',
+    categories: r === 'R' ? ['strategy', 'bluff'] : ['cooperative', 'party'],
+    time:       h === 'H' ? 'long' : 'short',
+    experience: d === 'D' && h === 'H' ? 'often' : d === 'W' && h === 'L' ? 'beginner' : 'sometimes',
+  }
+}
+
+async function getRecommendedGames(typeCode: TypeCode): Promise<Game[]> {
+  const { players, mood, categories, time, experience } = getMbtiRecommendParams(typeCode)
+
+  const supabase = createAdminClient()
+  const { data: games } = await supabase
+    .from('games')
+    .select('*')
+    .eq('is_published', true)
+    .eq('is_recommendable', true)
+
+  if (!games?.length) return []
+
+  const selectedGenres = categories.flatMap(c =>
+    Object.hasOwn(GENRE_CATEGORY_MAP, c) ? GENRE_CATEGORY_MAP[c] : []
+  )
+
+  const playerNum = players === '2' ? 2 : players === '3-4' ? 3 : 5
+  let eligible = games.filter(g => g.min_players <= playerNum && g.max_players >= playerNum)
+  if (eligible.length < 3) eligible = games
+
+  const scored = eligible.map(game => {
+    let score = 0
+    const g = game.genres ?? []
+
+    selectedGenres.forEach(genre => { if (g.includes(genre)) score += 4 })
+
+    if (mood === 'fun'   && g.some((x: string) => FUN_GENRES.includes(x)))   score += 2
+    if (mood === 'think' && g.some((x: string) => THINK_GENRES.includes(x))) score += 2
+
+    if (experience === 'beginner') {
+      if (game.difficulty === 'easy')   score += 4
+      if (game.difficulty === 'medium') score += 1
+      if (game.difficulty === 'hard')   score -= 2
+    } else if (experience === 'sometimes') {
+      if (game.difficulty === 'easy')   score += 2
+      if (game.difficulty === 'medium') score += 3
+      if (game.difficulty === 'hard')   score += 1
+    } else {
+      if (game.difficulty === 'easy')   score += 0
+      if (game.difficulty === 'medium') score += 2
+      if (game.difficulty === 'hard')   score += 4
+    }
+
+    if (time === 'short') {
+      if (game.play_time_min <= 20) score += 2
+      else if (game.play_time_min <= 30) score += 1
+    } else if (time === 'medium') {
+      if (game.play_time_min >= 20 && game.play_time_min <= 60) score += 1
+    } else {
+      if (game.play_time_min >= 45) score += 1
+    }
+
+    return { game, score }
+  })
+
+  // 詳細ページは静的生成なので上位3件を固定で返す（ランダムなし）
+  return scored
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .map(x => x.game as Game)
+}
+
 export default async function MbtiDetailPage({ params }: Props) {
   const { code } = await params
   const typeCode = code.toUpperCase() as TypeCode
@@ -34,6 +124,7 @@ export default async function MbtiDetailPage({ params }: Props) {
   if (!type) notFound()
 
   const axisLabels = getAxisLabels(typeCode)
+  const recommendedGames = await getRecommendedGames(typeCode)
 
   return (
     <div className="min-h-dvh px-4 py-8">
@@ -134,25 +225,20 @@ export default async function MbtiDetailPage({ params }: Props) {
           </div>
         </div>
 
-        {/* ── おすすめゲーム ── */}
-        <div className="mb-6 rounded-2xl border border-amber-400/20 bg-amber-500/5 p-5">
+        {/* ── おすすめゲーム（DBから取得） ── */}
+        <div className="mb-6">
           <h2 className="mb-3 text-xs font-bold tracking-widest text-amber-400/70 uppercase">
             おすすめボードゲーム
           </h2>
-          <div className="space-y-2">
-            {type.games.map(game => (
-              <a
-                key={game}
-                href={`https://www.google.com/search?q=${encodeURIComponent(game + ' ボードゲーム')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-amber-100 transition hover:border-amber-400/40 hover:bg-amber-400/10"
-              >
-                <span className="font-medium">{game}</span>
-                <ExternalLink className="h-3.5 w-3.5 shrink-0 text-amber-400/50" />
-              </a>
-            ))}
-          </div>
+          {recommendedGames.length > 0 ? (
+            <div className="grid grid-cols-3 gap-2">
+              {recommendedGames.map(game => (
+                <GameCard key={game.id} game={game} imageBaseUrl={IMAGE_BASE_URL} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-white/30">現在表示できるゲームがありません</p>
+          )}
         </div>
 
         {/* ── CTA ── */}
