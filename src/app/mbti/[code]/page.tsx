@@ -102,63 +102,35 @@ export default async function MbtiDetailPage({ params }: Props) {
           <p className="text-sm leading-relaxed text-white/70">{type.playStyle}</p>
         </div>
 
-        {/* ── 強み・弱み ── */}
-        <div className="mb-4 grid grid-cols-2 gap-3">
-          <div className="rounded-2xl border border-green-400/20 bg-green-500/5 p-4">
-            <h2 className="mb-3 flex items-center gap-1.5 text-xs font-bold tracking-widest text-green-400/70 uppercase">
-              <ThumbsUp className="h-3.5 w-3.5" />
-              強み
-            </h2>
-            <ul className="space-y-2">
-              {type.strengths.map(s => (
-                <li key={s} className="flex items-start gap-1.5 text-xs leading-relaxed text-white/70">
-                  <span className="mt-0.5 shrink-0 text-green-400">✓</span>
-                  {s}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-2xl border border-red-400/20 bg-red-500/5 p-4">
-            <h2 className="mb-3 flex items-center gap-1.5 text-xs font-bold tracking-widest text-red-400/70 uppercase">
-              <ThumbsDown className="h-3.5 w-3.5" />
-              弱み
-            </h2>
-            <ul className="space-y-2">
-              {type.weaknesses.map(w => (
-                <li key={w} className="flex items-start gap-1.5 text-xs leading-relaxed text-white/70">
-                  <span className="mt-0.5 shrink-0 text-red-400">✗</span>
-                  {w}
-                </li>
-              ))}
-            </ul>
-          </div>
+        {/* ── 強み ── */}
+        <div className="mb-4 rounded-2xl border border-green-400/20 bg-green-500/5 p-4">
+          <h2 className="mb-3 flex items-center gap-1.5 text-xs font-bold tracking-widest text-green-400/70 uppercase">
+            <ThumbsUp className="h-3.5 w-3.5" />
+            強み
+          </h2>
+          <ul className="space-y-2">
+            {type.strengths.map(s => (
+              <li key={s} className="flex items-start gap-1.5 text-xs leading-relaxed text-white/70">
+                <span className="mt-0.5 shrink-0 text-green-400">✓</span>
+                {s}
+              </li>
+            ))}
+          </ul>
         </div>
 
-        {/* ── 好き・苦手なゲームタイプ ── */}
+        {/* ── 好きなゲームタイプ ── */}
         <div className="mb-4 rounded-2xl border border-white/10 bg-white/5 p-5">
           <h2 className="mb-4 flex items-center gap-2 text-xs font-bold tracking-widest text-amber-400/70 uppercase">
             <Zap className="h-3.5 w-3.5" />
             ゲームの傾向
           </h2>
-          <div className="mb-4">
-            <p className="mb-2 text-xs font-bold text-green-400/80">好きなゲームタイプ</p>
-            <div className="flex flex-wrap gap-2">
-              {type.likedGames.map(g => (
-                <span key={g} className="rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1 text-xs text-green-300">
-                  {g}
-                </span>
-              ))}
-            </div>
-          </div>
-          <div>
-            <p className="mb-2 text-xs font-bold text-red-400/80">苦手なゲームタイプ</p>
-            <div className="flex flex-wrap gap-2">
-              {type.dislikedGames.map(g => (
-                <span key={g} className="rounded-full border border-red-400/20 bg-red-500/10 px-3 py-1 text-xs text-red-300">
-                  {g}
-                </span>
-              ))}
-            </div>
+          <p className="mb-2 text-xs font-bold text-green-400/80">好きなゲームタイプ</p>
+          <div className="flex flex-wrap gap-2">
+            {type.likedGames.map(g => (
+              <span key={g} className="rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1 text-xs text-green-300">
+                {g}
+              </span>
+            ))}
           </div>
         </div>
 
