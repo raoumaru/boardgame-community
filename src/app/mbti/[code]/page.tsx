@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { unstable_cache } from 'next/cache'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { ChevronLeft, Dna, Zap, ThumbsUp } from 'lucide-react'
@@ -56,6 +57,14 @@ function getMbtiRecommendParams(code: TypeCode) {
 }
 
 async function getRecommendedGames(typeCode: TypeCode): Promise<Game[]> {
+  return unstable_cache(
+    async () => _fetchRecommendedGames(typeCode),
+    [`mbti-recommend-${typeCode}`],
+    { tags: ['mbti-recommend', `mbti-recommend-${typeCode}`] }
+  )()
+}
+
+async function _fetchRecommendedGames(typeCode: TypeCode): Promise<Game[]> {
   const { players, mood, categories, time, experience } = getMbtiRecommendParams(typeCode)
 
   const supabase = createAdminClient()
