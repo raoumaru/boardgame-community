@@ -11,7 +11,7 @@ export function Footer() {
         <Mail className="h-3.5 w-3.5 shrink-0" />
         gute107080@gmail.com
       </a>
-      <p className="mt-4 text-xs text-white/20">© {new Date().getFullYear()} ラ王のボドゲ倉庫</p>
+      <p className="mt-4 text-xs text-white/20">© 2026 ラ王のボドゲ倉庫</p>
     </footer>
   )
 }
