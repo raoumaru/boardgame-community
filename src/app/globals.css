@@ -16,10 +16,20 @@
   from { transform: rotate(0deg) translateX(60px) rotate(0deg); }
   to   { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
 }
-.animate-fade-up  { animation: fadeUp  0.45s ease-out both; }
-.animate-fade-in  { animation: fadeIn  0.3s  ease-out both; }
-.animate-shimmer  { animation: shimmer 2s    ease-in-out infinite; }
-.animate-orbit    { animation: orbit   6s    linear infinite; }
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+@keyframes float-delayed {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+.animate-fade-up      { animation: fadeUp         0.45s ease-out both; }
+.animate-fade-in      { animation: fadeIn          0.3s  ease-out both; }
+.animate-shimmer      { animation: shimmer         2s    ease-in-out infinite; }
+.animate-orbit        { animation: orbit           6s    linear infinite; }
+.animate-float        { animation: float           3s    ease-in-out infinite; }
+.animate-float-delayed{ animation: float-delayed   3s    ease-in-out infinite 1.5s; }
 
 @layer base {
   body {
