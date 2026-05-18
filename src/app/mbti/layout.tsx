@@ -2,17 +2,39 @@ import type { Metadata } from 'next'
 import type React from 'react'
 
 export const metadata: Metadata = {
-  title: 'ボドゲMBTI',
-  description: 'ボドゲMBTI — 20問の診断でボードゲームの好みを16タイプに分類。あなたはダークストラテジスト？ロストドリーマー？ぴったりのボードゲームも紹介します。',
+  title: 'ボドゲMBTI — ボードゲームタイプ診断',
+  description: 'ボードゲームMBTI診断 — 20問に答えるだけで、あなたのボードゲームタイプを16種類に診断。得意なゲームジャンルやプレイスタイルがわかります。ダークストラテジスト・ロストドリーマーなど個性豊かな16キャラクターで判定。無料。',
+  keywords: [
+    'ボドゲMBTI', 'ボードゲームMBTI', 'ボードゲーム診断', 'ボードゲームタイプ診断',
+    'ボードゲーム性格診断', 'ボードゲーム適性診断', 'ボードゲームプレイスタイル診断',
+    'ボードゲームタイプ', 'ボードゲームおすすめ診断', 'ボドゲ診断',
+  ],
   openGraph: {
-    title: 'ボドゲMBTI | ラ王のボドゲ倉庫',
-    description: '20問の診断でボードゲームの好みを16タイプに分類。あなたのタイプは？',
+    title: 'ボドゲMBTI — ボードゲームタイプ診断 | ラ王のボドゲ倉庫',
+    description: '20問に答えるだけ。あなたのボードゲームタイプを16種類に診断します。無料・登録不要。',
   },
+}
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'ボドゲMBTI',
+  description: '20問の診断でボードゲームの好みを16タイプに分類するボードゲームタイプ診断ツール',
+  url: 'https://www.boardgame-raou.com/mbti',
+  applicationCategory: 'EntertainmentApplication',
+  operatingSystem: 'Web Browser',
+  inLanguage: 'ja',
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' },
 }
 
 export default function MbtiLayout({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ background: 'linear-gradient(160deg, #3a0a0a 0%, #1a0505 40%, #0d0205 100%)', minHeight: '100dvh' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {children}
     </div>
   )

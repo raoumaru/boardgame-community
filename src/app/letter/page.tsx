@@ -5,11 +5,15 @@ import { BookOpen, Clock, ArrowRight } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'ボドゲレター',
-  description: 'ボードゲームについて深く掘り下げるコラム・入門記事。マーダーミステリー、協力ゲーム、名作解説など。',
+  title: 'ボドゲレター — ボードゲームコラム・入門記事',
+  description: 'ボドゲレター — ボードゲームについて深く掘り下げるコラム・入門記事。マーダーミステリーの遊び方・ボードゲームとは何かなど、ボードゲームをもっと楽しむための読み物。',
+  keywords: [
+    'ボードゲームとは', 'ボードゲーム入門', 'ボードゲームコラム',
+    'マーダーミステリー 遊び方', 'ボードゲーム初心者', 'ボードゲーム解説',
+  ],
   openGraph: {
-    title: 'ボドゲレター | ラ王のボドゲ倉庫',
-    description: 'ボードゲームについて深く掘り下げるコラム・入門記事。',
+    title: 'ボドゲレター — ボードゲームコラム | ラ王のボドゲ倉庫',
+    description: 'ボードゲームをもっと楽しむためのコラム・入門記事。',
   },
 }
 

@@ -25,11 +25,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const type = TYPES[typeCode]
   if (!type) return { title: 'ページが見つかりません' }
   return {
-    title: `${typeCode}｜${type.name}`,
-    description: `ボドゲMBTI ${typeCode}タイプ「${type.name}」。${type.catchcopy}。${type.description}`,
+    title: `${type.name}（${typeCode}）| ボドゲMBTI診断結果`,
+    description: `ボドゲMBTI ${typeCode}タイプ「${type.name}」。${type.catchcopy}。${type.description} あなたに合ったボードゲームもご紹介。`,
+    keywords: [
+      `ボドゲMBTI ${typeCode}`, type.name, 'ボードゲームMBTI',
+      'ボードゲームタイプ診断', 'ボードゲーム診断結果', 'ボドゲ診断',
+    ],
     openGraph: {
-      title: `${typeCode} ${type.name} | ボドゲMBTI`,
-      description: type.catchcopy,
+      title: `${type.name}（${typeCode}）| ボドゲMBTI`,
+      description: `${type.catchcopy} — ボドゲMBTI ${typeCode}タイプの詳細・おすすめゲームはこちら。`,
     },
   }
 }

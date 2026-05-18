@@ -1,22 +1,40 @@
-import { createClient } from '@/lib/supabase/server'
+import type { MetadataRoute } from 'next'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { TYPES } from './mbti/data'
 
 const BASE_URL = 'https://www.boardgame-raou.com'
 
-export default async function sitemap() {
-  const supabase = await createClient()
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // ── 静的ページ ──────────────────────────────────────
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: BASE_URL,                lastModified: '2026-05-18', changeFrequency: 'weekly',  priority: 1.0 },
+    { url: `${BASE_URL}/games`,     lastModified: '2026-05-18', changeFrequency: 'daily',   priority: 0.9 },
+    { url: `${BASE_URL}/mbti`,      lastModified: '2026-05-18', changeFrequency: 'weekly',  priority: 0.9 },
+    { url: `${BASE_URL}/recommend`, lastModified: '2026-05-18', changeFrequency: 'weekly',  priority: 0.8 },
+    { url: `${BASE_URL}/letter`,    lastModified: '2026-05-18', changeFrequency: 'weekly',  priority: 0.7 },
+  ]
+
+  // ── ボドゲMBTI タイプ詳細 16ページ ────────────────────
+  const mbtiPages: MetadataRoute.Sitemap = Object.keys(TYPES).map(code => ({
+    url: `${BASE_URL}/mbti/${code.toLowerCase()}`,
+    lastModified: '2026-05-18',
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }))
+
+  // ── ゲーム詳細ページ（公開済み全件）────────────────────
+  const supabase = createAdminClient()
   const { data: games } = await supabase
     .from('games')
     .select('slug, updated_at')
     .eq('is_published', true)
 
-  const gameUrls = (games ?? []).map(g => ({
+  const gamePages: MetadataRoute.Sitemap = (games ?? []).map(g => ({
     url: `${BASE_URL}/games/${g.slug}`,
-    lastModified: g.updated_at,
+    lastModified: g.updated_at ?? '2026-05-18',
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
   }))
 
-  return [
-    { url: `${BASE_URL}/`,      lastModified: new Date() },
-    { url: `${BASE_URL}/games`, lastModified: new Date() },
-    ...gameUrls,
-  ]
+  return [...staticPages, ...mbtiPages, ...gamePages]
 }
