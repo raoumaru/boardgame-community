@@ -40,6 +40,7 @@ export function GameCard({ game, imageBaseUrl, isNew = false }: Props) {
             fill
             className="object-contain p-1"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            unoptimized
           />
         ) : (
           <div className="flex h-full items-center justify-center text-gray-300">
