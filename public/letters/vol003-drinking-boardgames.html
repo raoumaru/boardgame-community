@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>飲み会で使えるボードゲームおすすめ。飲んでるほど盛り上がる鉄板10選。| ボドゲレター Vol.003</title>
+  <meta name="description" content="飲み会をもっと盛り上げるボードゲームおすすめ10選。はぁって言うゲーム・ito・ドデリドなどルール簡単・全員参加・笑い保証の鉄板ゲームを厳選。次の飲み会に1本持ち込むだけで空気が変わる。">
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+JP:wght@300;400;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:          #07080e;
+      --paper:       #f0ead8;
+      --paper-dim:   #d4cbaf;
+      --ink:         #12100a;
+      --gold:        #c8922a;
+      --gold-bright: #e8b84b;
+      --gold-dim:    #8a6318;
+      --muted:       #606078;
+      --border:      #1a1a2e;
+      --text-body:   #9898b4;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 9999; opacity: 0.02;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--paper);
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      line-height: 1.9;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 50px;
+      background: rgba(7,8,14,0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .nav-logo { font-family: 'Special Elite', cursive; font-size: 0.9rem; letter-spacing: 0.15em; color: var(--gold); text-decoration: none; }
+    .nav-back { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-back:hover { color: var(--gold); }
+
+    /* ── PROGRESS ── */
+    #progress {
+      position: fixed; top: 50px; left: 0;
+      height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold-bright));
+      z-index: 99; transition: width 0.1s linear;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh; padding-top: 50px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(45deg, rgba(200,146,42,0.03) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(200,146,42,0.03) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(200,146,42,0.03) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(200,146,42,0.03) 75%);
+      background-size: 40px 40px;
+      background-position: 0 0, 0 20px, 20px -20px, -20px 0;
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; top: -10%; right: -10%;
+      width: 60%; height: 60%;
+      background: radial-gradient(ellipse, rgba(74,45,138,0.15) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 5rem 4rem 5rem;
+      max-width: 900px;
+    }
+
+    .hero-vol { display: inline-flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+    .hero-vol-num {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase;
+      color: var(--gold); border: 1px solid var(--gold-dim); padding: 0.2rem 0.8rem;
+    }
+    .hero-vol-line { width: 48px; height: 1px; background: var(--gold-dim); }
+
+    .hero-title {
+      font-family: 'Special Elite', cursive;
+      font-size: clamp(1.8rem, 4vw, 3.2rem);
+      line-height: 1.15; margin-bottom: 0.5rem;
+    }
+    .hero-title .sub {
+      font-family: 'Noto Serif JP', serif; font-weight: 300;
+      font-size: 0.32em; display: block;
+      letter-spacing: 0.18em; color: var(--paper-dim); margin-bottom: 0.5rem;
+    }
+    .hero-title .accent { color: var(--gold-bright); }
+
+    .hero-byline {
+      display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+      margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1.2rem;
+    }
+    .hero-byline span { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.14em; color: var(--muted); text-transform: uppercase; }
+    .hero-byline .sep { color: var(--gold-dim); }
+
+    .scroll-hint {
+      position: absolute; bottom: 2rem; right: 3rem; z-index: 2;
+      writing-mode: vertical-rl;
+      font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.25em;
+      color: var(--muted); text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .scroll-hint::after { content: ''; display: block; width: 1px; height: 48px; background: linear-gradient(to bottom, var(--muted), transparent); }
+
+    /* ── OPENING CARD ── */
+    .opening-card {
+      background: var(--paper); color: var(--ink);
+      padding: 3.5rem 4rem; position: relative;
+      margin: 3rem 2.5rem 0;
+      transform: rotate(-0.3deg);
+      box-shadow: 6px 6px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.4);
+    }
+    .opening-card::before {
+      content: 'DRINK & PLAY — Vol.003';
+      position: absolute; top: 1.2rem; right: 1.8rem;
+      font-family: 'Special Elite', cursive; font-size: 0.62rem; letter-spacing: 0.2em; color: var(--gold-dim); opacity: 0.6;
+    }
+    .opening-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold-bright), var(--gold-dim));
+    }
+    .opening-card-label {
+      font-family: 'Special Elite', cursive; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold-dim); margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px dashed var(--paper-dim);
+    }
+    .opening-card p { font-size: 1.05rem; line-height: 2; color: #2a200e; font-style: italic; }
+
+    /* ── BODY ── */
+    .body-wrap { max-width: 780px; margin: 0 auto; padding: 5rem 2.5rem 8rem; }
+    section { margin-bottom: 5rem; }
+
+    .sec-mark { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+    .sec-mark-line { flex: 0 0 32px; height: 1px; background: var(--gold-dim); }
+    .sec-mark-text { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold); }
+    .sec-mark-num { font-family: 'Special Elite', cursive; font-size: 0.7rem; color: var(--muted); }
+
+    h2 { font-family: 'Special Elite', cursive; font-size: clamp(1.8rem, 3.5vw, 2.5rem); line-height: 1.2; margin-bottom: 1.5rem; color: var(--paper); }
+    h2 em { font-style: italic; color: var(--gold-bright); font-family: inherit; }
+    p { font-size: 0.96rem; margin-bottom: 1.3rem; color: var(--text-body); letter-spacing: 0.01em; }
+    strong { color: var(--paper); font-weight: 700; }
+
+    /* ── CRITERIA ── */
+    .criteria-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 2.5rem 0;
+    }
+    .criteria-item { background: #0a0b14; padding: 1.8rem 1.5rem; }
+    .criteria-num { font-family: 'Special Elite', cursive; font-size: 2rem; color: var(--gold-dim); opacity: 0.4; line-height: 1; margin-bottom: 0.5rem; }
+    .criteria-item h3 { font-family: 'Special Elite', cursive; font-size: 0.95rem; color: var(--paper); margin-bottom: 0.5rem; }
+    .criteria-item p { font-size: 0.82rem; color: #707088; margin: 0; line-height: 1.75; }
+
+    /* ── GAME CARDS ── */
+    .game-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 2.5rem 0; }
+    .game-card { background: #0a0b14; padding: 2rem 2.5rem; transition: background 0.2s; }
+    .game-card:hover { background: #0d0f1a; }
+
+    .game-header { display: flex; align-items: flex-start; gap: 1.5rem; margin-bottom: 1rem; }
+    .game-num { font-family: 'Special Elite', cursive; font-size: 2.8rem; line-height: 1; color: var(--gold-dim); opacity: 0.35; flex-shrink: 0; width: 56px; text-align: right; }
+    .game-info { flex: 1; }
+    .game-name { font-family: 'Special Elite', cursive; font-size: 1.2rem; color: var(--paper); margin-bottom: 0.4rem; line-height: 1.2; }
+    .game-meta { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .game-meta-item {
+      font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em;
+      color: var(--gold-dim); background: rgba(200,146,42,0.06);
+      border: 1px solid rgba(200,146,42,0.15); padding: 0.2rem 0.6rem;
+    }
+
+    .game-desc { font-size: 0.9rem; color: var(--text-body); line-height: 1.8; margin-bottom: 1rem; padding-left: 4.5rem; }
+
+    .game-highlight { margin-left: 4.5rem; border-left: 2px solid var(--gold-dim); padding: 0.8rem 1rem; background: rgba(200,146,42,0.04); }
+    .game-highlight-label { font-family: 'DM Mono', monospace; font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.3rem; }
+    .game-highlight p { font-size: 0.83rem; color: #a0a0b8; margin: 0; line-height: 1.7; }
+
+    /* ── SCENE TABLE ── */
+    .scene-table { border: 1px solid var(--border); margin: 2.5rem 0; overflow: hidden; }
+    .scene-table-header {
+      background: rgba(200,146,42,0.08); padding: 0.8rem 1.5rem;
+      font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); border-bottom: 1px solid var(--border);
+    }
+    .scene-row { display: grid; grid-template-columns: 1fr 2fr; border-bottom: 1px solid var(--border); }
+    .scene-row:last-child { border-bottom: none; }
+    .scene-label-cell { padding: 1rem 1.5rem; background: #0a0b14; border-right: 1px solid var(--border); font-size: 0.83rem; font-weight: 700; color: var(--paper); display: flex; align-items: center; }
+    .scene-games-cell { padding: 1rem 1.5rem; background: #08090f; font-size: 0.83rem; color: var(--text-body); display: flex; align-items: center; }
+
+    /* ── PULLQUOTE ── */
+    .pullquote { text-align: center; padding: 3.5rem 2rem; position: relative; margin: 3rem 0; }
+    .pullquote::before, .pullquote::after { content: ''; display: block; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim), transparent); margin-bottom: 2.5rem; }
+    .pullquote::after { margin-top: 2.5rem; margin-bottom: 0; }
+    .pullquote p { font-family: 'Special Elite', cursive; font-size: clamp(1.3rem, 3vw, 2rem); line-height: 1.55; color: var(--paper); margin: 0; }
+    .pullquote p span { color: var(--gold-bright); }
+
+    /* ── CTA ── */
+    .cta-section { position: relative; overflow: hidden; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 5rem 2rem; text-align: center; }
+    .cta-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(74,45,138,0.12) 0%, transparent 70%); }
+    .cta-section h2 { font-family: 'Special Elite', cursive; font-size: clamp(2rem, 5vw, 3.5rem); position: relative; line-height: 1.15; margin-bottom: 1rem; }
+    .cta-section p { max-width: 480px; margin: 0 auto 2.5rem; position: relative; color: #707088; }
+    .cta-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; position: relative; }
+    .btn-primary { background: var(--gold-dim); color: var(--paper); border: none; font-family: 'Special Elite', cursive; font-size: 0.85rem; letter-spacing: 0.12em; padding: 0.85rem 2.5rem; cursor: pointer; transition: background 0.2s; text-transform: uppercase; text-decoration: none; display: inline-block; }
+    .btn-primary:hover { background: var(--gold); }
+    .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 0.68rem; letter-spacing: 0.15em; padding: 0.85rem 2rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; text-transform: uppercase; text-decoration: none; display: inline-block; }
+    .btn-ghost:hover { border-color: var(--muted); color: var(--paper); }
+
+    /* ── FOOTER ── */
+    footer { max-width: 780px; margin: 0 auto; padding: 2rem 2.5rem 4rem; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); }
+    footer span { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+    footer .next { font-family: 'Special Elite', cursive; font-size: 0.78rem; color: var(--gold); opacity: 0.7; }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+    .hero-content { animation: fadeUp 1s ease both; }
+    .opening-card { animation: fadeUp 1s 0.25s ease both; }
+
+    section, .pullquote, .game-list, .criteria-grid, .scene-table, .cta-section {
+      opacity: 0; transform: translateY(22px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .visible { opacity: 1 !important; transform: none !important; }
+
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+    .cursor { display: inline-block; width: 2px; height: 0.85em; background: var(--gold-bright); margin-left: 3px; vertical-align: middle; animation: blink 1.1s step-end infinite; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 680px) {
+      .hero-content { padding: 3rem 1.5rem 4rem; }
+      .opening-card { margin: 2rem 1rem 0; padding: 2.5rem 1.8rem; }
+      .body-wrap { padding: 4rem 1.5rem 6rem; }
+      .criteria-grid { grid-template-columns: 1fr; }
+      .game-num { font-size: 2rem; width: 40px; }
+      .game-desc { padding-left: 3.5rem; }
+      .game-highlight { margin-left: 3.5rem; }
+      .scene-row { grid-template-columns: 1fr; }
+      .scene-label-cell { border-right: none; border-bottom: 1px solid var(--border); }
+      footer { flex-direction: column; gap: 1rem; align-items: flex-start; }
+      .scroll-hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/letter" class="nav-logo">ボドゲレター</a>
+    <a href="/letter" class="nav-back">← 記事一覧に戻る</a>
+  </nav>
+  <div id="progress"></div>
+
+  <!-- ══════ HERO ══════ -->
+  <header class="hero">
+    <div class="scroll-hint">Scroll<span class="cursor"></span></div>
+    <div class="hero-content">
+      <div class="hero-vol">
+        <span class="hero-vol-num">Vol.003</span>
+        <div class="hero-vol-line"></div>
+      </div>
+      <h1 class="hero-title">
+        <span class="sub">飲み会ボードゲーム鉄板10選</span>
+        飲んでるほど、<br>
+        <span class="accent">盛り上がる。</span>
+      </h1>
+      <div class="hero-byline">
+        <span>2026.05.19</span>
+        <span class="sep">/</span>
+        <span>読了 約8分</span>
+        <span class="sep">/</span>
+        <span>飲み会 &nbsp;·&nbsp; おすすめ</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════ OPENING ══════ -->
+  <div class="opening-card" style="margin-top:3rem;">
+    <div class="opening-card-label">Opening — はじめに</div>
+    <p>スマホでネットサーフィン、カラオケ、お決まりの話題。そんな飲み会に、1箱のボードゲームを持ち込んでみてほしい。嘘みたいな話だが、テーブルにゲームを広げた瞬間、飲み会の空気は変わる。お酒が入るほど判断が鈍り、笑いが増え、誰かが叫ぶ。飲み会は「飲む場所」じゃない。「思い出を作る場所」だったと、その夜気づくはずだ。</p>
+  </div>
+
+  <!-- ══════ BODY ══════ -->
+  <main class="body-wrap">
+
+    <!-- SECTION 1 -->
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 01 &nbsp;—&nbsp; How to Choose</div>
+        <div class="sec-mark-num">01</div>
+      </div>
+      <h2>飲み会向け<br><em>ゲームの選び方</em></h2>
+      <p>どんなゲームでも飲み会で盛り上がるわけではない。複雑なゲームは酔った頭には辛い。長すぎるゲームは中だるみを生む。飲み会向けボードゲームには3つの条件がある。</p>
+
+      <div class="criteria-grid">
+        <div class="criteria-item">
+          <div class="criteria-num">01</div>
+          <h3>5分で説明できる</h3>
+          <p>酔っていてもルールが頭に入る。説明に時間がかかるゲームはそれだけでテンションが下がる。</p>
+        </div>
+        <div class="criteria-item">
+          <div class="criteria-num">02</div>
+          <h3>負けても笑える</h3>
+          <p>勝敗よりリアクションが面白い設計。やられた側が一番笑えるゲームが飲み会の鉄板。</p>
+        </div>
+        <div class="criteria-item">
+          <div class="criteria-num">03</div>
+          <h3>全員がいつも参加</h3>
+          <p>待ち時間があると飲んで話し出してゲームに戻れなくなる。毎ターン全員が動けるものを選ぼう。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PULLQUOTE 1 -->
+    <div class="pullquote">
+      <p>お酒は判断力を奪う。<br><span>だから、ゲームは面白くなる。</span></p>
+    </div>
+
+    <!-- SECTION 2 -->
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 02 &nbsp;—&nbsp; Top 10</div>
+        <div class="sec-mark-num">02</div>
+      </div>
+      <h2>鉄板<em>10選</em></h2>
+      <p>何度でも持ち込める、飲み会の定番たちを厳選した。ルール簡単・全員参加・笑い保証の10本。</p>
+
+      <div class="game-list">
+
+        <div class="game-card">
+          <div class="game-header">
+            <div class="game-num">01</div>
+            <div class="game-info">
+              <div class="game-name">はぁって言うゲーム</div>
+              <div class="game-meta">
+                <span class="game-meta-item">3〜8人</span>
+                <span class="game-meta-item">15〜30分</span>
+                <span class="game-meta-item">かんたん</span>
+              </div>
+            </div>
+          </div>
+          <p class="game-desc">お題カードに書かれた感情を、<strong>「はぁ」の一言だけ</strong>で表現し、何の感情かを他のプレイヤーが当てるゲーム。「照れ」「やけくそ」「威圧」など16種類のお題がある。</p>
+          <div class="game-highlight">
+            <div class="game-highlight-label">🍻 飲み会で盛り上がるポイント</div>
+            <p>お酒が入ると演技が大胆になる。普段クールな人が全力で「はぁ（照れ）」を演じる瞬間は爆笑必至。お題を外しても、外したリアクションが面白い。</p>
+          </div>
+        </div>
+
+        <div class="game-card">
+          <div class="game-header">
+            <div class="game-num">02</div>
+            <div class="game-info">
+              <div class="game-name">ito</div>
+              <div class="game-meta">
+                <span class="game-meta-item">2〜10人</span>
+                <span class="game-meta-item">15〜30分</span>
+                <span class="game-meta-item">かんたん</span>
+              </div>
+            </div>
+          </div>
+          <p class="game-desc">1〜100の数字カードを1枚持ち、数字を言わずに<strong>言葉だけで大きさを伝え</strong>、全員で小さい順に並べる協力ゲーム。お題は「辛いもの」「思い出の場所」など毎回変わる。</p>
+          <div class="game-highlight">
+            <div class="game-highlight-label">🍻 飲み会で盛り上がるポイント</div>
+            <p>「え、それが3なの？！」「その感覚どこから来てるの？」という価値観のズレが笑いを生む。人の意外な一面が見えて、飲み会の会話のネタにもなる。</p>
+          </div>
+        </div>
+
+        <div class="game-card">
+          <div class="game-header">
+            <div class="game-num">03</div>
+            <div class="game-info">
+              <div class="game-name">カタカナーシ</div>
+              <div class="game-meta">
+                <span class="game-meta-item">3〜8人</span>
+                <span class="game-meta-item">20〜40分</span>
+                <span class="game-meta-item">かんたん</span>
+              </div>
+            </div>
+          </div>
+          <p class="game-desc">お題の言葉を<strong>カタカナを使わずに説明する</strong>ゲーム。「スマートフォン」「コーヒー」「ランニング」などカタカナだらけの日常語を、カタカナ抜きで伝えなければならない。</p>
+          <div class="game-highlight">
+            <div class="game-highlight-label">🍻 飲み会で盛り上がるポイント</div>
+            <p>酔うとカタカナが無意識に出てしまう。「あ、言った！」という瞬間がテーブルに笑いをばらまく。焦れば焦るほどカタカナが出る悪循環が最高に楽しい。</p>
+          </div>
+        </div>
+
+        <div class="game-card">
+          <div class="game-header">
+            <div class="game-num">04</div>
+            <div class="game-info">
+              <div class="game-name">ハゲタカのえじき</div>
+              <div class="game-meta">
+                <span class="game-meta-item">2〜6人</span>
+                <span class="game-meta-item">20〜30分</span>
+                <span class="game-meta-item">かんたん</span>
+              </div>
+            </div>
+          </div>
+          <p class="game-desc">全員が同時に数字カードを出し、場のカードを奪い合う競りゲーム。<strong>全員が同じ数字を出すと誰も取れない</strong>。シンプルなルールの中に、相手の心を読む深い駆け引きがある。</p>
+          <div class="game-highlight">
+            <div class="game-highlight-label">🍻 飲み会で盛り上がるポイント</div>
+            <p>「なんでそのカードを出した！」「絶対かぶると思ったのに！」という叫びが連発する。酔って読み合いが雑になるほどカオスになり、結果が読めなくなる。</p>
+          </div>
+        </div>
+
+        <div class="game-card">
+          <div class="game-header">
+            <div class="game-num">05</div>
+            <div class="game-info">
+              <div class="game-name">JUST ONE</div>
+              <div class="game-meta">
+                <span class="game-meta-item">3〜7人</span>
+                <span class="game-meta-item">20〜40分</span>
+                <span class="game-meta-item">かんたん</span>
+              </div>
+            </div>
+          </div>
+          <p class="game-desc">出題者に秘密の言葉を当ててもらうため、全員が<strong>1つずつヒントを書く</strong>。ただし同じヒントを書いた人がいると、そのヒントは消えてしまう。ユニークなヒントを考える協力ゲーム。</p>
+          <div class="game-highlight">
+            <div class="game-highlight-label">🍻 飲み会で盛り上がるポイント</div>
+            <p>「またかぶった！」「なんでそのヒント！」という反応が面白い。お酒が入ると発想が暴走してユニークすぎるヒントが量産され、正解よりヒントの方が面白くなる。</p>
+          </div>
+        </div>
+
+        <div class="game-card">
+          <div class="game-header">
+            <div class="game-num">06</div>
+            <div class="game-info">
+              <div class="game-name">ドブル</div>
+              <div class="game-meta">
+                <span class="game-meta-item">2〜8人</span>
+                <span class="game-meta-item">15分</span>
+                <span class="game-meta-item">かんたん</span>
+              </div>
+            </div>
+          </div>
+          <p class="game-desc">全てのカードに必ず<strong>共通の絵柄が1つだけ</strong>描かれている。それを素早く見つけて叫ぶ、反射神経ゲームの最高峰。ルール説明は1分で終わり、何度でも繰り返せる。</p>
+          <div class="game-highlight">
+            <div class="game-highlight-label">🍻 飲み会で盛り上がるポイント</div>
+            <p>酔うと絵柄が認識できなくなる。全員がカードをじっと見つめて無言になる瞬間がある。素面より酔った人の方が強いこともある謎のゲーム。</p>
+          </div>
+        </div>
+
+        <div class="game-card">
+          <div class="game-header">
+            <div class="game-num">07</div>
+            <div class="game-info">
+              <div class="game-name">コードネーム</div>
+              <div class="game-meta">
+                <span class="game-meta-item">4〜8人</span>
+                <span class="game-meta-item">20〜30分</span>
+                <span class="game-meta-item">普通</span>
+              </div>
+            </div>
+          </div>
+          <p class="game-desc">2チームに分かれ、スパイマスターが<strong>1ワードのヒントで複数のカードを指し示す</strong>チーム対抗ゲーム。仲間の思考を読んでヒントを出す側も、解読する側も、どちらも熱くなる。</p>
+          <div class="game-highlight">
+            <div class="game-highlight-label">🍻 飲み会で盛り上がるポイント</div>
+            <p>チーム対抗なので自然と応援と野次が飛び交う。「なんでそこ踏むんだ！」と味方に怒鳴るシーンが定番。飲み会の後半、熱が入り過ぎることも。</p>
+          </div>
+        </div>
+
+        <div class="game-card">
+          <div class="game-header">
+            <div class="game-num">08</div>
+            <div class="game-info">
+              <div class="game-name">MIDNIGHT COCKTAIL</div>
+              <div class="game-meta">
+                <span class="game-meta-item">4〜8人</span>
+                <span class="game-meta-item">20〜30分</span>
+                <span class="game-meta-item">かんたん</span>
+              </div>
+            </div>
+          </div>
+          <p class="game-desc"><strong>暗闇のバーを舞台にした推理・社交ゲーム。</strong>「自分と同じカクテルを持つ相手と乾杯すると幸運が訪れる」という噂のバーに迷い込んだあなた。しかし誰が何のカクテルを飲んでいるかはわからない。他の客やマスターと会話を重ねながら、同じカクテルの相手を推理して乾杯を成功させられるか。</p>
+          <div class="game-highlight">
+            <div class="game-highlight-label">🍻 飲み会で盛り上がるポイント</div>
+            <p>実際に飲みながら「暗闇のバー」の世界に入り込める異色のゲーム。会話しながら相手を推理する設計が、飲み会の「話す」という行為と完璧にマッチする。</p>
+          </div>
+        </div>
+
+        <div class="game-card">
+          <div class="game-header">
+            <div class="game-num">09</div>
+            <div class="game-info">
+              <div class="game-name">ピンキリ</div>
+              <div class="game-meta">
+                <span class="game-meta-item">3〜8人</span>
+                <span class="game-meta-item">15〜30分</span>
+                <span class="game-meta-item">かんたん</span>
+              </div>
+            </div>
+          </div>
+          <p class="game-desc">お題に対する<strong>「ピン（ベスト）」と「キリ（ワースト）」</strong>なヒントを子プレイヤーが考え、親プレイヤーがそのヒントからお題を当てるバラエティトークゲーム。ヒントの数が少ないほど正解時の得点が高くなる。</p>
+          <div class="game-highlight">
+            <div class="game-highlight-label">🍻 飲み会で盛り上がるポイント</div>
+            <p>「ピンとキリが逆じゃない？」「その価値観どこから来てるの？」という感覚のズレがトークを生む。ヒントから相手の人となりが見えて、初対面の場でも盛り上がれる。</p>
+          </div>
+        </div>
+
+        <div class="game-card">
+          <div class="game-header">
+            <div class="game-num">10</div>
+            <div class="game-info">
+              <div class="game-name">ドデリド</div>
+              <div class="game-meta">
+                <span class="game-meta-item">3〜6人</span>
+                <span class="game-meta-item">15〜20分</span>
+                <span class="game-meta-item">かんたん</span>
+              </div>
+            </div>
+          </div>
+          <p class="game-desc">カードを順番にめくり、<strong>場の3カ所に置いていく</strong>反射神経ゲーム。色または動物の種類が2対1になったら宣言、両方同時なら「ドデリド！」と叫ぶ。カメが出たら「オ〜」と言う回数をこなし、ワニが出たら即座に山札に手を置いてかばわなければならない。</p>
+          <div class="game-highlight">
+            <div class="game-highlight-label">🍻 飲み会で盛り上がるポイント</div>
+            <p>「みどり！」「オ〜〜〜ペンギン！」「ドデリド！」と叫び続ける光景は傍から見ると完全に謎。酔えば酔うほどカメのカウントを忘れ、ワニに遅れ、全員で笑い転げることになる。</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PULLQUOTE 2 -->
+    <div class="pullquote">
+      <p>飲み会の主役は<br>お酒じゃない。<br><span>テーブルを囲む、人だ。</span></p>
+    </div>
+
+    <!-- SECTION 3 -->
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 03 &nbsp;—&nbsp; Scene Guide</div>
+        <div class="sec-mark-num">03</div>
+      </div>
+      <h2>シーン別<br><em>おすすめ早見表</em></h2>
+      <p>参加人数や関係性によって「刺さるゲーム」は変わる。迷ったらこの表を参考にしてほしい。</p>
+
+      <div class="scene-table">
+        <div class="scene-table-header">Scene Guide — どのゲームを選ぶか</div>
+        <div class="scene-row">
+          <div class="scene-label-cell">3〜4人の少人数飲み会</div>
+          <div class="scene-games-cell">ハゲタカのえじき・ドデリド・ドブル — 少人数でも全員が毎ターン動けるゲームを。</div>
+        </div>
+        <div class="scene-row">
+          <div class="scene-label-cell">5人以上の大人数</div>
+          <div class="scene-games-cell">はぁって言うゲーム・コードネーム・ito — 人数が多いほど笑いが倍増するゲームを。</div>
+        </div>
+        <div class="scene-row">
+          <div class="scene-label-cell">初対面が多い場</div>
+          <div class="scene-games-cell">ピンキリ・JUST ONE・MIDNIGHT COCKTAIL — 会話が自然に生まれ、相手のことを知れるゲームを。</div>
+        </div>
+        <div class="scene-row">
+          <div class="scene-label-cell">酔いが回ってきた終盤</div>
+          <div class="scene-games-cell">ドブル・ドデリド・カタカナーシ — 説明不要・即スタートできるゲームを。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <h2>次の飲み会に、<span style="color:var(--gold-bright);">1本持ち込もう。</span></h2>
+      <p>箱1つがあれば、いつもの飲み会が変わる。ゲームを探したいなら、ゲーム一覧からどうぞ。</p>
+      <div class="cta-btns">
+        <a href="/games" class="btn-primary">ゲーム一覧を見る</a>
+        <a href="/letter" class="btn-ghost">他の記事を読む</a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <span>ボドゲレター &nbsp;/&nbsp; Vol.003 &nbsp;/&nbsp; 2026.05.19</span>
+    <span class="next">Next: Vol.002 — マーダーミステリー入門</span>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      const d = document.documentElement;
+      const pct = d.scrollHeight - d.clientHeight > 0
+        ? (window.scrollY / (d.scrollHeight - d.clientHeight)) * 100 : 0;
+      document.getElementById('progress').style.width = pct + '%';
+    });
+
+    const targets = document.querySelectorAll(
+      'section, .pullquote, .game-list, .criteria-grid, .scene-table, .cta-section'
+    );
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.07 });
+    targets.forEach(el => obs.observe(el));
+  </script>
+
+</body>
+</html>

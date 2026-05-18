@@ -31,6 +31,17 @@ type Article = {
 
 const ARTICLES: Article[] = [
   {
+    vol: 'Vol.003',
+    slug: 'vol003-drinking-boardgames',
+    title: '飲み会で使えるボードゲームおすすめ。飲んでるほど盛り上がる鉄板10選。',
+    subtitle: 'Drinking Party Games',
+    date: '2026.05.19',
+    readTime: '約8分',
+    tags: ['おすすめ', '飲み会', 'パーティー'],
+    excerpt: 'スマホを置いて、1箱のボードゲームを持ち込んでみてほしい。お酒が入るほど判断が鈍り、笑いが増え、誰かが叫ぶ。飲み会の空気が変わる鉄板10選。',
+    href: '/letters/vol003-drinking-boardgames.html',
+  },
+  {
     vol: 'Vol.002',
     slug: 'vol009-murder-mystery',
     title: 'あなたは今夜、探偵になる。',
