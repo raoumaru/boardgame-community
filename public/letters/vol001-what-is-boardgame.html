@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>箱を開けると、友達になれるもの。| ボドゲレター Vol.001</title>
+  <meta name="description" content="ボードゲームとは何か。スマホを置いて、人と向き合い、笑い、悔しがる——その体験の正体を解き明かす完全入門。">
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+JP:wght@300;400;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:         #080a0f;
+      --paper:      #f0ead8;
+      --paper-dim:  #d4cbaf;
+      --ink:        #12100a;
+      --gold:       #c8922a;
+      --gold-bright:#e8b84b;
+      --gold-dim:   #8a6318;
+      --teal:       #1a4a4a;
+      --teal-bright:#2a7a7a;
+      --muted:      #5a5a6a;
+      --border:     #1e2030;
+      --text-body:  #a8a8bc;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      pointer-events: none; z-index: 9999; opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--paper);
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      line-height: 1.9;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 50px;
+      background: rgba(8,10,15,0.96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    .nav-logo {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.9rem; letter-spacing: 0.15em;
+      color: var(--gold); text-decoration: none;
+    }
+    .nav-back {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--muted);
+      text-decoration: none; transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--gold); }
+
+    /* ── PROGRESS ── */
+    #progress {
+      position: fixed; top: 50px; left: 0;
+      height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold-bright));
+      z-index: 99; transition: width 0.1s linear;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       HERO
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .hero {
+      min-height: 100vh;
+      padding-top: 50px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      position: relative; overflow: hidden;
+    }
+
+    /* Grid pattern — ゲームボードを暗示 */
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(200,146,42,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,146,42,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* Gold radial glow */
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -10%; left: -10%;
+      width: 70%; height: 70%;
+      background: radial-gradient(ellipse, rgba(200,146,42,0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 5rem 4rem 5rem;
+      max-width: 900px;
+    }
+
+    .hero-vol {
+      display: inline-flex; align-items: center; gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .hero-vol-num {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.65rem; letter-spacing: 0.4em;
+      text-transform: uppercase; color: var(--gold);
+      border: 1px solid var(--gold-dim);
+      padding: 0.2rem 0.8rem;
+    }
+    .hero-vol-line { width: 48px; height: 1px; background: var(--gold-dim); }
+
+    .hero-title {
+      font-family: 'Special Elite', cursive;
+      font-size: clamp(1.8rem, 4vw, 3.2rem);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+    }
+    .hero-title .sub {
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      font-size: 0.32em;
+      display: block;
+      letter-spacing: 0.18em;
+      color: var(--paper-dim);
+      margin-bottom: 0.5rem;
+    }
+    .hero-title .accent { color: var(--gold-bright); }
+
+    .hero-byline {
+      display: flex; align-items: center; gap: 2rem; flex-wrap: wrap;
+      margin-top: 2.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.2rem;
+    }
+    .hero-byline span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.14em;
+      color: var(--muted); text-transform: uppercase;
+    }
+    .hero-byline .sep { color: var(--gold-dim); }
+
+    .scroll-hint {
+      position: absolute; bottom: 2rem; right: 3rem; z-index: 2;
+      writing-mode: vertical-rl;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.25em;
+      color: var(--muted); text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .scroll-hint::after {
+      content: ''; display: block;
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       OPENING CARD
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .opening-card {
+      background: var(--paper);
+      color: var(--ink);
+      padding: 3.5rem 4rem;
+      position: relative;
+      margin: 0 2.5rem;
+      transform: rotate(-0.3deg);
+      box-shadow: 6px 6px 40px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,0,0,0.4);
+    }
+    .opening-card::before {
+      content: 'RULE BOOK — Page 1';
+      position: absolute; top: 1.2rem; right: 1.8rem;
+      font-family: 'Special Elite', cursive;
+      font-size: 0.62rem; letter-spacing: 0.2em;
+      color: var(--gold-dim); opacity: 0.6;
+    }
+    .opening-card::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 6px;
+      background: linear-gradient(90deg, var(--gold-dim), var(--gold-bright), var(--gold-dim));
+    }
+    .opening-card-label {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 1rem; padding-bottom: 0.8rem;
+      border-bottom: 1px dashed var(--paper-dim);
+    }
+    .opening-card p {
+      font-size: 1.05rem; line-height: 2;
+      color: #2a200e; font-style: italic;
+    }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       BODY
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+    .body-wrap {
+      max-width: 780px; margin: 0 auto;
+      padding: 5rem 2.5rem 8rem;
+    }
+
+    section { margin-bottom: 5rem; }
+
+    .sec-mark {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+    }
+    .sec-mark-line { flex: 0 0 32px; height: 1px; background: var(--gold-dim); }
+    .sec-mark-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--gold);
+    }
+    .sec-mark-num {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.7rem; color: var(--muted);
+    }
+
+    h2 {
+      font-family: 'Special Elite', cursive;
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      line-height: 1.2; margin-bottom: 1.5rem; color: var(--paper);
+    }
+    h2 em { font-style: italic; color: var(--gold-bright); font-family: inherit; }
+
+    p {
+      font-size: 0.96rem; margin-bottom: 1.3rem;
+      color: var(--text-body); letter-spacing: 0.01em;
+    }
+    strong { color: var(--paper); font-weight: 700; }
+
+    /* ── DEFINITION ── */
+    .def-block {
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold);
+      padding: 2rem 2.5rem;
+      background: rgba(200,146,42,0.04);
+      margin: 2.5rem 0;
+    }
+    .def-word {
+      font-family: 'Special Elite', cursive;
+      font-size: 1.6rem; color: var(--gold-bright); margin-bottom: 0.3rem;
+    }
+    .def-reading {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.15em;
+      color: var(--muted); margin-bottom: 1rem;
+    }
+    .def-block p { margin: 0; font-size: 0.93rem; }
+
+    /* ── FEELING GRID — なぜ面白いのか ── */
+    .feeling-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+    .feeling-card {
+      background: #0c0e14; padding: 1.8rem 1.8rem;
+      transition: background 0.2s;
+    }
+    .feeling-card:hover { background: #10131a; }
+    .feeling-num {
+      font-family: 'Special Elite', cursive;
+      font-size: 2.5rem; line-height: 1;
+      color: var(--gold-dim); opacity: 0.4;
+      margin-bottom: 0.5rem;
+    }
+    .feeling-card h3 {
+      font-family: 'Special Elite', cursive;
+      font-size: 1rem; color: var(--paper);
+      margin-bottom: 0.5rem;
+    }
+    .feeling-card p {
+      font-size: 0.82rem; color: #7a7a8a; margin: 0; line-height: 1.75;
+    }
+
+    /* ── PULLQUOTE ── */
+    .pullquote {
+      text-align: center; padding: 3.5rem 2rem;
+      position: relative; margin: 3rem 0;
+    }
+    .pullquote::before, .pullquote::after {
+      content: ''; display: block; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+      margin-bottom: 2.5rem;
+    }
+    .pullquote::after { margin-top: 2.5rem; margin-bottom: 0; }
+    .pullquote p {
+      font-family: 'Special Elite', cursive;
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      line-height: 1.55; color: var(--paper); margin: 0;
+    }
+    .pullquote p span { color: var(--gold-bright); }
+
+    /* ── GENRE SHOWCASE ── */
+    .genre-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+    .genre-item {
+      background: #0c0e14; padding: 1.6rem 1.4rem;
+      transition: background 0.2s; position: relative;
+      overflow: hidden;
+    }
+    .genre-item:hover { background: #10131a; }
+    .genre-item::before {
+      content: attr(data-icon);
+      position: absolute; top: 0.8rem; right: 1rem;
+      font-size: 1.5rem; opacity: 0.15;
+    }
+    .genre-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.55rem; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+    .genre-item h3 {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.92rem; color: var(--paper); margin-bottom: 0.4rem;
+    }
+    .genre-item p { font-size: 0.78rem; color: #7a7a8a; margin: 0; line-height: 1.65; }
+    .genre-example {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem; color: var(--gold-dim);
+      margin-top: 0.8rem; letter-spacing: 0.05em;
+    }
+
+    /* ── PAPER NOTE — なぜ今がチャンスか ── */
+    .paper-note {
+      background: var(--paper);
+      color: var(--ink);
+      padding: 2.5rem 3rem;
+      margin: 2.5rem 0;
+      position: relative;
+      transform: rotate(0.4deg);
+      box-shadow: 4px 4px 24px rgba(0,0,0,0.6);
+    }
+    .paper-note::before {
+      content: '';
+      position: absolute; top: -8px; left: 3rem;
+      width: 70px; height: 20px;
+      background: rgba(200,146,42,0.5);
+      transform: rotate(-0.5deg);
+    }
+    .paper-note::after {
+      content: '';
+      position: absolute; top: -8px; right: 4rem;
+      width: 50px; height: 20px;
+      background: rgba(200,146,42,0.35);
+      transform: rotate(1deg);
+    }
+    .paper-note h3 {
+      font-family: 'Special Elite', cursive;
+      font-size: 1rem; color: #5a3a10;
+      margin-bottom: 1rem; padding-bottom: 0.8rem;
+      border-bottom: 1px dashed var(--paper-dim);
+    }
+    .note-list { list-style: none; }
+    .note-list li {
+      display: grid; grid-template-columns: 20px 1fr;
+      gap: 0.8rem; padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      font-size: 0.88rem; color: #2a1e0e; align-items: start;
+    }
+    .note-list li::before {
+      content: '→';
+      color: var(--gold-dim);
+      font-family: 'Special Elite', cursive;
+    }
+
+    /* ── SCENE ── */
+    .scene {
+      border: 1px solid var(--border);
+      padding: 3rem; position: relative;
+      background: #0a0c11; margin: 3rem 0; overflow: hidden;
+    }
+    .scene::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(200,146,42,0.06) 0%, transparent 60%);
+    }
+    .scene-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .scene-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .scene-text {
+      font-size: 1rem; line-height: 2.1;
+      color: #c0bcd0; font-style: italic; position: relative;
+    }
+    .scene-text strong { color: var(--paper); font-style: normal; }
+
+    /* ── FIRST STEP ── */
+    .first-step {
+      counter-reset: step;
+      margin: 2.5rem 0;
+    }
+    .step-item {
+      display: grid; grid-template-columns: 40px 1fr;
+      gap: 1.5rem; margin-bottom: 1.8rem; align-items: start;
+    }
+    .step-num {
+      width: 40px; height: 40px;
+      border: 1px solid var(--gold-dim);
+      background: rgba(200,146,42,0.06);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Special Elite', cursive; font-size: 1rem;
+      color: var(--gold); flex-shrink: 0;
+    }
+    .step-body h3 {
+      font-family: 'Special Elite', cursive;
+      font-size: 1rem; color: var(--paper); margin-bottom: 0.3rem;
+    }
+    .step-body p { font-size: 0.87rem; color: #7a7a8a; margin: 0; line-height: 1.7; }
+
+    /* ── RECOMMEND BADGE ── */
+    .rec-box {
+      background: rgba(200,146,42,0.06);
+      border: 1px solid var(--gold-dim);
+      padding: 2rem 2.5rem; margin: 2.5rem 0;
+      position: relative;
+    }
+    .rec-box::before {
+      content: '初めての一箱';
+      position: absolute; top: -0.65rem; left: 1.5rem;
+      background: var(--bg);
+      font-family: 'Special Elite', cursive;
+      font-size: 0.65rem; letter-spacing: 0.2em;
+      color: var(--gold); padding: 0 0.5rem;
+    }
+    .rec-games {
+      display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 0.8rem;
+    }
+    .rec-game {
+      border: 1px solid var(--border);
+      background: var(--bg);
+      padding: 0.4rem 1rem;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 0.82rem; color: var(--paper-dim);
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      position: relative; overflow: hidden;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      padding: 5rem 2rem; text-align: center;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(200,146,42,0.1) 0%, transparent 70%);
+    }
+    .cta-section h2 {
+      font-family: 'Special Elite', cursive;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      position: relative; line-height: 1.15; margin-bottom: 1rem;
+    }
+    .cta-section p {
+      max-width: 480px; margin: 0 auto 2.5rem;
+      position: relative; color: #7a7a8a;
+    }
+    .cta-btns {
+      display: flex; gap: 1rem;
+      justify-content: center; flex-wrap: wrap; position: relative;
+    }
+    .btn-primary {
+      background: var(--gold-dim);
+      color: var(--paper);
+      border: none;
+      font-family: 'Special Elite', cursive;
+      font-size: 0.85rem; letter-spacing: 0.12em;
+      padding: 0.85rem 2.5rem;
+      cursor: pointer; transition: background 0.2s;
+      text-transform: uppercase; text-decoration: none; display: inline-block;
+    }
+    .btn-primary:hover { background: var(--gold); }
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.15em;
+      padding: 0.85rem 2rem; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      text-transform: uppercase; text-decoration: none; display: inline-block;
+    }
+    .btn-ghost:hover { border-color: var(--muted); color: var(--paper); }
+
+    /* ── FOOTER ── */
+    footer {
+      max-width: 780px; margin: 0 auto;
+      padding: 2rem 2.5rem 4rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid var(--border);
+    }
+    footer span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    footer .next {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.78rem; color: var(--gold); opacity: 0.7;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .hero-content { animation: fadeUp 1s ease both; }
+    .opening-card { animation: fadeUp 1s 0.25s ease both; }
+
+    section, .pullquote, .feeling-grid, .genre-list,
+    .paper-note, .scene, .rec-box, .cta-section {
+      opacity: 0; transform: translateY(22px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .visible { opacity: 1 !important; transform: none !important; }
+
+    @keyframes blink {
+      0%,100% { opacity: 1; } 50% { opacity: 0; }
+    }
+    .cursor {
+      display: inline-block; width: 2px; height: 0.85em;
+      background: var(--gold-bright); margin-left: 3px;
+      vertical-align: middle; animation: blink 1.1s step-end infinite;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 680px) {
+      .hero-content { padding: 3rem 1.5rem 4rem; }
+      .opening-card { margin: 0 1rem; padding: 2.5rem 1.8rem; }
+      .body-wrap { padding: 4rem 1.5rem 6rem; }
+      .feeling-grid { grid-template-columns: 1fr; }
+      .genre-list { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 1rem; align-items: flex-start; }
+      .scroll-hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/letter" class="nav-logo">ボドゲレター</a>
+    <a href="/letter" class="nav-back">← 記事一覧に戻る</a>
+  </nav>
+  <div id="progress"></div>
+
+  <!-- ══════ HERO ══════ -->
+  <header class="hero">
+    <div class="scroll-hint">Scroll<span class="cursor"></span></div>
+    <div class="hero-content">
+      <div class="hero-vol">
+        <span class="hero-vol-num">Vol.001</span>
+        <div class="hero-vol-line"></div>
+      </div>
+      <h1 class="hero-title">
+        <span class="sub">ボードゲームとは、何か。</span>
+        箱を開けると、<br>
+        <span class="accent">友達</span>になれるもの。
+      </h1>
+      <div class="hero-byline">
+        <span>2026.05.18</span>
+        <span class="sep">/</span>
+        <span>読了 約8分</span>
+        <span class="sep">/</span>
+        <span>入門 &nbsp;·&nbsp; 完全ガイド</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════ OPENING ══════ -->
+  <div class="opening-card" style="margin-top:3rem;">
+    <div class="opening-card-label">Opening — はじめに</div>
+    <p>スマートフォンを、伏せる。画面を閉じる。そして、テーブルの向こうにいる人の顔を見る。——それだけで、もうゲームは始まっている。ボードゲームとは、ただの遊びではない。人と人が向き合うための、最高の「理由」だ。</p>
+  </div>
+
+  <!-- ══════ BODY ══════ -->
+  <main class="body-wrap">
+
+    <!-- SECTION 1 -->
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 01 &nbsp;—&nbsp; Definition</div>
+        <div class="sec-mark-num">01</div>
+      </div>
+      <h2>ボードゲームとは、<br><em>体験を設計された</em>遊びだ</h2>
+
+      <div class="def-block">
+        <div class="def-word">Board Game</div>
+        <div class="def-reading">ボードゲーム &nbsp;/&nbsp; テーブルゲーム &nbsp;/&nbsp; アナログゲーム</div>
+        <p>ボード・カード・ダイス・タイルなどの物理的な道具を使い、複数の人が対面で遊ぶゲームの総称。コンピュータを使わず、人間同士の判断と対話が中心となる。その種類は戦略・協力・推理・パーティーなど多岐にわたる。</p>
+      </div>
+
+      <p>「ボードゲーム」という言葉を聞いて、古めかしい将棋や人生ゲームを思い浮かべる人がいるかもしれない。だが今、世界のボードゲーム市場は年々拡大し、毎年数千タイトルの新作が生まれている。</p>
+      <p><strong>現代のボードゲームは、体験を精密に設計された「インタラクティブな芸術作品」だ。</strong>駆け引き、感情、笑い、そして悔しさ——それらが30分から数時間の間に凝縮されている。</p>
+    </section>
+
+    <!-- PULLQUOTE 1 -->
+    <div class="pullquote">
+      <p>画面の向こうに<br>相手はいない。<br><span>テーブルの向こうに、いる。</span></p>
+    </div>
+
+    <!-- SECTION 2 -->
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 02 &nbsp;—&nbsp; Why So Fun</div>
+        <div class="sec-mark-num">02</div>
+      </div>
+      <h2>なぜ、<em>こんなにも</em><br>面白いのか</h2>
+      <p>ボードゲームが持つ面白さの正体は何か。四つの「感情の引き金」がある。</p>
+
+      <div class="feeling-grid">
+        <div class="feeling-card">
+          <div class="feeling-num">01</div>
+          <h3>判断の快感</h3>
+          <p>どのカードを出すか。どこに駒を置くか。すべての選択に意味がある。正解かどうかはわからない——だからこそ、決断の瞬間が輝く。</p>
+        </div>
+        <div class="feeling-card">
+          <div class="feeling-num">02</div>
+          <h3>人を読む緊張</h3>
+          <p>相手は何を考えているのか。この笑顔は本物か。デジタルゲームでは味わえない、生身の人間と向き合う緊張感がある。</p>
+        </div>
+        <div class="feeling-card">
+          <div class="feeling-num">03</div>
+          <h3>逆転の興奮</h3>
+          <p>最後まで諦めなかった者が勝つ。絶望的な状況からの一手が、テーブルをひっくり返す。その瞬間の叫び声は、映画を超える。</p>
+        </div>
+        <div class="feeling-card">
+          <div class="feeling-num">04</div>
+          <h3>共有される記憶</h3>
+          <p>終わった後に残るのは「あのとき◯◯が…」という物語だ。それはその場にいた全員が持ち帰る、取り替えのきかない思い出になる。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCENE -->
+    <div class="scene">
+      <div class="scene-label">Scene — ある土曜日の夜</div>
+      <p class="scene-text">
+        4人がテーブルを囲む。箱を開けると、色とりどりのタイルとカードが並ぶ。ルールを読み上げる声。<strong>「えっ、これどういうこと？」</strong>という笑い声。<br><br>
+        ゲームが始まると、誰もスマートフォンを見なくなる。誰もが、<strong>今この瞬間</strong>に集中している。3時間後、誰かが言う——<strong>「もう一回やろう」</strong>。
+      </p>
+    </div>
+
+    <!-- SECTION 3 -->
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 03 &nbsp;—&nbsp; Genres</div>
+        <div class="sec-mark-num">03</div>
+      </div>
+      <h2>どんな種類が<br>あるのか</h2>
+      <p>ボードゲームの世界は広い。戦略が好きな人も、初対面でも盛り上がりたい人も、必ず自分に合うジャンルがある。</p>
+
+      <div class="genre-list">
+        <div class="genre-item" data-icon="♟">
+          <div class="genre-tag">Strategy</div>
+          <h3>戦略ゲーム</h3>
+          <p>資源を管理し、相手の手を読み、盤面を制する。思考の深さが勝敗を決める。</p>
+          <div class="genre-example">例: カタン、ブラス、テラフォーミング・マーズ</div>
+        </div>
+        <div class="genre-item" data-icon="🤝">
+          <div class="genre-tag">Cooperative</div>
+          <h3>協力ゲーム</h3>
+          <p>全員が同じ目標に向かって戦う。勝っても負けても、チームの一体感が残る。</p>
+          <div class="genre-example">例: パンデミック、フラッシュポイント</div>
+        </div>
+        <div class="genre-item" data-icon="🎭">
+          <div class="genre-tag">Bluffing</div>
+          <h3>心理・正体隠匿</h3>
+          <p>誰が敵で誰が味方かわからない。嘘をつき、疑い、見抜く——心理戦の極致。</p>
+          <div class="genre-example">例: 人狼、レジスタンス、ザ・マインド</div>
+        </div>
+        <div class="genre-item" data-icon="🃏">
+          <div class="genre-tag">Card Game</div>
+          <h3>カードゲーム</h3>
+          <p>手軽に持ち運べ、どこでも遊べる。シンプルなルールの中に深い駆け引きが潜む。</p>
+          <div class="genre-example">例: ドミニオン、ハナビ、ito</div>
+        </div>
+        <div class="genre-item" data-icon="🎉">
+          <div class="genre-tag">Party</div>
+          <h3>パーティーゲーム</h3>
+          <p>ルール不要で即スタート。大人数で笑いが止まらない。初対面の壁を一瞬で消す。</p>
+          <div class="genre-example">例: コードネーム、はぁって言うゲーム</div>
+        </div>
+        <div class="genre-item" data-icon="🗺">
+          <div class="genre-tag">Adventure</div>
+          <h3>冒険・探索ゲーム</h3>
+          <p>ダンジョンを探索し、モンスターを倒す。RPGをテーブルの上で体験する。</p>
+          <div class="genre-example">例: グルームヘイヴン、ディセント</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PULLQUOTE 2 -->
+    <div class="pullquote">
+      <p>ボードゲームは<br>遊びじゃない。<br><span>人と過ごす時間の、<em>密度</em>だ。</span></p>
+    </div>
+
+    <!-- SECTION 4 -->
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 04 &nbsp;—&nbsp; Why Now</div>
+        <div class="sec-mark-num">04</div>
+      </div>
+      <h2>なぜ今、<em>ボードゲームなのか</em></h2>
+      <p>SNS、動画、ゲームアプリ——あらゆるコンテンツが個人の画面に溢れる時代に、なぜテーブルゲームが再び注目されているのか。</p>
+      <p>答えは逆説的だ。<strong>「コンテンツが多すぎる時代だからこそ」、人は「何もない空間で人と向き合うこと」を求め始めている。</strong>ボードゲームは、そのための最高の舞台装置だ。</p>
+      <p>世界最大のボードゲーム評価サイト「BoardGameGeek」には7万タイトル以上が登録されている。日本でも専門店・カフェが急増し、ゲームマーケット（国内最大のボードゲームイベント）には毎回数万人が集まる。</p>
+
+      <div class="paper-note">
+        <h3>今、始める理由が揃っている</h3>
+        <ul class="note-list">
+          <li>国内専門店・ボードゲームカフェが主要都市に続々オープン。試し遊びが身近になった。</li>
+          <li>1,500円〜3,000円で購入できるコスパ抜群の傑作タイトルが多数ある。</li>
+          <li>「初心者向け」のラベルが付いたゲームは、ルール説明10分以内で始められる。</li>
+          <li>YouTubeやSNSで遊び方動画が豊富。ルールに迷ってもすぐ解決できる。</li>
+          <li>プレイ人数2人〜という作品も多く、友達を大勢集めなくても楽しめる。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 5 -->
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 05 &nbsp;—&nbsp; First Step</div>
+        <div class="sec-mark-num">05</div>
+      </div>
+      <h2>最初の一歩。<br><em>何から始めればいいのか。</em></h2>
+      <p>「面白そうだけど、何を買えばいいかわからない」——それが最大の壁だ。シンプルな手順を踏めば、今夜にでも始められる。</p>
+
+      <div class="first-step">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>人数を決める</h3>
+            <p>2人？家族4人？友達グループ？人数によって最適なゲームが変わる。まずここから決めると、選択肢が一気に絞られる。</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>ボードゲームカフェで試す</h3>
+            <p>購入前に試したいなら、ボードゲームカフェが最善だ。数百タイトルを無料で試遊でき、スタッフがルールも教えてくれる。入場料1,000〜1,500円程度。</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>「定番」の一箱を買う</h3>
+            <p>初めて買うなら、何百万人もが遊んだ実績のある定番タイトルが確実だ。外れがなく、説明動画も豊富にある。</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <h3>「次のゲーム」を決める</h3>
+            <p>1回遊んだら、次に試したいゲームを探す——それがボードゲーマーの始まりだ。沼へようこそ。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rec-box">
+        <p style="font-size:0.88rem; color:var(--text-body); margin-bottom:1rem;">定番として名高い、最初の一箱候補。</p>
+        <div class="rec-games">
+          <span class="rec-game">宝石の煌き</span>
+          <span class="rec-game">コードネーム</span>
+          <span class="rec-game">ハゲタカのえじき</span>
+          <span class="rec-game">はぁって言うゲーム</span>
+          <span class="rec-game">ニムト</span>
+          <span class="rec-game">JUST ONE</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <h2>さあ、<span style="color:var(--gold-bright);">テーブルを囲もう。</span></h2>
+      <p>箱を開けるだけでいい。ルールを広げるだけでいい。その瞬間から、あなたの「ボードゲームの物語」が始まる。</p>
+      <div class="cta-btns">
+        <a href="/games" class="btn-primary">ゲーム一覧を見る</a>
+        <a href="/letter" class="btn-ghost">他の記事を読む</a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <span>ボドゲレター &nbsp;/&nbsp; Vol.001 &nbsp;/&nbsp; 2026.05.18</span>
+    <span class="next">Next: Vol.009 — マーダーミステリー入門</span>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      const d = document.documentElement;
+      const pct = d.scrollHeight - d.clientHeight > 0
+        ? (window.scrollY / (d.scrollHeight - d.clientHeight)) * 100 : 0;
+      document.getElementById('progress').style.width = pct + '%';
+    });
+
+    const targets = document.querySelectorAll(
+      'section, .pullquote, .feeling-grid, .genre-list, .paper-note, .scene, .rec-box, .cta-section'
+    );
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.07 });
+    targets.forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>

@@ -27,7 +27,7 @@ type Article = {
 
 const ARTICLES: Article[] = [
   {
-    vol: 'Vol.009',
+    vol: 'Vol.002',
     slug: 'vol009-murder-mystery',
     title: 'あなたは今夜、探偵になる。',
     subtitle: 'Murder Mystery',
@@ -36,6 +36,17 @@ const ARTICLES: Article[] = [
     tags: ['入門', '完全ガイド', 'マーダーミステリー'],
     excerpt: 'ある夜、密室で殺人が起きた。参加者全員に動機がある。全員に嘘がある。そして、その中の誰かが——犯人だ。マーダーミステリーとは何か、どう遊ぶのかを徹底解説。',
     href: '/letters/vol009-murder-mystery.html',
+  },
+  {
+    vol: 'Vol.001',
+    slug: 'vol001-what-is-boardgame',
+    title: '箱を開けると、友達になれるもの。',
+    subtitle: 'What is Board Game',
+    date: '2026.05.18',
+    readTime: '約8分',
+    tags: ['入門', '完全ガイド', 'ボードゲームとは'],
+    excerpt: 'スマートフォンを伏せて、テーブルの向こうにいる人の顔を見る。それだけで、もうゲームは始まっている。ボードゲームとは何か、なぜ面白いのかを徹底解説。',
+    href: '/letters/vol001-what-is-boardgame.html',
   },
 ]
 
