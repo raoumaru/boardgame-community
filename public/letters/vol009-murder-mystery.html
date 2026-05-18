@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>あなたは今夜、探偵になる。| ボドゲレター</title>
+  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Noto+Serif+JP:wght@300;400;700&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #0b0907;
+      --paper:     #f0e8d8;
+      --paper-dim: #d8cdb8;
+      --ink:       #1c140c;
+      --red:       #8b1a1a;
+      --red-bright:#c0392b;
+      --amber:     #c8922a;
+      --tape:      rgba(201,168,76,0.18);
+      --muted:     #6b5d4e;
+      --border:    #2e2318;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--paper);
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      line-height: 1.9;
+      cursor: default;
+      overflow-x: hidden;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 50px;
+      background: rgba(11,9,7,0.95);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+    }
+    .nav-logo {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.9rem; letter-spacing: 0.15em;
+      color: var(--amber);
+      text-decoration: none;
+    }
+    .nav-back {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--amber); }
+
+    #progress {
+      position: fixed; top: 50px; left: 0;
+      height: 2px; width: 0%;
+      background: var(--red-bright);
+      z-index: 99; transition: width 0.1s linear;
+    }
+
+    .hero {
+      min-height: 100vh;
+      padding-top: 50px;
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -20%; right: -10%;
+      width: 60%; height: 160%;
+      background: linear-gradient(170deg, transparent 0%, rgba(139,26,26,0.07) 40%, rgba(139,26,26,0.13) 55%, rgba(139,26,26,0.07) 70%, transparent 100%);
+      transform: rotate(-8deg);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 3px, transparent 3px, transparent 22px);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 5rem 4rem 5rem;
+      max-width: 900px;
+    }
+
+    .hero-stamp {
+      display: inline-block;
+      border: 2px solid var(--red);
+      color: var(--red);
+      font-family: 'Special Elite', cursive;
+      font-size: 0.65rem; letter-spacing: 0.35em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.8rem;
+      margin-bottom: 2.5rem;
+      transform: rotate(-1.5deg);
+      opacity: 0.85;
+    }
+
+    .hero-title {
+      font-family: 'Special Elite', cursive;
+      font-size: clamp(3rem, 8vw, 7rem);
+      line-height: 1.02;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+    }
+    .hero-title .accent { color: var(--red-bright); }
+    .hero-title .thin {
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      font-size: 0.38em;
+      display: block;
+      letter-spacing: 0.12em;
+      color: var(--paper-dim);
+      margin-bottom: 0.6rem;
+    }
+
+    .hero-byline {
+      display: flex; align-items: center; gap: 2rem;
+      margin-top: 2.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.2rem;
+    }
+    .hero-byline span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.14em;
+      color: var(--muted); text-transform: uppercase;
+    }
+    .hero-byline .sep { color: var(--red); }
+
+    .scroll-hint {
+      position: absolute; bottom: 2rem; right: 3rem;
+      z-index: 2; writing-mode: vertical-rl;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.25em;
+      color: var(--muted); text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .scroll-hint::after {
+      content: '';
+      display: block;
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+    }
+
+    .case-file {
+      background: var(--paper);
+      color: var(--ink);
+      padding: 3.5rem 4rem;
+      position: relative;
+      margin: 0 2.5rem;
+      transform: rotate(0.3deg);
+      box-shadow: 4px 4px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.3);
+    }
+    .case-file::before {
+      content: 'CASE FILE #0012';
+      position: absolute; top: 1.2rem; right: 1.8rem;
+      font-family: 'Special Elite', cursive;
+      font-size: 0.65rem; letter-spacing: 0.2em;
+      color: var(--muted); opacity: 0.5;
+    }
+    .case-file::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 6px;
+      background: var(--red);
+    }
+    .case-file-label {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.7rem; letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 1rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px dashed var(--paper-dim);
+    }
+    .case-file p {
+      font-size: 1.05rem;
+      line-height: 1.95;
+      color: #2a1e12;
+      font-style: italic;
+    }
+
+    .body-wrap {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 5rem 2.5rem 8rem;
+    }
+
+    section { margin-bottom: 5rem; }
+
+    .sec-mark {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .sec-mark-line { flex: 0 0 32px; height: 1px; background: var(--red); }
+    .sec-mark-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--red);
+    }
+    .sec-mark-num {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.7rem; color: var(--muted);
+    }
+
+    h2 {
+      font-family: 'Special Elite', cursive;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      color: var(--paper);
+    }
+    h2 em { font-style: italic; color: var(--amber); font-family: inherit; }
+
+    p {
+      font-size: 0.96rem; margin-bottom: 1.3rem;
+      color: #b8a898; letter-spacing: 0.01em;
+    }
+    strong { color: var(--paper); font-weight: 700; }
+
+    .definition-block {
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--red);
+      padding: 2rem 2.5rem;
+      background: rgba(139,26,26,0.04);
+      margin: 2.5rem 0;
+      position: relative;
+    }
+    .definition-block .def-word {
+      font-family: 'Special Elite', cursive;
+      font-size: 1.5rem;
+      color: var(--amber);
+      margin-bottom: 0.3rem;
+    }
+    .definition-block .def-reading {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.15em;
+      color: var(--muted); margin-bottom: 1rem;
+    }
+    .definition-block p { margin: 0; font-size: 0.93rem; }
+
+    .flow {
+      position: relative;
+      margin: 2.5rem 0;
+      padding-left: 1rem;
+    }
+    .flow::before {
+      content: '';
+      position: absolute;
+      left: 24px; top: 24px; bottom: 24px;
+      width: 1px;
+      background: repeating-linear-gradient(to bottom, var(--red) 0, var(--red) 6px, transparent 6px, transparent 14px);
+    }
+    .flow-step {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2.2rem;
+      align-items: start;
+    }
+    .flow-num {
+      width: 48px; height: 48px;
+      border: 1px solid var(--red);
+      background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Special Elite', cursive;
+      font-size: 1.1rem;
+      color: var(--red);
+      flex-shrink: 0;
+      position: relative; z-index: 1;
+    }
+    .flow-content h3 {
+      font-family: 'Special Elite', cursive;
+      font-size: 1.1rem;
+      color: var(--paper);
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+    .flow-content p { font-size: 0.88rem; margin: 0; color: #9a8878; }
+
+    .pullquote {
+      text-align: center;
+      padding: 3.5rem 2rem;
+      position: relative;
+      margin: 3rem 0;
+    }
+    .pullquote::before, .pullquote::after {
+      content: '';
+      display: block;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+      margin-bottom: 2.5rem;
+    }
+    .pullquote::after { margin-top: 2.5rem; margin-bottom: 0; }
+    .pullquote p {
+      font-family: 'Special Elite', cursive;
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      line-height: 1.5;
+      color: var(--paper);
+      margin: 0;
+    }
+    .pullquote p span { color: var(--red-bright); }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+    .role-card {
+      background: #110e0b;
+      padding: 1.8rem 1.5rem;
+      transition: background 0.2s;
+    }
+    .role-card:hover { background: #1a1410; }
+    .role-icon {
+      width: 36px; height: 36px;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .role-icon svg { width: 18px; height: 18px; stroke: var(--amber); fill: none; stroke-width: 1.5; }
+    .role-card h3 {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.95rem; color: var(--paper);
+      margin-bottom: 0.4rem;
+    }
+    .role-card p { font-size: 0.8rem; color: #7a6858; margin: 0; line-height: 1.7; }
+
+    .evidence-tape {
+      background: var(--paper);
+      color: var(--ink);
+      padding: 2.5rem 3rem;
+      margin: 2.5rem 0;
+      position: relative;
+      transform: rotate(-0.4deg);
+      box-shadow: 3px 3px 20px rgba(0,0,0,0.5);
+    }
+    .evidence-tape::before {
+      content: '';
+      position: absolute;
+      top: -10px; left: 2.5rem;
+      width: 80px; height: 22px;
+      background: rgba(201,168,76,0.45);
+      transform: rotate(-1deg);
+    }
+    .evidence-tape::after {
+      content: '';
+      position: absolute;
+      top: -10px; right: 3rem;
+      width: 60px; height: 22px;
+      background: rgba(201,168,76,0.35);
+      transform: rotate(1.5deg);
+    }
+    .evidence-tape h3 {
+      font-family: 'Special Elite', cursive;
+      font-size: 1rem; color: var(--red);
+      margin-bottom: 1rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px dashed var(--paper-dim);
+    }
+    .evidence-list { list-style: none; }
+    .evidence-list li {
+      display: grid;
+      grid-template-columns: 20px 1fr;
+      gap: 0.8rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      font-size: 0.88rem;
+      color: #2a1e12;
+      align-items: start;
+    }
+    .evidence-list li::before {
+      content: '—';
+      color: var(--red);
+      font-family: 'Special Elite', cursive;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+    .compare-col { background: #110e0b; padding: 2rem 1.8rem; }
+    .compare-col h3 {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.85rem; letter-spacing: 0.12em;
+      color: var(--muted); margin-bottom: 1.2rem;
+      text-transform: uppercase;
+    }
+    .compare-col.highlight { background: rgba(139,26,26,0.07); }
+    .compare-col.highlight h3 { color: var(--red); }
+    .compare-item {
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem; color: #9a8878;
+    }
+    .compare-item strong { color: var(--paper); display: block; margin-bottom: 0.1rem; }
+
+    .scene-setter {
+      border: 1px solid var(--border);
+      padding: 3rem;
+      position: relative;
+      background: #0e0b09;
+      margin: 3rem 0;
+      overflow: hidden;
+    }
+    .scene-setter::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 80% 50%, rgba(139,26,26,0.08) 0%, transparent 65%);
+    }
+    .scene-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--red);
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .scene-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .scene-text {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 1rem; line-height: 2.1;
+      color: #c8b8a4;
+      font-style: italic;
+      position: relative;
+    }
+    .scene-text strong { color: var(--paper); font-style: normal; }
+
+    .cta-section {
+      position: relative;
+      overflow: hidden;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 5rem 2rem;
+      text-align: center;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(139,26,26,0.12) 0%, transparent 70%);
+    }
+    .cta-section h2 {
+      font-family: 'Special Elite', cursive;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      position: relative;
+      line-height: 1.15; margin-bottom: 1rem;
+    }
+    .cta-section p {
+      max-width: 480px; margin: 0 auto 2.5rem;
+      position: relative; color: #9a8878;
+    }
+    .cta-btns {
+      display: flex; gap: 1rem;
+      justify-content: center; flex-wrap: wrap;
+      position: relative;
+    }
+    .btn-primary {
+      background: var(--red);
+      color: var(--paper);
+      border: none;
+      font-family: 'Special Elite', cursive;
+      font-size: 0.85rem; letter-spacing: 0.12em;
+      padding: 0.85rem 2.5rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-transform: uppercase;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: var(--red-bright); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.15em;
+      padding: 0.85rem 2rem;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      text-transform: uppercase;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-ghost:hover { border-color: var(--muted); color: var(--paper); }
+
+    footer {
+      max-width: 780px; margin: 0 auto;
+      padding: 2rem 2.5rem 4rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border-top: 1px solid var(--border);
+    }
+    footer span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    footer .next {
+      font-family: 'Special Elite', cursive;
+      font-size: 0.78rem; color: var(--amber); opacity: 0.7;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-content { animation: fadeIn 1s ease both; }
+    .case-file    { animation: fadeIn 1s 0.3s ease both; }
+
+    section, .pullquote, .compare, .role-grid, .evidence-tape, .scene-setter {
+      opacity: 0; transform: translateY(22px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .visible { opacity: 1 !important; transform: none !important; }
+
+    @keyframes blink {
+      0%,100% { opacity: 1; } 50% { opacity: 0; }
+    }
+    .cursor {
+      display: inline-block;
+      width: 2px; height: 0.85em;
+      background: var(--red-bright);
+      margin-left: 3px;
+      vertical-align: middle;
+      animation: blink 1.1s step-end infinite;
+    }
+
+    @media (max-width: 680px) {
+      .hero-content { padding: 3rem 1.5rem 4rem; }
+      .case-file { margin: 0 1rem; padding: 2.5rem 1.8rem; }
+      .body-wrap { padding: 4rem 1.5rem 6rem; }
+      .role-grid { grid-template-columns: 1fr; }
+      .compare { grid-template-columns: 1fr; }
+      footer { flex-direction: column; gap: 1rem; align-items: flex-start; }
+      .scroll-hint { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="/letter" class="nav-logo">ボドゲレター</a>
+    <a href="/letter" class="nav-back">← 記事一覧に戻る</a>
+  </nav>
+  <div id="progress"></div>
+
+  <header class="hero">
+    <div class="scroll-hint">Scroll<span class="cursor"></span></div>
+    <div class="hero-content">
+      <div class="hero-stamp">Confidential — Case Open</div>
+      <h1 class="hero-title">
+        <span class="thin">あなたは今夜、探偵になる。</span>
+        Murder<br>
+        <span class="accent">Mystery</span>
+      </h1>
+      <div class="hero-byline">
+        <span>2025.05.18</span>
+        <span class="sep">/</span>
+        <span>読了 約7分</span>
+        <span class="sep">/</span>
+        <span>入門 &nbsp;·&nbsp; 完全ガイド</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="case-file" style="margin-top: 3rem;">
+    <div class="case-file-label">Opening Statement — 事件の概要</div>
+    <p>ある夜、密室で殺人が起きた。参加者全員に動機がある。全員に嘘がある。そして、その中の誰かが——犯人だ。これは小説ではない。ゲームでもない。あなたが今夜、主人公として参加する体験型の物語だ。</p>
+  </div>
+
+  <main class="body-wrap">
+
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 01 &nbsp;—&nbsp; What Is</div>
+        <div class="sec-mark-num">01</div>
+      </div>
+      <h2>マーダーミステリーとは、<br><em>あなたが登場人物</em>になるゲームだ</h2>
+      <div class="definition-block">
+        <div class="def-word">Murder Mystery</div>
+        <div class="def-reading">マーダーミステリー &nbsp;/&nbsp; 謎解き体験ゲーム</div>
+        <p>参加者それぞれが「キャラクター」を割り当てられ、架空の殺人事件を舞台に、他の参加者と会話・推理・駆け引きを行うゲーム。プレイヤーは探偵でもあり、容疑者でもある。シナリオは1回限りの使い捨て——同じ体験は二度とできない。</p>
+      </div>
+      <p>読む推理小説でもなく、画面の向こうで謎を解くゲームでもない。<strong>自分自身がキャラクターとして物語の中に立ち、生きた人間と言葉を交わしながら真実を追う</strong>——それがマーダーミステリーの核心だ。</p>
+      <p>中国で2010年代に爆発的に普及し、日本でも近年急速に広まっている。カフェやイベントスペースで開催されるほか、自宅でも手軽に遊べるパッケージが増えている。</p>
+    </section>
+
+    <div class="pullquote">
+      <p>読書は傍観者の体験だ。<br>だがマーダーミステリーは——<br><span>あなたが物語に<em>なる</em>。</span></p>
+    </div>
+
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 02 &nbsp;—&nbsp; How to Play</div>
+        <div class="sec-mark-num">02</div>
+      </div>
+      <h2>どうやって遊ぶのか。<br>一夜の流れを追う。</h2>
+      <p>難しい準備はいらない。必要なのは、人数分の役割と、シナリオブックだけだ。一般的な流れはこうだ。</p>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="flow-num">I</div>
+          <div class="flow-content">
+            <h3>キャラクターの割り当て</h3>
+            <p>各プレイヤーに「登場人物カード」が配られる。名前、職業、動機、そして——秘密が書かれている。これがあなたの身分証明書だ。他の人には見せてはいけない。</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">II</div>
+          <div class="flow-content">
+            <h3>事件の概要が明かされる</h3>
+            <p>「昨夜、○○が死体で発見された」——シナリオの冒頭が読み上げられる。現場の状況、被害者との関係。全員に動機があり、全員がアリバイを持つ。</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">III</div>
+          <div class="flow-content">
+            <h3>自由交渉フェーズ</h3>
+            <p>プレイヤーは自由に話し合う。「あなたはあの夜どこにいたの？」「それは本当のこと？」情報を集め、嘘を見抜き、時に嘘をつく。ここがゲームの心臓部だ。</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">IV</div>
+          <div class="flow-content">
+            <h3>追加手がかりの開示</h3>
+            <p>フェーズが進むたびに新しい証拠が明かされる。アリバイの矛盾、隠された手紙、証言の食い違い。真実は少しずつ、残酷に明らかになっていく。</p>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-num">V</div>
+          <div class="flow-content">
+            <h3>投票と真相開示</h3>
+            <p>全員が「誰が犯人か」を投票する。そしてシナリオの最後のページが開かれる——真犯人は、その夜テーブルを囲んでいた誰かだ。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 03 &nbsp;—&nbsp; Roles</div>
+        <div class="sec-mark-num">03</div>
+      </div>
+      <h2>あなたはどの役を<br>演じることになるのか</h2>
+      <p>配られたキャラクターによって、夜の体験はまったく変わる。三つの典型的な立場を知っておこう。</p>
+      <div class="role-grid">
+        <div class="role-card">
+          <div class="role-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/><line x1="18" y1="6" x2="22" y2="6"/><line x1="20" y1="4" x2="20" y2="8"/></svg>
+          </div>
+          <h3>探偵役</h3>
+          <p>真実を追う者。証言の矛盾を突き、手がかりを集め、推理を組み立てる。論理が武器だ。しかし全員が自分を疑っているかもしれない。</p>
+        </div>
+        <div class="role-card">
+          <div class="role-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 3l9 18H3L12 3z"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="12" y1="17" x2="12" y2="18"/></svg>
+          </div>
+          <h3>容疑者役</h3>
+          <p>何かを隠している者。必ずしも犯人ではないが、秘密がある。どこまで話し、どこで黙るか——その判断が生死を分ける。演じることへの恐怖が快感に変わる。</p>
+        </div>
+        <div class="role-card">
+          <div class="role-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <h3>犯人役</h3>
+          <p>真実を知る唯一の存在。完璧なアリバイを維持しながら、他者の疑惑を誘導する。緊張の連続だが——最後まで逃げ切ったときの達成感は格別だ。</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="scene-setter">
+      <div class="scene-label">Scene — ある夜のテーブル</div>
+      <p class="scene-text">
+        午後8時。テーブルには5人が座っている。それぞれの手元に、封筒。<strong>「開けてください」</strong>という声とともに、紙を広げる。そこに書かれた名前は、自分のものではない。<br><br>
+        隣の人が目を細める。向かいの人が何かをメモする。<strong>「あなた、その夜どこにいたんですか？」</strong><br><br>
+        あなたは答えを知っている。でも、どこまで話すべきか——キャラクターの記憶が、少しずつ自分の記憶に混ざり始める。これが、マーダーミステリーの入口だ。
+      </p>
+    </div>
+
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 04 &nbsp;—&nbsp; vs Others</div>
+        <div class="sec-mark-num">04</div>
+      </div>
+      <h2>脱出ゲーム・人狼と<br>何が違うのか</h2>
+      <p>「謎解きや人狼とどう違うの？」——よく聞かれる。答えは明確だ。</p>
+      <div class="compare">
+        <div class="compare-col">
+          <h3>脱出ゲーム / 謎解き</h3>
+          <div class="compare-item"><strong>目的</strong>全員で協力してパズルを解く</div>
+          <div class="compare-item"><strong>役割</strong>全員が同じ立場</div>
+          <div class="compare-item"><strong>物語性</strong>背景として存在する</div>
+          <div class="compare-item"><strong>会話</strong>情報共有が中心</div>
+          <div class="compare-item"><strong>感情</strong>達成感・一体感</div>
+        </div>
+        <div class="compare-col highlight">
+          <h3>マーダーミステリー</h3>
+          <div class="compare-item"><strong>目的</strong>個々の目標が異なる（生存・真相・隠蔽）</div>
+          <div class="compare-item"><strong>役割</strong>全員が固有のキャラクターを持つ</div>
+          <div class="compare-item"><strong>物語性</strong>自分が物語の中にいる</div>
+          <div class="compare-item"><strong>会話</strong>心理戦・交渉・演技が絡む</div>
+          <div class="compare-item"><strong>感情</strong>緊張・疑心・驚き・没入</div>
+        </div>
+      </div>
+      <p>人狼との違いは「キャラクターの深さ」だ。人狼では役職のみが与えられるが、マーダーミステリーでは<strong>その人物の人生・感情・秘密が細かく書かれている</strong>。あなたは役割を「演じる」のではなく、その人物として「考える」。</p>
+    </section>
+
+    <div class="evidence-tape">
+      <h3>Evidence — 初めての一本を選ぶための手がかり</h3>
+      <ul class="evidence-list">
+        <li>プレイ人数は4〜8人が主流。初回は5〜6人がちょうど良い。</li>
+        <li>所要時間は2〜4時間。夕食後から深夜にかけてが定番の時間帯だ。</li>
+        <li>「初心者向け」と記載されたシナリオは、演技力不要で推理に集中できる構造になっている。</li>
+        <li>ネット通販でシナリオパッケージを購入すれば、自宅で開催できる。1セット1,500〜3,000円程度。</li>
+        <li>マーダーミステリーカフェや体験型施設では、ゲームマスターが進行を担うため、より没入しやすい。</li>
+        <li>同じシナリオは同じメンバーで二度遊べない。それが、この体験の唯一無二の価値だ。</li>
+      </ul>
+    </div>
+
+    <div class="pullquote">
+      <p>このゲームで一番怖いのは<br>殺人犯ではない。<br><span>隣に座っている、友人だ。</span></p>
+    </div>
+
+    <section>
+      <div class="sec-mark">
+        <div class="sec-mark-line"></div>
+        <div class="sec-mark-text">Section 05 &nbsp;—&nbsp; Why Now</div>
+        <div class="sec-mark-num">05</div>
+      </div>
+      <h2>なぜ今、<em>これほど</em>流行っているのか</h2>
+      <p>コンテンツが溢れる時代に、なぜわざわざ人が集まり、数時間をかけてこのゲームに没入するのか。</p>
+      <p>答えは単純だ。<strong>「生きた人間と、本物の緊張感を共有する体験」が、デジタルでは代替できないから</strong>だ。映画は観客だ。ドラマも傍観者だ。だがマーダーミステリーでは、あなたが判断し、あなたが言葉を選び、あなたの一言が物語を動かす。</p>
+      <p>終わった後に残るのは、ゲームの勝敗ではなく——「あの瞬間の、あの人の表情」という記憶だ。それは、一緒にいた人間と共有される、取り替えのきかない一夜だ。</p>
+    </section>
+
+    <div class="cta-section">
+      <h2>今夜、事件を<br><span style="color:var(--red-bright);">起こそう。</span></h2>
+      <p>シナリオを一本買って、5人を集めるだけでいい。あとは——テーブルの上に封筒を並べ、「開けてください」と言うだけだ。</p>
+      <div class="cta-btns">
+        <a href="/letter" class="btn-primary">他の記事も読む</a>
+        <a href="/games" class="btn-ghost">ゲーム一覧を見る</a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <span>ボドゲレター &nbsp;/&nbsp; Vol.009 &nbsp;/&nbsp; 2025.05.18</span>
+    <span class="next">ラ王のボドゲ倉庫</span>
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', () => {
+      const d = document.documentElement;
+      const pct = d.scrollHeight - d.clientHeight > 0
+        ? (window.scrollY / (d.scrollHeight - d.clientHeight)) * 100 : 0;
+      document.getElementById('progress').style.width = pct + '%';
+    });
+
+    const reveals = document.querySelectorAll('section, .pullquote, .compare, .role-grid, .evidence-tape, .scene-setter, .cta-section');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.07 });
+    reveals.forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>
