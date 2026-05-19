@@ -27,10 +27,12 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/sharp": "^0.31.1",
     "@typescript-eslint/parser": "^8.59.3",
     "canvas": "^3.2.3",
     "eslint": "^10.4.0",
     "eslint-plugin-security": "^4.0.0",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
