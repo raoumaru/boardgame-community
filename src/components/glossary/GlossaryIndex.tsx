@@ -64,26 +64,17 @@ export function GlossaryIndex({ terms }: Props) {
           該当する用語が見つかりませんでした
         </div>
       ) : (
-        <div className="space-y-3">
-          {filtered.map(term => (
+        <div className="rounded-2xl border border-white/10 overflow-hidden">
+          {filtered.map((term, i) => (
             <Link
               key={term.slug}
               href={`/glossary/${term.slug}`}
-              className="group flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-amber-400/30 hover:bg-white/10"
+              className={`group flex items-center justify-between px-4 py-3 transition hover:bg-white/10 ${i !== 0 ? 'border-t border-white/10' : ''}`}
             >
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-amber-300 group-hover:text-amber-200">
-                    {term.title}
-                  </span>
-                  <span className={`hidden shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium sm:inline-block ${CATEGORY_COLORS[term.category] ?? 'bg-gray-100 text-gray-700'}`}>
-                    {term.category}
-                  </span>
-                </div>
-                <p className="mt-0.5 text-xs text-white/40">{term.reading}</p>
-                <p className="mt-1 line-clamp-1 text-sm text-white/60">{term.shortDef}</p>
-              </div>
-              <ChevronRight className="ml-3 h-4 w-4 shrink-0 text-white/30 transition group-hover:text-amber-400" />
+              <span className="text-sm font-bold text-amber-300 group-hover:text-amber-200">
+                {term.title}
+              </span>
+              <ChevronRight className="h-4 w-4 shrink-0 text-white/30 transition group-hover:text-amber-400" />
             </Link>
           ))}
         </div>

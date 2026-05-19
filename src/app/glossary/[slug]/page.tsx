@@ -392,14 +392,14 @@ function IllustTrickTaking() {
   )
 }
 
-const ILLUSTRATIONS: Record<string, React.FC> = {
+const ILLUSTRATIONS: Record<string, React.FC | null> = {
   'worker-placement': IllustWorkerPlacement,
   'deck-building':    IllustDeckBuilding,
   'draft':            IllustDraft,
   'meeple':           IllustMeeple,
   'cooperative-game': IllustCooperative,
   'area-majority':    IllustAreaMajority,
-  'abstract-game':    IllustAbstractGame,
+  'abstract-game':    null,
   'euro-game':        IllustEuroGame,
   'hidden-role':      IllustHiddenRole,
   'trick-taking':     IllustTrickTaking,
