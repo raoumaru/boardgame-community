@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Gamepad2, Wand2, Dna, BookOpen, Mail, GraduationCap } from 'lucide-react'
+import { Dice5, Wand2, Dna, BookOpen, Mail, GraduationCap } from 'lucide-react'
 import type React from 'react'
 
 type NavItem = {
@@ -13,11 +13,11 @@ type NavItem = {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: '/games',     label: 'ゲーム一覧',   icon: Gamepad2 },
+  { href: '/games',     label: 'ボドゲ一覧',   icon: Dice5 },
   { href: '/recommend', label: 'ボドゲーター', icon: Wand2 },
   { href: '/mbti',      label: 'ボドゲMBTI',  icon: Dna },
   { href: '/letter',    label: 'ボドゲレター', icon: BookOpen },
-  { href: '/glossary',  label: '用語集',       icon: GraduationCap },
+  { href: '/glossary',  label: 'ボドゲ用語集', icon: GraduationCap },
   { href: '/contact',   label: 'お問い合わせ', icon: Mail },
 ]
 
