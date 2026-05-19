@@ -326,6 +326,72 @@ function IllustEuroGame() {
   )
 }
 
+function IllustHiddenRole() {
+  const players = [
+    { label: 'A', role: '市民', color: 'bg-blue-500', show: true },
+    { label: 'B', role: '?', color: 'bg-gray-400', show: false },
+    { label: 'C', role: '人狼', color: 'bg-red-500', show: true },
+    { label: 'D', role: '?', color: 'bg-gray-400', show: false },
+  ]
+  return (
+    <div className="flex flex-col items-center gap-4 p-4">
+      <div className="grid grid-cols-4 gap-2 w-full max-w-xs">
+        {players.map(p => (
+          <div key={p.label} className="flex flex-col items-center gap-1.5">
+            <div className={`h-10 w-10 rounded-full ${p.color} flex items-center justify-center shadow`}>
+              <span className="text-sm font-bold text-white">{p.label}</span>
+            </div>
+            <div className={`w-full rounded-lg border-2 py-1.5 text-center text-[10px] font-bold ${
+              p.show
+                ? p.role === '市民' ? 'border-blue-300 bg-blue-50 text-blue-700' : 'border-red-300 bg-red-50 text-red-700'
+                : 'border-gray-300 bg-gray-100 text-gray-400'
+            }`}>
+              {p.show ? p.role : '裏向き'}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-3 text-xs">
+        <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-blue-700 font-semibold">市民チーム：推理</div>
+        <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-red-700 font-semibold">人狼チーム：偽装</div>
+      </div>
+      <p className="text-xs text-gray-500 text-center">誰が敵か分からない状態で心理戦が繰り広げられる</p>
+    </div>
+  )
+}
+
+function IllustTrickTaking() {
+  const trick = [
+    { player: 'A', suit: '♥', num: '7', color: 'text-red-500', winner: false },
+    { player: 'B', suit: '♥', num: 'J', color: 'text-red-500', winner: false },
+    { player: 'C', suit: '♥', num: 'K', color: 'text-red-500', winner: true },
+    { player: 'D', suit: '♥', num: '3', color: 'text-red-500', winner: false },
+  ]
+  return (
+    <div className="flex flex-col items-center gap-3 p-4">
+      <p className="text-xs font-bold text-gray-600">1トリックの流れ</p>
+      <div className="flex gap-2 items-end">
+        {trick.map(c => (
+          <div key={c.player} className={`flex flex-col items-center gap-1 ${c.winner ? 'scale-110' : ''}`}>
+            <span className="text-[10px] text-gray-500">{c.player}</span>
+            <div className={`w-12 h-16 rounded-lg border-2 flex flex-col items-center justify-center shadow ${
+              c.winner ? 'border-amber-400 bg-amber-50' : 'border-gray-300 bg-white'
+            }`}>
+              <span className={`text-lg font-bold ${c.color}`}>{c.suit}</span>
+              <span className="text-sm font-bold text-gray-700">{c.num}</span>
+            </div>
+            {c.winner && <span className="text-[9px] font-bold text-amber-600">獲得！</span>}
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs">
+        <span className="text-amber-700 font-semibold">Cが最強（K）→このトリックを取る</span>
+      </div>
+      <p className="text-xs text-gray-500">これを繰り返して獲得トリック数を競う</p>
+    </div>
+  )
+}
+
 const ILLUSTRATIONS: Record<string, React.FC> = {
   'worker-placement': IllustWorkerPlacement,
   'deck-building':    IllustDeckBuilding,
@@ -335,6 +401,8 @@ const ILLUSTRATIONS: Record<string, React.FC> = {
   'area-majority':    IllustAreaMajority,
   'abstract-game':    IllustAbstractGame,
   'euro-game':        IllustEuroGame,
+  'hidden-role':      IllustHiddenRole,
+  'trick-taking':     IllustTrickTaking,
 }
 
 function TermIllustration({ slug }: { slug: string }) {

@@ -140,6 +140,38 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     relatedSlugs: ['worker-placement', 'deck-building', 'area-majority'],
     keywords: ['ユーロゲーム とは', 'ユーロゲーム 意味 ボードゲーム', 'ゲルマンゲーム とは'],
   },
+  {
+    slug: 'hidden-role',
+    title: '正体隠匿',
+    reading: 'しょうたいいんとく',
+    shortDef: '秘密の役割を隠しながら進む心理戦ゲームシステム',
+    description: [
+      '正体隠匿（Hidden Role）とは、各プレイヤーが秘密の役割カードを受け取り、自分の正体（陣営・役割）を隠しながらゲームを進めるシステムです。',
+      '人狼ゲームがその代表例。「市民チーム」は誰が人狼かを推理して処刑し、「人狼チーム」は正体を隠しながら市民を騙して生き残ります。誰を信じ、誰を疑うかという心理戦が最大の醍醐味です。',
+      '「ワンナイト人狼」「スパイフォール」など、よりスピーディなバリエーションも豊富。大人数で盛り上がりやすく初心者にも入りやすいため、パーティゲームの定番ジャンルです。会話・演技・論理が絡み合う独特の熱さがあります。',
+    ],
+    category: 'ゲームタイプ',
+    relatedGenre: 'hidden_role',
+    relatedGenreLabel: '正体隠匿ゲーム',
+    relatedSlugs: ['cooperative-game', 'draft', 'area-majority'],
+    keywords: ['正体隠匿 とは', '正体隠匿 ボードゲーム 意味', '正体隠匿 おすすめ 人狼'],
+  },
+  {
+    slug: 'trick-taking',
+    title: 'トリックテイキング',
+    reading: 'とりっくていきんぐ',
+    shortDef: '順番にカードを出し合い最強カードの持ち主がトリックを取るシステム',
+    description: [
+      'トリックテイキング（Trick-taking）とは、プレイヤーが順番に手札からカードを1枚ずつ出し合い、最も強いカードを出したプレイヤーがその1セット（トリック）を獲得するゲームシステムです。',
+      'トランプのブリッジやスペードが古典的な例。「切り札（マストフォロー）」というルールがあり、最初に出たカードと同じスートを必ず出さなければなりません。手持ちカードの管理と相手の手読みが勝負の鍵です。',
+      '近年は「ニムト」「ウィザード」「The Crew（ザ・クルー）」など革新的なトリックテイキングが次々と登場。特にThe Crewは協力型トリックテイキングとして世界的に大ヒットしました。シンプルなルールで深い駆け引きが楽しめます。',
+    ],
+    category: 'カードゲーム',
+    relatedGenre: null,
+    relatedGenreLabel: null,
+    relatedSlugs: ['draft', 'deck-building', 'abstract-game'],
+    keywords: ['トリックテイキング とは', 'トリックテイキング ボードゲーム 意味', 'トリックテイキング おすすめ'],
+  },
 ]
 
 export function getTermBySlug(slug: string): GlossaryTerm | undefined {
