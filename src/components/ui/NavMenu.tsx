@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Gamepad2, Wand2, Dna, BookOpen, Mail } from 'lucide-react'
+import { Gamepad2, Wand2, Dna, BookOpen, Mail, GraduationCap } from 'lucide-react'
 import type React from 'react'
 
 type NavItem = {
@@ -17,6 +17,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/recommend', label: 'ボドゲーター', icon: Wand2 },
   { href: '/mbti',      label: 'ボドゲMBTI',  icon: Dna },
   { href: '/letter',    label: 'ボドゲレター', icon: BookOpen },
+  { href: '/glossary',  label: '用語集',       icon: GraduationCap },
   { href: '/contact',   label: 'お問い合わせ', icon: Mail },
 ]
 
