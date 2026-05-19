@@ -153,6 +153,7 @@ async function GameDetailContent({ params }: { params: Promise<{ slug: string }>
             src={imageUrl}
             alt={`${g.title} - ${formatPlayers(g.min_players, g.max_players)}で遊べるボードゲーム`}
             fill
+            priority
             className="object-contain"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 672px"
           />

@@ -22,12 +22,13 @@ export function GameGrid({ games, imageBaseUrl, newGameIds }: Props) {
 
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-      {games.map((game) => (
+      {games.map((game, i) => (
         <GameCard
           key={game.id}
           game={game}
           imageBaseUrl={imageBaseUrl}
           isNew={newGameIds?.has(game.id) ?? false}
+          priority={i < 6}
         />
       ))}
     </div>

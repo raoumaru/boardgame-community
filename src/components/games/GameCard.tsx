@@ -8,9 +8,9 @@ import { GENRES } from "@/lib/types";
 
 const VALID_GENRES = new Set<string>(GENRES.map((g) => g.value));
 
-type Props = { game: Game; imageBaseUrl: string; isNew?: boolean };
+type Props = { game: Game; imageBaseUrl: string; isNew?: boolean; priority?: boolean };
 
-export function GameCard({ game, imageBaseUrl, isNew = false }: Props) {
+export function GameCard({ game, imageBaseUrl, isNew = false, priority = false }: Props) {
   const imageUrl = game.image_path
     ? `${imageBaseUrl}/${game.image_path}`
     : null;
@@ -40,6 +40,7 @@ export function GameCard({ game, imageBaseUrl, isNew = false }: Props) {
             fill
             className="object-contain p-1"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            priority={priority}
           />
         ) : (
           <div className="flex h-full items-center justify-center text-gray-300">

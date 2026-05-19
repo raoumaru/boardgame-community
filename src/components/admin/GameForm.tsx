@@ -32,6 +32,35 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
+/** アップロード前にWebPへ変換・リサイズ（最大幅800px・品質85%） */
+async function compressToWebP(file: File, maxWidth = 800, quality = 0.85): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    const url = URL.createObjectURL(file)
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      const scale = Math.min(1, maxWidth / img.naturalWidth)
+      const w = Math.round(img.naturalWidth * scale)
+      const h = Math.round(img.naturalHeight * scale)
+      const canvas = document.createElement('canvas')
+      canvas.width = w
+      canvas.height = h
+      const ctx = canvas.getContext('2d')!
+      ctx.drawImage(img, 0, 0, w, h)
+      canvas.toBlob(
+        blob => {
+          if (!blob) { reject(new Error('WebP変換に失敗しました')); return }
+          resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.webp'), { type: 'image/webp' }))
+        },
+        'image/webp',
+        quality,
+      )
+    }
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('画像の読み込みに失敗しました')) }
+    img.src = url
+  })
+}
+
 type Props = {
   game?: Game
 }
@@ -96,11 +125,11 @@ export function GameForm({ game }: Props) {
   const uploadImage = async (gameId: string): Promise<string | null> => {
     if (!imageFile) return game?.image_path ?? null
     const supabase = createClient()
-    const ext = imageFile.name.split('.').pop() ?? 'jpg'
-    const path = `games/${gameId}.${ext}`
+    const compressed = await compressToWebP(imageFile)
+    const path = `games/${gameId}.webp`
     const { error } = await supabase.storage
       .from('game-images')
-      .upload(path, imageFile, { upsert: true })
+      .upload(path, compressed, { upsert: true, contentType: 'image/webp' })
     if (error) throw new Error(error.message)
     return path
   }
