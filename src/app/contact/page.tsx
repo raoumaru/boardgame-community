@@ -9,7 +9,6 @@ import { NavMenu } from '@/components/ui/NavMenu'
 import { Send, CheckCircle2 } from 'lucide-react'
 
 const schema = z.object({
-  senderType: z.enum(['user', 'cafe', 'other'], { message: '送信者タイプを選択してください' }),
   category:   z.enum(['game', 'bug', 'collab', 'other'], { message: 'カテゴリを選択してください' }),
   name:       z.string().min(1, 'お名前を入力してください').max(100),
   email:      z.string().email('正しいメールアドレスを入力してください').optional().or(z.literal('')),
@@ -18,12 +17,6 @@ const schema = z.object({
 })
 
 type FormValues = z.infer<typeof schema>
-
-const SENDER_TYPE_OPTIONS = [
-  { value: 'user',  label: '一般ユーザー' },
-  { value: 'cafe',  label: 'カフェ・施設関係者' },
-  { value: 'other', label: 'その他' },
-] as const
 
 const CATEGORY_OPTIONS = [
   { value: 'game',   label: 'ゲームについて' },
@@ -39,7 +32,7 @@ export default function ContactPage() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(schema) as any,
-    defaultValues: { senderType: 'user', honeypot: '' },
+    defaultValues: { honeypot: '' },
   })
 
   const onSubmit = async (values: FormValues) => {
@@ -86,25 +79,6 @@ export default function ContactPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
             {/* ハニーポット（隠しフィールド） */}
             <input type="text" {...register('honeypot')} className="hidden" tabIndex={-1} autoComplete="off" />
-
-            {/* 送信者タイプ */}
-            <div>
-              <p className={labelClass}>あなたは？ *</p>
-              <div className="flex flex-wrap gap-3">
-                {SENDER_TYPE_OPTIONS.map(opt => (
-                  <label key={opt.value} className="flex cursor-pointer items-center gap-2">
-                    <input
-                      type="radio"
-                      value={opt.value}
-                      {...register('senderType')}
-                      className="accent-amber-400"
-                    />
-                    <span className="text-sm text-white/80">{opt.label}</span>
-                  </label>
-                ))}
-              </div>
-              {errors.senderType && <p className={errorClass}>{errors.senderType.message}</p>}
-            </div>
 
             {/* カテゴリ */}
             <div>

@@ -20,19 +20,12 @@ function isRateLimited(ip: string): boolean {
 }
 
 const schema = z.object({
-  senderType:  z.enum(['user', 'cafe', 'other']),
   category:    z.enum(['game', 'bug', 'collab', 'other']),
   name:        z.string().min(1).max(100),
   email:       z.string().email().optional().or(z.literal('')),
   message:     z.string().min(1).max(2000),
   honeypot:    z.string().max(0), // ボットトラップ（空でなければ弾く）
 })
-
-const SENDER_TYPE_LABELS: Record<string, string> = {
-  user:  '一般ユーザー',
-  cafe:  'カフェ・施設関係者',
-  other: 'その他',
-}
 
 const CATEGORY_LABELS: Record<string, string> = {
   game:   'ゲームについて',
@@ -61,7 +54,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '入力内容を確認してください' }, { status: 400 })
   }
 
-  const { senderType, category, name, email, message } = result.data
+  const { category, name, email, message } = result.data
 
   const fromEmail = process.env.CONTACT_FROM_EMAIL ?? 'noreply@boardgame-raou.com'
   const toEmail   = process.env.CONTACT_TO_EMAIL   ?? 'gute107080@gmail.com'
@@ -77,7 +70,6 @@ export async function POST(req: NextRequest) {
       replyTo,
       subject:  `【お問い合わせ】${CATEGORY_LABELS[category]} - ${name}`,
       text: [
-        `■ 送信者タイプ: ${SENDER_TYPE_LABELS[senderType]}`,
         `■ カテゴリ: ${CATEGORY_LABELS[category]}`,
         `■ お名前: ${name}`,
         `■ メールアドレス: ${email || '未入力'}`,
