@@ -64,12 +64,12 @@ export function GlossaryIndex({ terms }: Props) {
           該当する用語が見つかりませんでした
         </div>
       ) : (
-        <div className="rounded-2xl border border-white/10 overflow-hidden">
-          {filtered.map((term, i) => (
+        <div className="grid grid-cols-2 gap-2">
+          {filtered.map(term => (
             <Link
               key={term.slug}
               href={`/glossary/${term.slug}`}
-              className={`group flex items-center justify-between px-4 py-3 transition hover:bg-white/10 ${i !== 0 ? 'border-t border-white/10' : ''}`}
+              className="group flex items-center justify-between rounded-xl border border-white/10 px-4 py-3 transition hover:border-amber-400/30 hover:bg-white/10"
             >
               <span className="text-sm font-bold text-amber-300 group-hover:text-amber-200">
                 {term.title}
