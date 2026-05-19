@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type React from "react";
+import { SITE_URL } from "@/lib/constants";
 import { Noto_Sans_JP } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { Footer } from "@/components/ui/Footer";
@@ -40,7 +41,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'ラ王のボドゲ倉庫',
-  url: 'https://www.boardgame-raou.com',
+  url: SITE_URL,
   description: 'ボードゲーム一覧・おすすめ・占いで探せるボードゲームサイト。ボドゲーターでぴったりのゲームを見つけよう。',
 }
 

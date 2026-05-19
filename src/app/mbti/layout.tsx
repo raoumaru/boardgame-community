@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import type React from 'react'
+import { SITE_URL } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: 'ボドゲMBTI — ボードゲームタイプ診断',
@@ -20,7 +21,7 @@ const jsonLd = {
   '@type': 'WebApplication',
   name: 'ボドゲMBTI',
   description: '20問の診断でボードゲームの好みを16タイプに分類するボードゲームタイプ診断ツール',
-  url: 'https://www.boardgame-raou.com/mbti',
+  url: `${SITE_URL}/mbti`,
   applicationCategory: 'EntertainmentApplication',
   operatingSystem: 'Web Browser',
   inLanguage: 'ja',
@@ -30,7 +31,7 @@ const jsonLd = {
 
 export default function MbtiLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ background: 'linear-gradient(160deg, #3a0a0a 0%, #1a0505 40%, #0d0205 100%)', minHeight: '100dvh' }}>
+    <div className="min-h-dvh bg-[linear-gradient(160deg,#3a0a0a_0%,#1a0505_40%,#0d0205_100%)]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

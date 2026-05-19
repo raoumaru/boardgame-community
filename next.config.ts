@@ -42,6 +42,7 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   cacheComponents: true,
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

@@ -6,6 +6,7 @@ import { ChevronLeft, Dna, Zap, ThumbsUp } from 'lucide-react'
 import { NavMenu } from '@/components/ui/NavMenu'
 import { GameCard } from '@/components/games/GameCard'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { scoreGames, type ScoringParams } from '@/lib/scoring'
 import { TYPES, getAxisLabels, AXIS_COLORS, type TypeCode } from '../data'
 import type { Metadata } from 'next'
 import type { Game } from '@/lib/types'
@@ -38,18 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-// ── ジャンルマッピング（/api/recommend と共通のロジック） ──────────────────
-const GENRE_CATEGORY_MAP: Record<string, string[]> = {
-  cooperative: ['cooperative'],
-  bluff:       ['bluffing', 'hidden_role'],
-  puzzle:      ['puzzle'],
-  strategy:    ['strategy', 'drafting', 'deck_building'],
-  party:       ['party', 'family', 'word_sense'],
-}
-const FUN_GENRES   = ['party', 'family', 'word_sense', 'bluffing', 'hidden_role']
-const THINK_GENRES = ['strategy', 'puzzle', 'deck_building', 'drafting', 'cooperative']
-
-function getMbtiRecommendParams(code: TypeCode) {
+function getMbtiRecommendParams(code: TypeCode): ScoringParams {
   const d = code[0], r = code[1], i = code[2], h = code[3]
   return {
     players:    i === 'I' ? '2' : i === 'G' ? '5+' : '3-4',
@@ -69,7 +59,7 @@ async function getRecommendedGames(typeCode: TypeCode): Promise<Game[]> {
 }
 
 async function _fetchRecommendedGames(typeCode: TypeCode): Promise<Game[]> {
-  const { players, mood, categories, time, experience } = getMbtiRecommendParams(typeCode)
+  const params = getMbtiRecommendParams(typeCode)
 
   const supabase = createAdminClient()
   const { data: games } = await supabase
@@ -80,54 +70,10 @@ async function _fetchRecommendedGames(typeCode: TypeCode): Promise<Game[]> {
 
   if (!games?.length) return []
 
-  const selectedGenres = categories.flatMap(c =>
-    Object.hasOwn(GENRE_CATEGORY_MAP, c) ? GENRE_CATEGORY_MAP[c] : []
-  )
-
-  const playerNum = players === '2' ? 2 : players === '3-4' ? 3 : 5
-  let eligible = games.filter(g => g.min_players <= playerNum && g.max_players >= playerNum)
-  if (eligible.length < 3) eligible = games
-
-  const scored = eligible.map(game => {
-    let score = 0
-    const g = game.genres ?? []
-
-    selectedGenres.forEach(genre => { if (g.includes(genre)) score += 4 })
-
-    if (mood === 'fun'   && g.some((x: string) => FUN_GENRES.includes(x)))   score += 2
-    if (mood === 'think' && g.some((x: string) => THINK_GENRES.includes(x))) score += 2
-
-    if (experience === 'beginner') {
-      if (game.difficulty === 'easy')   score += 4
-      if (game.difficulty === 'medium') score += 1
-      if (game.difficulty === 'hard')   score -= 2
-    } else if (experience === 'sometimes') {
-      if (game.difficulty === 'easy')   score += 2
-      if (game.difficulty === 'medium') score += 3
-      if (game.difficulty === 'hard')   score += 1
-    } else {
-      if (game.difficulty === 'easy')   score += 0
-      if (game.difficulty === 'medium') score += 2
-      if (game.difficulty === 'hard')   score += 4
-    }
-
-    if (time === 'short') {
-      if (game.play_time_min <= 20) score += 2
-      else if (game.play_time_min <= 30) score += 1
-    } else if (time === 'medium') {
-      if (game.play_time_min >= 20 && game.play_time_min <= 60) score += 1
-    } else {
-      if (game.play_time_min >= 45) score += 1
-    }
-
-    return { game, score }
-  })
-
-  // 詳細ページは静的生成なので上位3件を固定で返す（ランダムなし）
-  return scored
+  return scoreGames(games as Game[], params)
     .sort((a, b) => b.score - a.score)
     .slice(0, 3)
-    .map(x => x.game as Game)
+    .map(x => x.game)
 }
 
 export default async function MbtiDetailPage({ params }: Props) {

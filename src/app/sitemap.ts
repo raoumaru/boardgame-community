@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { TYPES } from './mbti/data'
+import { SITE_URL } from '@/lib/constants'
 
-const BASE_URL = 'https://www.boardgame-raou.com'
+const BASE_URL = SITE_URL
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ── 静的ページ ──────────────────────────────────────
