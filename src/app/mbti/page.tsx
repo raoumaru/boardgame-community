@@ -268,8 +268,14 @@ export default function MbtiPage() {
     setResult(r)
     setStage('result')
     try { localStorage.setItem('mbti-last-result', JSON.stringify(r)) } catch {}
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  // 結果画面に切り替わったら最上部にスクロール（state更新後のDOM反映を待つ）
+  useEffect(() => {
+    if (stage === 'result') {
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
+    }
+  }, [stage])
 
   // 診断結果が出たらタイプに合うゲームをDBから取得
   useEffect(() => {
