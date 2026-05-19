@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { z } from 'zod'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 // In-memory rate limiting (IP ごとに 3回/10分)
 const rateMap = new Map<string, { count: number; resetAt: number }>()
 const RATE_LIMIT = 3
@@ -69,6 +67,8 @@ export async function POST(req: NextRequest) {
   const toEmail   = process.env.CONTACT_TO_EMAIL   ?? 'gute107080@gmail.com'
 
   const replyTo = email ? [email] : undefined
+
+  const resend = new Resend(process.env.RESEND_API_KEY)
 
   try {
     await resend.emails.send({
