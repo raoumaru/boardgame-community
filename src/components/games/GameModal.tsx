@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import Image from 'next/image'
-import { Users, Clock, Gamepad2, Sparkles, ExternalLink } from 'lucide-react'
+import { Users, Clock, Gamepad2, Sparkles, ExternalLink, ShoppingCart } from 'lucide-react'
 import { GenreBadge, DifficultyBadge } from '@/components/ui/Badge'
 import { GENRES } from '@/lib/types'
 
@@ -14,6 +14,44 @@ type Props = {
   game: Game
   imageBaseUrl: string
   onClose: () => void
+}
+
+function AmazonLink({ title }: { title: string }) {
+  const tag = process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG
+  if (!tag) return null
+  const url = `https://www.amazon.co.jp/s?k=${encodeURIComponent(title + ' ボードゲーム')}&tag=${tag}`
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer sponsored"
+      className="flex items-center justify-center gap-2 rounded-xl border border-orange-300/60 bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-700 transition hover:bg-orange-100 hover:border-orange-400/80"
+    >
+      <ShoppingCart className="h-4 w-4 shrink-0" />
+      Amazonで購入する
+    </a>
+  )
+}
+
+function RakutenLink({ title }: { title: string }) {
+  const aId  = process.env.NEXT_PUBLIC_MOSHIMO_A_ID
+  const pId  = process.env.NEXT_PUBLIC_MOSHIMO_P_ID
+  const pcId = process.env.NEXT_PUBLIC_MOSHIMO_PC_ID
+  const plId = process.env.NEXT_PUBLIC_MOSHIMO_PL_ID
+  if (!aId) return null
+  const rakutenUrl  = `https://search.rakuten.co.jp/search/mall/${encodeURIComponent(title + ' ボードゲーム')}/`
+  const affiliateUrl = `https://af.moshimo.com/af/c/click?a_id=${aId}&p_id=${pId}&pc_id=${pcId}&pl_id=${plId}&url=${encodeURIComponent(rakutenUrl)}`
+  return (
+    <a
+      href={affiliateUrl}
+      target="_blank"
+      rel="noopener noreferrer sponsored"
+      className="flex items-center justify-center gap-2 rounded-xl border border-red-300/60 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 transition hover:bg-red-100 hover:border-red-400/80"
+    >
+      <ShoppingCart className="h-4 w-4 shrink-0" />
+      楽天市場で購入する
+    </a>
+  )
 }
 
 export function GameModal({ game, imageBaseUrl, onClose }: Props) {
@@ -127,6 +165,12 @@ export function GameModal({ game, imageBaseUrl, onClose }: Props) {
               <p className="text-sm leading-relaxed text-gray-700">{game.recommended_for}</p>
             </div>
           )}
+
+          {/* 購入リンク */}
+          <div className="space-y-2">
+            <AmazonLink title={game.title} />
+            <RakutenLink title={game.title} />
+          </div>
 
           {/* 外部リンク */}
           {game.external_url && (
