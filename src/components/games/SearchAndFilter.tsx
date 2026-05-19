@@ -65,11 +65,11 @@ export function SearchAndFilter({ filters, onChange }: Props) {
       <div className="flex justify-center gap-6">
         <Link
           href="/recommend"
-          className="animate-float group relative flex h-36 w-36 flex-col items-center justify-center gap-2 overflow-hidden rounded-full border border-amber-400/30 bg-gradient-to-br from-amber-500/20 to-amber-700/10 text-center shadow-lg shadow-amber-900/20 backdrop-blur-sm transition-all hover:scale-[1.05] hover:border-amber-400/60"
+          className="animate-float group relative flex h-36 w-36 flex-col items-center justify-center gap-2 overflow-hidden rounded-full border border-purple-400/30 bg-gradient-to-br from-purple-500/20 to-purple-800/10 text-center shadow-lg shadow-purple-900/20 backdrop-blur-sm transition-all hover:scale-[1.05] hover:border-purple-400/60"
         >
-          <span className="pointer-events-none absolute -top-4 -right-4 h-16 w-16 rounded-full bg-amber-400/10 blur-xl" />
-          <span className="pointer-events-none absolute -bottom-3 -left-3 h-12 w-12 rounded-full bg-amber-300/10 blur-lg" />
-          <Wand2 className="h-7 w-7 text-amber-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.6)]" />
+          <span className="pointer-events-none absolute -top-4 -right-4 h-16 w-16 rounded-full bg-purple-400/10 blur-xl" />
+          <span className="pointer-events-none absolute -bottom-3 -left-3 h-12 w-12 rounded-full bg-purple-300/10 blur-lg" />
+          <Wand2 className="h-7 w-7 text-purple-300 drop-shadow-[0_0_6px_rgba(192,132,252,0.6)]" />
           <span className="px-2 text-xs font-bold leading-tight text-amber-100">
             ボドゲーターで<br />今日のボドゲを占う
           </span>

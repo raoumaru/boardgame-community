@@ -33,224 +33,324 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-// 用語ごとのSVGイラスト
-function TermIllustration({ slug }: { slug: string }) {
-  const svgs: Record<string, React.ReactNode> = {
-    'worker-placement': (
-      <svg viewBox="0 0 240 160" className="w-full h-full" aria-hidden="true">
-        <rect width="240" height="160" fill="#FEF3E8" rx="12"/>
-        {/* グリッド */}
-        {[20,80,140].map(x => [20,80,120].map(y => (
-          <rect key={`${x}-${y}`} x={x} y={y} width="50" height="36" rx="6" fill="#e8d5b0" stroke="#c4a56a" strokeWidth="1.5"/>
-        )))}
-        {/* ワーカー（青チーム） */}
-        <circle cx="45" cy="38" r="10" fill="#3B82F6"/>
-        <ellipse cx="45" cy="52" rx="8" ry="4" fill="#3B82F6"/>
-        <circle cx="105" cy="98" r="10" fill="#3B82F6"/>
-        <ellipse cx="105" cy="112" rx="8" ry="4" fill="#3B82F6"/>
-        {/* ワーカー（赤チーム） */}
-        <circle cx="165" cy="38" r="10" fill="#EF4444"/>
-        <ellipse cx="165" cy="52" rx="8" ry="4" fill="#EF4444"/>
-        <circle cx="45" cy="98" r="10" fill="#EF4444"/>
-        <ellipse cx="45" cy="112" rx="8" ry="4" fill="#EF4444"/>
-        {/* ラベル */}
-        <text x="120" y="152" textAnchor="middle" fontSize="11" fill="#92400e" fontFamily="sans-serif">コマを置いてアクション確保</text>
-      </svg>
-    ),
-    'deck-building': (
-      <svg viewBox="0 0 240 160" className="w-full h-full" aria-hidden="true">
-        <rect width="240" height="160" fill="#FEF3E8" rx="12"/>
-        {/* 初期デッキ（小） */}
-        {[0,2,4].map(i => <rect key={i} x={20+i*3} y={60-i*3} width="40" height="56" rx="4" fill="#e8d5b0" stroke="#c4a56a" strokeWidth="1.5"/>)}
-        <text x="40" y="72" textAnchor="middle" fontSize="9" fill="#78350f" fontFamily="sans-serif">スタート</text>
-        <text x="40" y="83" textAnchor="middle" fontSize="9" fill="#78350f" fontFamily="sans-serif">デッキ</text>
-        {/* 矢印 */}
-        <path d="M68 88 L88 88" stroke="#C4892A" strokeWidth="2.5" markerEnd="url(#arr)"/>
-        <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#C4892A" strokeWidth="1.5"/></marker></defs>
-        {/* カード購入 */}
-        <rect x="90" y="50" width="36" height="50" rx="4" fill="#fbbf24" stroke="#d97706" strokeWidth="1.5"/>
-        <text x="108" y="72" textAnchor="middle" fontSize="18" fontFamily="sans-serif">★</text>
-        <text x="108" y="88" textAnchor="middle" fontSize="9" fill="#78350f" fontFamily="sans-serif">強カード</text>
-        {/* 矢印 */}
-        <path d="M134 88 L154 88" stroke="#C4892A" strokeWidth="2.5" markerEnd="url(#arr)"/>
-        {/* 強化後デッキ（大） */}
-        {[0,2,4,6,8].map(i => <rect key={i} x={156+i*3} y={50-i*3} width="44" height="62" rx="4" fill="#e8d5b0" stroke="#c4a56a" strokeWidth="1.5"/>)}
-        <rect x="156" y="50" width="44" height="62" rx="4" fill="#fbbf24" stroke="#d97706" strokeWidth="1.5"/>
-        <text x="178" y="77" textAnchor="middle" fontSize="9" fill="#78350f" fontFamily="sans-serif">強化後</text>
-        <text x="178" y="89" textAnchor="middle" fontSize="9" fill="#78350f" fontFamily="sans-serif">デッキ</text>
-        <text x="120" y="152" textAnchor="middle" fontSize="11" fill="#92400e" fontFamily="sans-serif">カードを獲得してデッキを育てる</text>
-      </svg>
-    ),
-    'draft': (
-      <svg viewBox="0 0 240 160" className="w-full h-full" aria-hidden="true">
-        <rect width="240" height="160" fill="#FEF3E8" rx="12"/>
-        {/* プレイヤー */}
-        {[
-          { x: 120, y: 20, label: 'A', color: '#3B82F6' },
-          { x: 210, y: 90, label: 'B', color: '#10B981' },
-          { x: 120, y: 130, label: 'C', color: '#F59E0B' },
-          { x: 30,  y: 90, label: 'D', color: '#EF4444' },
-        ].map(p => (
-          <g key={p.label}>
-            <circle cx={p.x} cy={p.y} r="18" fill={p.color}/>
-            <text x={p.x} y={p.y+5} textAnchor="middle" fontSize="14" fill="white" fontWeight="bold" fontFamily="sans-serif">{p.label}</text>
-          </g>
-        ))}
-        {/* 矢印（時計回り） */}
-        <path d="M138 28 Q175 28 196 72" stroke="#C4892A" strokeWidth="2" fill="none" markerEnd="url(#arr2)"/>
-        <path d="M204 108 Q210 130 162 138" stroke="#C4892A" strokeWidth="2" fill="none" markerEnd="url(#arr2)"/>
-        <path d="M102 138 Q60 138 44 108" stroke="#C4892A" strokeWidth="2" fill="none" markerEnd="url(#arr2)"/>
-        <path d="M36 72 Q36 28 102 26" stroke="#C4892A" strokeWidth="2" fill="none" markerEnd="url(#arr2)"/>
-        <defs><marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#C4892A" strokeWidth="1.5"/></marker></defs>
-        {/* 中央カード */}
-        <rect x="100" y="65" width="40" height="30" rx="4" fill="#fbbf24" stroke="#d97706" strokeWidth="1.5"/>
-        <text x="120" y="83" textAnchor="middle" fontSize="10" fill="#78350f" fontFamily="sans-serif">1枚選んで</text>
-        <text x="120" y="152" textAnchor="middle" fontSize="11" fill="#92400e" fontFamily="sans-serif">1枚選んで残りを隣へ回す</text>
-      </svg>
-    ),
-    'meeple': (
-      <svg viewBox="0 0 240 160" className="w-full h-full" aria-hidden="true">
-        <rect width="240" height="160" fill="#FEF3E8" rx="12"/>
-        {/* ミープル形状（大） */}
-        <g transform="translate(120,75)">
-          <circle cx="0" cy="-40" r="18" fill="#C4892A"/>
-          <path d="M-22,-22 C-30,-10 -28,8 -20,18 L-8,18 L-4,4 L4,4 L8,18 L20,18 C28,8 30,-10 22,-22 Z" fill="#C4892A"/>
-          <path d="M-20,18 L-28,38 L-16,38 L-8,22 L8,22 L16,38 L28,38 L20,18 Z" fill="#C4892A"/>
-        </g>
-        {/* 色違いの小ミープル */}
-        {[
-          { x: 50, color: '#3B82F6' },
-          { x: 90, color: '#10B981' },
-          { x: 160, color: '#EF4444' },
-          { x: 200, color: '#8B5CF6' },
-        ].map((m, i) => (
-          <g key={i} transform={`translate(${m.x}, 105) scale(0.5)`}>
-            <circle cx="0" cy="-40" r="18" fill={m.color}/>
-            <path d="M-22,-22 C-30,-10 -28,8 -20,18 L-8,18 L-4,4 L4,4 L8,18 L20,18 C28,8 30,-10 22,-22 Z" fill={m.color}/>
-            <path d="M-20,18 L-28,38 L-16,38 L-8,22 L8,22 L16,38 L28,38 L20,18 Z" fill={m.color}/>
-          </g>
-        ))}
-        <text x="120" y="152" textAnchor="middle" fontSize="11" fill="#92400e" fontFamily="sans-serif">ボードゲームの人型コマの総称</text>
-      </svg>
-    ),
-    'cooperative-game': (
-      <svg viewBox="0 0 240 160" className="w-full h-full" aria-hidden="true">
-        <rect width="240" height="160" fill="#FEF3E8" rx="12"/>
-        {/* 共通目標 */}
-        <rect x="90" y="10" width="60" height="40" rx="8" fill="#FCA5A5" stroke="#EF4444" strokeWidth="2"/>
-        <text x="120" y="27" textAnchor="middle" fontSize="10" fill="#7f1d1d" fontFamily="sans-serif">ゲーム</text>
-        <text x="120" y="40" textAnchor="middle" fontSize="10" fill="#7f1d1d" fontFamily="sans-serif">（敵）</text>
-        {/* プレイヤーたち */}
-        {[
-          { x: 40,  y: 100, color: '#3B82F6', label: 'P1' },
-          { x: 100, y: 120, color: '#10B981', label: 'P2' },
-          { x: 160, y: 100, color: '#F59E0B', label: 'P3' },
-          { x: 120, y: 80,  color: '#8B5CF6', label: 'P4' },
-        ].map(p => (
-          <g key={p.label}>
-            <circle cx={p.x} cy={p.y} r="16" fill={p.color}/>
-            <text x={p.x} y={p.y+5} textAnchor="middle" fontSize="11" fill="white" fontWeight="bold" fontFamily="sans-serif">{p.label}</text>
-          </g>
-        ))}
-        {/* 協力の矢印 */}
-        <path d="M56 94 L104 88" stroke="#C4892A" strokeWidth="2" markerEnd="url(#arr3)"/>
-        <path d="M116 88 L148 94" stroke="#C4892A" strokeWidth="2" markerEnd="url(#arr3)"/>
-        <path d="M100 104 L108 52" stroke="#C4892A" strokeWidth="2" markerEnd="url(#arr3)"/>
-        <defs><marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="none" stroke="#C4892A" strokeWidth="1.5"/></marker></defs>
-        {/* VS */}
-        <text x="190" y="60" fontSize="16" fill="#EF4444" fontWeight="bold" fontFamily="sans-serif">VS</text>
-        <path d="M165 62 L185 52" stroke="#EF4444" strokeWidth="2"/>
-        <text x="120" y="152" textAnchor="middle" fontSize="11" fill="#92400e" fontFamily="sans-serif">全員でゲームに勝つ or 負ける</text>
-      </svg>
-    ),
-    'area-majority': (
-      <svg viewBox="0 0 240 160" className="w-full h-full" aria-hidden="true">
-        <rect width="240" height="160" fill="#FEF3E8" rx="12"/>
-        {/* エリア分割 */}
-        <rect x="15" y="15" width="70" height="55" rx="6" fill="#BFDBFE" stroke="#3B82F6" strokeWidth="2"/>
-        <rect x="95" y="15" width="70" height="55" rx="6" fill="#FEF3C7" stroke="#D97706" strokeWidth="2"/>
-        <rect x="175" y="15" width="50" height="55" rx="6" fill="#FCE7F3" stroke="#EC4899" strokeWidth="2"/>
-        <rect x="15" y="82" width="100" height="63" rx="6" fill="#D1FAE5" stroke="#10B981" strokeWidth="2"/>
-        <rect x="125" y="82" width="100" height="63" rx="6" fill="#EDE9FE" stroke="#8B5CF6" strokeWidth="2"/>
-        {/* コマ配置 */}
-        {/* エリア1: 青3個 */}
-        {[35,55,75].map((x,i) => <circle key={i} cx={x} cy="42" r="8" fill="#3B82F6"/>)}
-        {/* エリア2: 青1 赤2 */}
-        <circle cx="115" cy="42" r="8" fill="#3B82F6"/>
-        {[135,155].map((x,i) => <circle key={i} cx={x} cy="42" r="8" fill="#EF4444"/>)}
-        {/* エリア3: 赤2 */}
-        {[185,205].map((x,i) => <circle key={i} cx={x} cy="42" r="8" fill="#EF4444"/>)}
-        {/* スコア */}
-        <text x="50" y="80" textAnchor="middle" fontSize="10" fill="#1d4ed8" fontWeight="bold" fontFamily="sans-serif">青 支配</text>
-        <text x="130" y="80" textAnchor="middle" fontSize="10" fill="#b91c1c" fontWeight="bold" fontFamily="sans-serif">赤 支配</text>
-        <text x="200" y="80" textAnchor="middle" fontSize="10" fill="#b91c1c" fontWeight="bold" fontFamily="sans-serif">赤</text>
-        <text x="120" y="152" textAnchor="middle" fontSize="11" fill="#92400e" fontFamily="sans-serif">各エリアで多数派を目指す</text>
-      </svg>
-    ),
-    'abstract-game': (
-      <svg viewBox="0 0 240 160" className="w-full h-full" aria-hidden="true">
-        <rect width="240" height="160" fill="#FEF3E8" rx="12"/>
-        {/* 碁盤風グリッド */}
-        {[40,72,104,136,168].map(x => <line key={`v${x}`} x1={x} y1="20" x2={x} y2="132" stroke="#c4a56a" strokeWidth="1"/>)}
-        {[20,52,84,116,132].map(y => <line key={`h${y}`} x1="40" y1={y} x2="168" y2={y} stroke="#c4a56a" strokeWidth="1"/>)}
-        {/* 黒石 */}
-        {[[40,20],[72,52],[104,20],[136,84],[168,52],[104,84],[40,116]].map(([x,y],i) =>
-          <circle key={i} cx={x} cy={y} r="10" fill="#1c1917" stroke="#78716c" strokeWidth="1"/>
-        )}
-        {/* 白石 */}
-        {[[72,20],[104,52],[136,20],[40,52],[168,84],[72,116],[136,116]].map(([x,y],i) =>
-          <circle key={i} cx={x} cy={y} r="10" fill="#fafaf9" stroke="#a8a29e" strokeWidth="1"/>
-        )}
-        {/* 無テーマ表示 */}
-        <rect x="175" y="45" width="55" height="70" rx="8" fill="#fff8f0" stroke="#c4a56a" strokeWidth="1.5"/>
-        <text x="202" y="67" textAnchor="middle" fontSize="9" fill="#78350f" fontFamily="sans-serif">テーマ</text>
-        <text x="202" y="79" textAnchor="middle" fontSize="9" fill="#78350f" fontFamily="sans-serif">なし</text>
-        <line x1="178" y1="48" x2="227" y2="112" stroke="#EF4444" strokeWidth="2"/>
-        <line x1="227" y1="48" x2="178" y2="112" stroke="#EF4444" strokeWidth="2"/>
-        <text x="120" y="152" textAnchor="middle" fontSize="11" fill="#92400e" fontFamily="sans-serif">純粋な思考力・戦略だけで競う</text>
-      </svg>
-    ),
-    'euro-game': (
-      <svg viewBox="0 0 240 160" className="w-full h-full" aria-hidden="true">
-        <rect width="240" height="160" fill="#FEF3E8" rx="12"/>
-        {/* 勝利点トラック */}
-        <rect x="20" y="20" width="200" height="30" rx="6" fill="#e8d5b0" stroke="#c4a56a" strokeWidth="1.5"/>
-        <text x="30" y="40" fontSize="10" fill="#78350f" fontFamily="sans-serif">VP</text>
-        {[0,1,2,3,4,5,6,7,8,9].map(i =>
-          <rect key={i} x={50+i*16} y="24" width="14" height="22" rx="2" fill={i<7?"#fef9c3":"#e8d5b0"} stroke="#c4a56a" strokeWidth="1"/>
-        )}
-        {[0,1,2,3,4,5,6,7,8,9].map(i =>
-          <text key={i} x={57+i*16} y="38" textAnchor="middle" fontSize="9" fill="#78350f" fontFamily="sans-serif">{i+1}</text>
-        )}
-        {/* プレイヤーマーカー */}
-        <circle cx="106" cy="35" r="7" fill="#3B82F6" stroke="white" strokeWidth="1.5"/>
-        <circle cx="122" cy="35" r="7" fill="#EF4444" stroke="white" strokeWidth="1.5"/>
-        {/* 建設的な競争 */}
-        <rect x="20" y="65" width="90" height="75" rx="8" fill="#d1fae5" stroke="#10B981" strokeWidth="1.5"/>
-        <text x="65" y="83" textAnchor="middle" fontSize="9" fill="#065f46" fontWeight="bold" fontFamily="sans-serif">間接的な競争</text>
-        <text x="65" y="96" textAnchor="middle" fontSize="9" fill="#065f46" fontFamily="sans-serif">・資源収集</text>
-        <text x="65" y="108" textAnchor="middle" fontSize="9" fill="#065f46" fontFamily="sans-serif">・エンジン構築</text>
-        <text x="65" y="120" textAnchor="middle" fontSize="9" fill="#065f46" fontFamily="sans-serif">・VP積み上げ</text>
-        <rect x="130" y="65" width="90" height="75" rx="8" fill="#fee2e2" stroke="#EF4444" strokeWidth="1.5"/>
-        <text x="175" y="83" textAnchor="middle" fontSize="9" fill="#7f1d1d" fontWeight="bold" fontFamily="sans-serif">直接攻撃は少ない</text>
-        <text x="175" y="96" textAnchor="middle" fontSize="9" fill="#7f1d1d" fontFamily="sans-serif">✕ユニット破壊</text>
-        <text x="175" y="108" textAnchor="middle" fontSize="9" fill="#7f1d1d" fontFamily="sans-serif">✕領土侵略</text>
-        <text x="175" y="120" textAnchor="middle" fontSize="9" fill="#7f1d1d" fontFamily="sans-serif">△妨害は少しあり</text>
-        <text x="120" y="152" textAnchor="middle" fontSize="11" fill="#92400e" fontFamily="sans-serif">勝利点を積み上げて勝つ欧州スタイル</text>
-      </svg>
-    ),
-  }
+// ─── HTML+Tailwind イラスト ───────────────────────────────────────────────
 
+function IllustWorkerPlacement() {
+  const cells = [
+    { label: '木材', taken: 'blue' },
+    { label: '食料', taken: 'red' },
+    { label: '石材', taken: null },
+    { label: '農場', taken: 'blue' },
+    { label: '市場', taken: null },
+    { label: '工房', taken: 'red' },
+  ]
   return (
-    <div className="aspect-[3/2] w-full overflow-hidden rounded-xl border border-amber-200/60 bg-[#FEF3E8]">
-      {svgs[slug] ?? (
-        <div className="flex h-full items-center justify-center">
-          <BookOpen className="h-12 w-12 text-amber-300" />
+    <div className="flex flex-col items-center gap-3 p-4">
+      <p className="text-xs font-semibold text-gray-500">アクションスペース</p>
+      <div className="grid grid-cols-3 gap-2 w-full max-w-xs">
+        {cells.map((c, i) => (
+          <div key={i} className={`flex flex-col items-center justify-center gap-1 rounded-xl border-2 py-3 ${c.taken ? 'border-gray-300 bg-gray-100' : 'border-amber-300 bg-amber-50'}`}>
+            {c.taken && (
+              <div className={`h-6 w-6 rounded-full ${c.taken === 'blue' ? 'bg-blue-500' : 'bg-red-500'} flex items-center justify-center`}>
+                <span className="text-[8px] font-bold text-white">{c.taken === 'blue' ? 'A' : 'B'}</span>
+              </div>
+            )}
+            <span className="text-[10px] font-medium text-gray-600">{c.label}</span>
+            {!c.taken && <span className="text-[9px] text-amber-500">空き</span>}
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-4 text-xs text-gray-500">
+        <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-full bg-blue-500 inline-block"/>プレイヤーA</span>
+        <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-full bg-red-500 inline-block"/>プレイヤーB</span>
+      </div>
+      <p className="text-center text-xs text-gray-500">先に置いたプレイヤーがそのアクションを独占</p>
+    </div>
+  )
+}
+
+function IllustDeckBuilding() {
+  return (
+    <div className="flex items-end justify-center gap-4 p-4">
+      {/* スタートデッキ */}
+      <div className="flex flex-col items-center gap-2">
+        <div className="relative w-16 h-20">
+          {[2,1,0].map(i => (
+            <div key={i} className="absolute rounded-lg border-2 border-gray-300 bg-gray-100 w-14 h-18"
+              style={{ bottom: i*3, left: i*2, width: 52, height: 68 }} />
+          ))}
+          <div className="absolute bottom-0 left-0 w-[52px] h-[68px] rounded-lg border-2 border-gray-400 bg-white flex items-center justify-center">
+            <span className="text-[9px] text-gray-400 text-center leading-tight">弱い<br/>カード</span>
+          </div>
+        </div>
+        <span className="text-[10px] text-gray-500 font-semibold">スタート<br className="hidden"/>デッキ（5枚）</span>
+      </div>
+
+      {/* 矢印＋購入 */}
+      <div className="flex flex-col items-center gap-1 pb-6">
+        <div className="rounded-lg border-2 border-yellow-400 bg-yellow-50 px-2 py-1 text-center">
+          <span className="text-lg">★</span>
+          <p className="text-[9px] text-yellow-700 font-semibold">強カード<br/>を購入</p>
+        </div>
+        <span className="text-lg text-amber-500">↓</span>
+      </div>
+
+      {/* 強化デッキ */}
+      <div className="flex flex-col items-center gap-2">
+        <div className="relative w-16 h-24">
+          {[4,3,2,1,0].map(i => (
+            <div key={i} className="absolute rounded-lg border-2 w-[52px] h-[72px]"
+              style={{
+                bottom: i*3, left: i*2,
+                borderColor: i===0 ? '#f59e0b' : '#d1d5db',
+                backgroundColor: i===0 ? '#fef3c7' : '#f9fafb',
+              }} />
+          ))}
+          <div className="absolute bottom-0 left-0 w-[52px] h-[72px] rounded-lg border-2 border-yellow-400 bg-yellow-50 flex items-center justify-center">
+            <span className="text-[9px] text-yellow-700 text-center leading-tight font-semibold">強化後<br/>デッキ</span>
+          </div>
+        </div>
+        <span className="text-[10px] text-gray-500 font-semibold">強化デッキ（10枚）</span>
+      </div>
+    </div>
+  )
+}
+
+function IllustDraft() {
+  const players = [
+    { label: 'A', color: 'bg-blue-500',   pos: 'top-0 left-1/2 -translate-x-1/2' },
+    { label: 'B', color: 'bg-green-500',  pos: 'top-1/2 right-0 -translate-y-1/2' },
+    { label: 'C', color: 'bg-amber-500',  pos: 'bottom-0 left-1/2 -translate-x-1/2' },
+    { label: 'D', color: 'bg-red-500',    pos: 'top-1/2 left-0 -translate-y-1/2' },
+  ]
+  return (
+    <div className="flex flex-col items-center gap-3 p-4">
+      <div className="relative w-44 h-44">
+        {/* 円形の矢印を模したリング */}
+        <div className="absolute inset-4 rounded-full border-2 border-dashed border-amber-300/60" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="rounded-lg border-2 border-amber-400 bg-amber-50 px-2 py-1 text-center">
+            <p className="text-[10px] font-bold text-amber-800">1枚選ぶ</p>
+            <p className="text-[9px] text-amber-600">残りを渡す→</p>
+          </div>
+        </div>
+        {players.map(p => (
+          <div key={p.label} className={`absolute ${p.pos}`}>
+            <div className={`h-9 w-9 rounded-full ${p.color} flex items-center justify-center shadow-md`}>
+              <span className="text-sm font-bold text-white">{p.label}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="text-xs text-gray-500">時計回りにカードを渡していく</p>
+    </div>
+  )
+}
+
+function IllustMeeple() {
+  const colors = ['bg-amber-500', 'bg-blue-500', 'bg-red-500', 'bg-green-500', 'bg-purple-500']
+  return (
+    <div className="flex flex-col items-center gap-4 p-4">
+      {/* 大きなミープル SVG */}
+      <svg viewBox="0 0 60 80" className="w-20 h-24" aria-hidden="true">
+        <circle cx="30" cy="14" r="12" fill="#C4892A"/>
+        <path d="M10,30 C6,20 8,40 14,48 L22,48 L26,36 L34,36 L38,48 L46,48 C52,40 54,20 50,30 C46,18 14,18 10,30 Z" fill="#C4892A"/>
+        <path d="M14,48 L8,68 L20,68 L26,52 L34,52 L40,68 L52,68 L46,48 Z" fill="#C4892A"/>
+      </svg>
+      <p className="text-sm font-bold text-gray-700">ミープル</p>
+      {/* カラーバリエーション */}
+      <div className="flex gap-2">
+        {colors.map((c, i) => (
+          <svg key={i} viewBox="0 0 60 80" className="w-8 h-10" aria-hidden="true">
+            <circle cx="30" cy="14" r="12" className={c.replace('bg-', 'fill-')}
+              style={{ fill: ['#f59e0b','#3b82f6','#ef4444','#22c55e','#a855f7'][i] }}/>
+            <path d="M10,30 C6,20 8,40 14,48 L22,48 L26,36 L34,36 L38,48 L46,48 C52,40 54,20 50,30 C46,18 14,18 10,30 Z"
+              style={{ fill: ['#f59e0b','#3b82f6','#ef4444','#22c55e','#a855f7'][i] }}/>
+            <path d="M14,48 L8,68 L20,68 L26,52 L34,52 L40,68 L52,68 L46,48 Z"
+              style={{ fill: ['#f59e0b','#3b82f6','#ef4444','#22c55e','#a855f7'][i] }}/>
+          </svg>
+        ))}
+      </div>
+      <p className="text-xs text-gray-500">色違いで各プレイヤーを区別する</p>
+    </div>
+  )
+}
+
+function IllustCooperative() {
+  return (
+    <div className="flex flex-col items-center gap-3 p-4">
+      <div className="flex w-full max-w-xs items-center gap-3">
+        {/* プレイヤー側 */}
+        <div className="flex flex-1 flex-col items-center gap-2 rounded-xl border-2 border-blue-200 bg-blue-50 p-3">
+          <p className="text-xs font-bold text-blue-700">プレイヤー全員</p>
+          <div className="flex gap-1">
+            {['#3b82f6','#22c55e','#f59e0b','#a855f7'].map((c,i) => (
+              <div key={i} className="h-6 w-6 rounded-full flex items-center justify-center text-[8px] font-bold text-white"
+                style={{ backgroundColor: c }}>P{i+1}</div>
+            ))}
+          </div>
+          <p className="text-[10px] text-blue-600 text-center">協力して作戦を立てる</p>
+        </div>
+        {/* VS */}
+        <div className="shrink-0">
+          <div className="rounded-full bg-gray-200 px-2 py-1 text-xs font-bold text-gray-600">VS</div>
+        </div>
+        {/* ゲーム側 */}
+        <div className="flex flex-1 flex-col items-center gap-2 rounded-xl border-2 border-red-200 bg-red-50 p-3">
+          <p className="text-xs font-bold text-red-700">ゲーム</p>
+          <div className="text-2xl">🎲</div>
+          <p className="text-[10px] text-red-600 text-center">システムが敵</p>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-2 w-full max-w-xs text-xs">
+        <div className="rounded-lg bg-green-50 border border-green-200 p-2 text-center text-green-700 font-semibold">
+          全員勝利 🎉
+        </div>
+        <div className="rounded-lg bg-red-50 border border-red-200 p-2 text-center text-red-700 font-semibold">
+          全員敗北 💀
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function IllustAreaMajority() {
+  const areas = [
+    { name: 'エリアA', blue: 3, red: 1, winner: 'blue' },
+    { name: 'エリアB', blue: 1, red: 2, winner: 'red' },
+    { name: 'エリアC', blue: 2, red: 2, winner: null },
+  ]
+  return (
+    <div className="flex flex-col items-center gap-3 p-4">
+      <div className="grid grid-cols-3 gap-2 w-full max-w-xs">
+        {areas.map(area => (
+          <div key={area.name}
+            className={`rounded-xl border-2 p-2 flex flex-col items-center gap-1.5 ${
+              area.winner === 'blue' ? 'border-blue-400 bg-blue-50' :
+              area.winner === 'red'  ? 'border-red-400 bg-red-50' :
+              'border-gray-300 bg-gray-50'
+            }`}>
+            <p className="text-[9px] font-bold text-gray-600">{area.name}</p>
+            <div className="flex flex-wrap justify-center gap-0.5">
+              {Array(area.blue).fill(0).map((_, i) => (
+                <div key={`b${i}`} className="h-4 w-4 rounded-full bg-blue-500"/>
+              ))}
+              {Array(area.red).fill(0).map((_, i) => (
+                <div key={`r${i}`} className="h-4 w-4 rounded-full bg-red-500"/>
+              ))}
+            </div>
+            <p className={`text-[9px] font-bold ${
+              area.winner === 'blue' ? 'text-blue-700' :
+              area.winner === 'red'  ? 'text-red-700' :
+              'text-gray-500'
+            }`}>
+              {area.winner === 'blue' ? '青の支配' : area.winner === 'red' ? '赤の支配' : '引き分け'}
+            </p>
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-4 text-xs text-gray-500">
+        <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-full bg-blue-500 inline-block"/>青チーム</span>
+        <span className="flex items-center gap-1"><span className="h-3 w-3 rounded-full bg-red-500 inline-block"/>赤チーム</span>
+      </div>
+      <p className="text-xs text-gray-500 text-center">多数派のコマを置いたチームがエリアを支配</p>
+    </div>
+  )
+}
+
+function IllustAbstractGame() {
+  const board = [
+    [1,0,1,0,1],
+    [0,1,0,1,0],
+    [1,0,0,0,1],
+    [0,1,0,1,0],
+    [1,0,1,0,1],
+  ]
+  return (
+    <div className="flex flex-col items-center gap-3 p-4">
+      <div className="grid grid-cols-5 gap-0.5 border-2 border-gray-400 rounded-lg overflow-hidden p-1 bg-gray-200">
+        {board.flat().map((v, i) => (
+          <div key={i} className="h-8 w-8 rounded flex items-center justify-center bg-amber-50">
+            {v === 1 && (
+              <div className="h-6 w-6 rounded-full bg-gray-800 shadow-inner"/>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-3 text-xs">
+        <div className="flex items-center gap-1.5 rounded-lg border border-green-300 bg-green-50 px-3 py-1.5">
+          <span className="text-green-700 font-semibold">✓ 完全情報</span>
+        </div>
+        <div className="flex items-center gap-1.5 rounded-lg border border-red-300 bg-red-50 px-3 py-1.5">
+          <span className="text-red-700 font-semibold">✕ 運要素なし</span>
+        </div>
+      </div>
+      <p className="text-xs text-gray-500">純粋な思考力・読み合いだけで勝敗が決まる</p>
+    </div>
+  )
+}
+
+function IllustEuroGame() {
+  return (
+    <div className="flex flex-col items-center gap-3 p-4">
+      {/* 勝利点トラック */}
+      <div className="w-full max-w-xs">
+        <p className="text-xs font-bold text-gray-600 mb-1.5">勝利点（VP）トラック</p>
+        <div className="flex rounded-lg overflow-hidden border border-gray-300">
+          {[1,2,3,4,5,6,7,8,9,10].map(n => (
+            <div key={n} className={`flex-1 py-1.5 text-center text-[10px] border-r border-gray-300 last:border-r-0 font-medium relative
+              ${n <= 6 ? 'bg-amber-50 text-amber-800' : 'bg-gray-50 text-gray-400'}`}>
+              {n}
+              {n === 6 && <div className="absolute -top-1 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-blue-500"/>}
+              {n === 4 && <div className="absolute -top-1 left-1/2 -translate-x-1/2 h-2 w-2 rounded-full bg-red-500"/>}
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* 特徴比較 */}
+      <div className="grid grid-cols-2 gap-2 w-full max-w-xs text-xs">
+        <div className="rounded-xl border border-green-200 bg-green-50 p-2 space-y-1">
+          <p className="font-bold text-green-700">ユーロゲームの特徴</p>
+          <p className="text-green-600">✓ 間接的な競争</p>
+          <p className="text-green-600">✓ 資源・エンジン構築</p>
+          <p className="text-green-600">✓ VP積み上げ</p>
+        </div>
+        <div className="rounded-xl border border-red-200 bg-red-50 p-2 space-y-1">
+          <p className="font-bold text-red-700">少ないもの</p>
+          <p className="text-red-600">✕ 直接攻撃</p>
+          <p className="text-red-600">✕ 相手の排除</p>
+          <p className="text-gray-500">△ 妨害は少しあり</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const ILLUSTRATIONS: Record<string, React.FC> = {
+  'worker-placement': IllustWorkerPlacement,
+  'deck-building':    IllustDeckBuilding,
+  'draft':            IllustDraft,
+  'meeple':           IllustMeeple,
+  'cooperative-game': IllustCooperative,
+  'area-majority':    IllustAreaMajority,
+  'abstract-game':    IllustAbstractGame,
+  'euro-game':        IllustEuroGame,
+}
+
+function TermIllustration({ slug }: { slug: string }) {
+  const Illust = ILLUSTRATIONS[slug]
+  return (
+    <div className="w-full overflow-hidden rounded-xl border border-amber-200/60 bg-[#FEF3E8]">
+      {Illust ? <Illust /> : (
+        <div className="flex h-32 items-center justify-center">
+          <BookOpen className="h-10 w-10 text-amber-300" />
         </div>
       )}
     </div>
   )
 }
+
+// ─── メインページ ─────────────────────────────────────────────────────────
 
 export default async function GlossaryTermPage({ params }: Props) {
   const { slug } = await params
@@ -287,35 +387,29 @@ export default async function GlossaryTermPage({ params }: Props) {
 
         {/* メインカード */}
         <div className="rounded-2xl border border-white/10 bg-[#FEF3E8]/95 p-6 shadow-2xl shadow-black/40">
-          {/* カテゴリバッジ */}
           <span className="mb-3 inline-block rounded-full bg-amber-100 px-3 py-0.5 text-xs font-medium text-amber-800">
             {term.category}
           </span>
 
-          {/* タイトル */}
           <h1 className="text-2xl font-bold text-gray-900">
             {term.title}<span className="text-gray-500">とは？</span>
           </h1>
           <p className="mt-0.5 text-sm text-gray-400">（{term.reading}）</p>
 
-          {/* 一言定義 */}
           <div className="mt-4 rounded-xl border-l-4 border-amber-400 bg-amber-50 px-4 py-3">
             <p className="text-sm font-semibold text-amber-900">{term.shortDef}</p>
           </div>
 
-          {/* SVGイラスト */}
           <div className="mt-5">
             <TermIllustration slug={slug} />
           </div>
 
-          {/* 説明文 */}
           <div className="mt-5 space-y-3">
             {term.description.map((para, i) => (
               <p key={i} className="text-sm leading-relaxed text-gray-700">{para}</p>
             ))}
           </div>
 
-          {/* 関連ゲームへのリンク */}
           {term.relatedGenre && (
             <div className="mt-6">
               <h2 className="mb-3 flex items-center gap-2 text-sm font-bold text-gray-800">
@@ -370,7 +464,6 @@ export default async function GlossaryTermPage({ params }: Props) {
           </Link>
         </div>
 
-        {/* 用語集一覧へ戻る */}
         <div className="mt-6">
           <Link
             href="/glossary"

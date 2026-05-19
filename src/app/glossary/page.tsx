@@ -1,9 +1,10 @@
-import Link from 'next/link'
 import { Suspense } from 'react'
-import { BookOpen, ChevronRight, Wand2, Gamepad2 } from 'lucide-react'
+import Link from 'next/link'
+import { BookOpen, Wand2, Gamepad2 } from 'lucide-react'
 import { NavMenu } from '@/components/ui/NavMenu'
 import { GLOSSARY_TERMS } from '@/lib/glossary'
 import { SITE_URL } from '@/lib/constants'
+import { GlossaryIndex } from '@/components/glossary/GlossaryIndex'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -17,14 +18,6 @@ export const metadata: Metadata = {
   alternates: { canonical: `${SITE_URL}/glossary` },
 }
 
-const CATEGORY_COLORS: Record<string, string> = {
-  '戦略':         'bg-blue-100 text-blue-800',
-  'カードゲーム': 'bg-yellow-100 text-yellow-800',
-  'ゲームタイプ': 'bg-green-100 text-green-800',
-  'コンポーネント':'bg-orange-100 text-orange-800',
-  'ゲームスタイル':'bg-purple-100 text-purple-800',
-}
-
 export default function GlossaryPage() {
   return (
     <div className="min-h-dvh bg-[linear-gradient(160deg,#1a0a00_0%,#0d0500_40%,#050200_100%)]">
@@ -34,7 +27,7 @@ export default function GlossaryPage() {
 
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
         {/* ヘッダー */}
-        <div className="mb-8">
+        <div className="mb-6">
           <div className="mb-2 flex items-center gap-2">
             <BookOpen className="h-6 w-6 text-amber-400" />
             <h1 className="text-2xl font-bold text-amber-300">ボードゲーム用語集</h1>
@@ -44,30 +37,8 @@ export default function GlossaryPage() {
           </p>
         </div>
 
-        {/* 用語一覧 */}
-        <div className="space-y-3">
-          {GLOSSARY_TERMS.map(term => (
-            <Link
-              key={term.slug}
-              href={`/glossary/${term.slug}`}
-              className="group flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-amber-400/30 hover:bg-white/10"
-            >
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-amber-300 group-hover:text-amber-200">
-                    {term.title}
-                  </span>
-                  <span className={`hidden shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium sm:inline-block ${CATEGORY_COLORS[term.category] ?? 'bg-gray-100 text-gray-700'}`}>
-                    {term.category}
-                  </span>
-                </div>
-                <p className="mt-0.5 text-xs text-white/40">{term.reading}</p>
-                <p className="mt-1 line-clamp-1 text-sm text-white/60">{term.shortDef}</p>
-              </div>
-              <ChevronRight className="ml-3 h-4 w-4 shrink-0 text-white/30 transition group-hover:text-amber-400" />
-            </Link>
-          ))}
-        </div>
+        {/* 検索付き一覧（クライアントコンポーネント） */}
+        <GlossaryIndex terms={GLOSSARY_TERMS} />
 
         {/* CTA */}
         <div className="mt-10 grid grid-cols-2 gap-3">
