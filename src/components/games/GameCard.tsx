@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Users, Clock } from "lucide-react";
 import { GenreBadge, DifficultyBadge } from "@/components/ui/Badge";
+import { BookmarkButton } from "@/components/ui/BookmarkButton";
 import { formatPlayers, formatPlayTime } from "@/lib/utils";
 import type { Game, Difficulty } from "@/lib/types";
 import { GENRES } from "@/lib/types";
@@ -33,6 +34,11 @@ export function GameCard({ game, imageBaseUrl, isNew = false, priority = false }
             )}
           </div>
         )}
+        {/* ブックマークボタン */}
+        <div className="absolute right-1.5 top-1.5 z-10">
+          <BookmarkButton gameId={game.id} />
+        </div>
+
         {/* おすすめバッジ */}
         {game.submitter_nickname && (
           <div className="absolute bottom-1.5 right-1.5 z-10 rounded-full bg-amber-500/90 px-2 py-1 text-center text-[9px] font-bold leading-tight text-white shadow backdrop-blur-sm">

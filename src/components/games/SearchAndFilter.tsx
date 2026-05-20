@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Users, Clock, Gamepad2, Trophy, Sparkles, Flame, Search, X, Wand2, Dna } from 'lucide-react'
+import { Users, Clock, Gamepad2, Trophy, Sparkles, Flame, Search, X, Wand2, Dna, Heart } from 'lucide-react'
 import { GENRES } from '@/lib/types'
 import type { FilterState } from '@/components/games/GamesClient'
 
@@ -49,14 +49,14 @@ type Props = {
 }
 
 export function SearchAndFilter({ filters, onChange }: Props) {
-  const { q, players, time, genre, difficulty, isNew, isPopular } = filters
+  const { q, players, time, genre, difficulty, isNew, isPopular, isFavorite } = filters
 
   const update = (patch: Partial<FilterState>) => onChange({ ...filters, ...patch })
 
   const handleReset = () =>
-    onChange({ q: '', players: '', time: '', genre: '', difficulty: '', isNew: false, isPopular: false })
+    onChange({ q: '', players: '', time: '', genre: '', difficulty: '', isNew: false, isPopular: false, isFavorite: false })
 
-  const hasFilter = q || players || time || genre || difficulty || isNew || isPopular
+  const hasFilter = q || players || time || genre || difficulty || isNew || isPopular || isFavorite
 
   return (
     <div className="mb-6 space-y-3">
@@ -178,6 +178,18 @@ export function SearchAndFilter({ filters, onChange }: Props) {
         >
           <Flame className="h-4 w-4" />
           人気
+        </button>
+
+        <button
+          onClick={() => update({ isFavorite: !isFavorite, isNew: false, isPopular: false })}
+          className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-sm font-semibold shadow-md transition ${
+            isFavorite
+              ? 'bg-red-500 text-white hover:bg-red-600'
+              : 'bg-white/15 text-white hover:bg-white/25'
+          }`}
+        >
+          <Heart className={`h-4 w-4 ${isFavorite ? 'fill-white' : ''}`} />
+          お気に入り
         </button>
 
         {hasFilter && (

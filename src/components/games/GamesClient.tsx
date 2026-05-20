@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { GameGrid } from '@/components/games/GameGrid'
 import { SearchAndFilter } from '@/components/games/SearchAndFilter'
+import { useBookmarks } from '@/hooks/useBookmarks'
 import type { Game } from '@/lib/types'
 
 export type FilterState = {
@@ -14,6 +15,7 @@ export type FilterState = {
   difficulty: string
   isNew: boolean
   isPopular: boolean
+  isFavorite: boolean
 }
 
 function toKatakana(str: string): string {
@@ -32,6 +34,7 @@ export function GamesClient({
 }) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { ids: bookmarkIds } = useBookmarks()
 
   // URLから初期値を復元（バックボタン対応）
   const [filters, setFilters] = useState<FilterState>({
@@ -42,6 +45,7 @@ export function GamesClient({
     difficulty: searchParams.get('difficulty') ?? '',
     isNew:      searchParams.get('new') === 'true',
     isPopular:  searchParams.get('popular') === 'true',
+    isFavorite: searchParams.get('favorite') === 'true',
   })
 
   // フィルター変更 → state更新 + URLをreplaceで同期（戻るボタン用）
@@ -55,6 +59,7 @@ export function GamesClient({
     if (next.difficulty) params.set('difficulty', next.difficulty)
     if (next.isNew)      params.set('new', 'true')
     if (next.isPopular)  params.set('popular', 'true')
+    if (next.isFavorite) params.set('favorite', 'true')
     router.replace(`/games?${params.toString()}`, { scroll: false })
   }, [router])
 
@@ -68,7 +73,7 @@ export function GamesClient({
 
   // クライアントサイドフィルタリング
   const filtered = useMemo(() => {
-    const { q, players, time, genre, difficulty, isNew, isPopular } = filters
+    const { q, players, time, genre, difficulty, isNew, isPopular, isFavorite } = filters
 
     let result = [...allGames]
 
@@ -121,6 +126,12 @@ export function GamesClient({
       result = result.filter(g => g.is_popular)
     }
 
+    // お気に入り
+    if (isFavorite) {
+      const bookmarkSet = new Set(bookmarkIds)
+      result = result.filter(g => bookmarkSet.has(g.id))
+    }
+
     // プレイ時間
     if (time) {
       if (time === '91') {
@@ -141,7 +152,7 @@ export function GamesClient({
     }
 
     return result
-  }, [allGames, filters, newGameIds])
+  }, [allGames, filters, newGameIds, bookmarkIds])
 
   return (
     <>

@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { Users, Clock, Gamepad2, Sparkles, ExternalLink, ShoppingCart } from 'lucide-react'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { GenreBadge, DifficultyBadge } from '@/components/ui/Badge'
+import { BookmarkButton } from '@/components/ui/BookmarkButton'
 import { NavMenu } from '@/components/ui/NavMenu'
 import { BackButton } from '@/components/games/BackButton'
 import { formatPlayers, formatPlayTime } from '@/lib/utils'
@@ -175,7 +176,10 @@ async function GameDetailContent({ params }: { params: Promise<{ slug: string }>
       {/* コンテンツ */}
       <div className="space-y-5 p-5">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{g.title}</h1>
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <h1 className="text-2xl font-bold text-gray-900">{g.title}</h1>
+            <BookmarkButton gameId={g.id} size="md" className="shrink-0" />
+          </div>
           <div className="mt-2 flex flex-wrap gap-3 text-sm text-gray-500">
             <span className="flex items-center gap-1">
               <Users className="h-4 w-4 shrink-0" />
