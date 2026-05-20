@@ -18,10 +18,35 @@ export type Game = {
   is_published: boolean
   is_recommendable: boolean
   is_popular: boolean
+  is_owned: boolean
+  submitter_nickname: string | null
   sort_order: number
   created_at: string
   updated_at: string
   external_url: string | null
+}
+
+export type SubmissionStatus = 'pending' | 'approved' | 'rejected'
+
+export type GameSubmission = {
+  id: string
+  title: string
+  submitter_nickname: string
+  image_path: string
+  image_consented: boolean
+  description: string | null
+  min_players: number | null
+  max_players: number | null
+  play_time_min: number | null
+  play_time_max: number | null
+  difficulty: string | null
+  genres: string[] | null
+  submitter_comment: string | null
+  status: SubmissionStatus
+  admin_note: string | null
+  approved_game_id: string | null
+  created_at: string
+  reviewed_at: string | null
 }
 
 export const GENRES = [

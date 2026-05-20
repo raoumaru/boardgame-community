@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { unstable_cache } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { GamesClient } from "@/components/games/GamesClient";
@@ -22,15 +23,25 @@ const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/objec
 const GAMES_SELECT =
   "id, title, slug, title_kana, min_players, max_players, play_time_min, play_time_max, difficulty, genres, image_path, is_popular, is_recommendable, sort_order, created_at, external_url";
 
+// 本番環境（Vercel）かどうか
+const IS_PRODUCTION = !!process.env.VERCEL_ENV
+
 // 1時間キャッシュ。管理画面でゲームを保存・削除すると自動でリセット
 const fetchPublishedGames = unstable_cache(
   async () => {
     const supabase = createAdminClient();
-    const { data } = await supabase
+    let query = supabase
       .from("games")
       .select(GAMES_SELECT)
       .eq("is_published", true)
       .order("sort_order", { ascending: true });
+
+    // 本番環境では「テスト」を含むタイトルを除外
+    if (IS_PRODUCTION) {
+      query = query.not("title", "ilike", "%テスト%");
+    }
+
+    const { data } = await query;
     return data ?? [];
   },
   ["games-list"],
@@ -70,6 +81,18 @@ export default function GamesPage() {
       <Suspense fallback={<GamesLoadingSkeleton />}>
         <GamesWithData />
       </Suspense>
+
+      {/* 申請CTA */}
+      <div className="mt-10 rounded-2xl border border-amber-400/20 bg-amber-500/10 p-6 text-center">
+        <p className="mb-1 text-base font-bold text-amber-200">あなたのおすすめを教えてください！</p>
+        <p className="mb-4 text-sm text-white/50">「このゲームをみんなに知ってほしい」そんな一本があれば、ぜひ申請してください。</p>
+        <Link
+          href="/submit"
+          className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-amber-400"
+        >
+          🎲 ゲームを申請する
+        </Link>
+      </div>
     </div>
   );
 }

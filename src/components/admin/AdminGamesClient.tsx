@@ -27,6 +27,7 @@ type Game = {
   is_published: boolean
   is_recommendable: boolean
   is_popular: boolean
+  is_owned: boolean
   sort_order: number
   image_path: string | null
 }
@@ -40,6 +41,7 @@ export function AdminGamesClient({ games: initialGames }: Props) {
   const [titleFilter, setTitleFilter] = useState('')
   const [imageFilter, setImageFilter] = useState<'all' | 'has' | 'none'>('all')
   const [publishFilter, setPublishFilter] = useState<'all' | 'published' | 'unpublished'>('all')
+  const [ownedFilter, setOwnedFilter] = useState<'all' | 'owned' | 'not_owned'>('all')
   const [isClearingCache, setIsClearingCache] = useState(false)
   const [cacheMessage, setCacheMessage] = useState('')
 
@@ -79,7 +81,11 @@ export function AdminGamesClient({ games: initialGames }: Props) {
         publishFilter === 'all' ? true :
         publishFilter === 'published' ? g.is_published :
         !g.is_published
-      return matchTitle && matchImage && matchPublish
+      const matchOwned =
+        ownedFilter === 'all' ? true :
+        ownedFilter === 'owned' ? (g.is_owned !== false) :
+        g.is_owned === false
+      return matchTitle && matchImage && matchPublish && matchOwned
     })
   }, [games, titleFilter, imageFilter, publishFilter])
 
@@ -152,6 +158,21 @@ export function AdminGamesClient({ games: initialGames }: Props) {
             </button>
           ))}
         </div>
+        <div className="flex items-center gap-1 rounded-lg border border-gray-200 bg-white p-1">
+          {(['all', 'owned', 'not_owned'] as const).map(v => (
+            <button
+              key={v}
+              onClick={() => setOwnedFilter(v)}
+              className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                ownedFilter === v
+                  ? 'bg-amber-500 text-white'
+                  : 'text-gray-500 hover:bg-gray-100'
+              }`}
+            >
+              {v === 'all' ? '所持：すべて' : v === 'owned' ? '🎮 所持' : '未所持'}
+            </button>
+          ))}
+        </div>
         <span className="self-center text-xs text-gray-400">{filtered.length}件</span>
       </div>
 
@@ -163,6 +184,7 @@ export function AdminGamesClient({ games: initialGames }: Props) {
               <th className="px-4 py-3 text-left whitespace-nowrap">人数</th>
               <th className="px-4 py-3 text-left whitespace-nowrap">時間</th>
               <th className="px-4 py-3 text-left whitespace-nowrap w-16">画像</th>
+              <th className="px-4 py-3 text-left whitespace-nowrap w-16">所持</th>
               <th className="px-4 py-3 text-left whitespace-nowrap w-20">公開</th>
               <th className="px-4 py-3 text-left whitespace-nowrap w-24">占い</th>
               <th className="px-4 py-3 text-left whitespace-nowrap w-16">人気</th>
@@ -181,6 +203,12 @@ export function AdminGamesClient({ games: initialGames }: Props) {
                   {game.image_path
                     ? <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">あり</span>
                     : <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-400">なし</span>
+                  }
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-center">
+                  {game.is_owned
+                    ? <span title="所持中" className="text-base">🎮</span>
+                    : <span className="text-xs text-gray-300">—</span>
                   }
                 </td>
                 <td className="px-4 py-3">

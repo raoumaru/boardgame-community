@@ -9,7 +9,7 @@ import { Gamepad2, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { GENRES, DIFFICULTY_LABELS } from '@/lib/types'
 import { slugify } from '@/lib/utils'
-import type { Game } from '@/lib/types'
+import type { GameSubmission } from '@/lib/types'
 
 const schema = z.object({
   title:           z.string().min(1, 'タイトルは必須です'),
@@ -29,11 +29,11 @@ const schema = z.object({
   is_owned:          z.boolean(),
   sort_order:        z.coerce.number().default(0),
   external_url:      z.string().url('正しいURLを入力してください').optional().or(z.literal('')),
+  use_submitted_image: z.boolean(),
 })
 
 type FormValues = z.infer<typeof schema>
 
-/** アップロード前にWebPへ変換・リサイズ（最大幅800px・品質85%） */
 async function compressToWebP(file: File, maxWidth = 800, quality = 0.85): Promise<File> {
   return new Promise((resolve, reject) => {
     const img = new Image()
@@ -44,17 +44,14 @@ async function compressToWebP(file: File, maxWidth = 800, quality = 0.85): Promi
       const w = Math.round(img.naturalWidth * scale)
       const h = Math.round(img.naturalHeight * scale)
       const canvas = document.createElement('canvas')
-      canvas.width = w
-      canvas.height = h
-      const ctx = canvas.getContext('2d')!
-      ctx.drawImage(img, 0, 0, w, h)
+      canvas.width = w; canvas.height = h
+      canvas.getContext('2d')!.drawImage(img, 0, 0, w, h)
       canvas.toBlob(
         blob => {
-          if (!blob) { reject(new Error('WebP変換に失敗しました')); return }
+          if (!blob) { reject(new Error('WebP変換失敗')); return }
           resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.webp'), { type: 'image/webp' }))
         },
-        'image/webp',
-        quality,
+        'image/webp', quality,
       )
     }
     img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('画像の読み込みに失敗しました')) }
@@ -63,17 +60,14 @@ async function compressToWebP(file: File, maxWidth = 800, quality = 0.85): Promi
 }
 
 type Props = {
-  game?: Game
+  submission: GameSubmission
+  submittedImageUrl: string | null
 }
 
-export function GameForm({ game }: Props) {
+export function SubmissionApproveForm({ submission, submittedImageUrl }: Props) {
   const router = useRouter()
   const [imageFile, setImageFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(
-    game?.image_path
-      ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-images/${game.image_path}`
-      : null
-  )
+  const [previewUrl, setPreviewUrl] = useState<string | null>(submittedImageUrl)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -81,88 +75,82 @@ export function GameForm({ game }: Props) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(schema) as any,
     defaultValues: {
-      title:           game?.title ?? '',
-      slug:            game?.slug ?? '',
-      description:     game?.description ?? '',
-      rules:           game?.rules ?? '',
-      recommended_for: game?.recommended_for ?? '',
-      min_players:     game?.min_players ?? 2,
-      max_players:     game?.max_players ?? 4,
-      play_time_min:   game?.play_time_min ?? 30,
-      play_time_max:   game?.play_time_max ?? null,
-      difficulty:      (game?.difficulty as 'easy'|'medium'|'hard'|null) ?? null,
-      genres:          game?.genres ?? [],
-      is_published:      game?.is_published ?? true,
-      is_recommendable:  game?.is_recommendable ?? true,
-      is_popular:        game?.is_popular ?? false,
-      is_owned:          game?.is_owned ?? true,
-      sort_order:        game?.sort_order ?? 0,
-      external_url:      game?.external_url ?? '',
+      title:           submission.title,
+      slug:            slugify(submission.title),
+      description:     submission.description ?? '',
+      rules:           submission.description ?? '',
+      recommended_for: '',
+      min_players:     submission.min_players  ?? 2,
+      max_players:     submission.max_players  ?? 4,
+      play_time_min:   submission.play_time_min ?? 30,
+      play_time_max:   submission.play_time_max ?? null,
+      difficulty:      (submission.difficulty as 'easy'|'medium'|'hard'|null) ?? null,
+      genres:          submission.genres ?? [],
+      is_published:      true,
+      is_recommendable:  false,
+      is_popular:        false,
+      is_owned:          false,
+      sort_order:        0,
+      external_url:      '',
+      use_submitted_image: !!submittedImageUrl,
     },
   })
 
-  const watchedGenres = watch('genres') ?? []
-
-  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
-  const MAX_IMAGE_SIZE_MB = 5
+  const watchedGenres          = watch('genres') ?? []
+  const useSubmittedImage      = watch('use_submitted_image')
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      setError('画像はJPEG・PNG・WebP・GIF形式のみアップロードできます')
-      e.target.value = ''
-      return
-    }
-    if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
-      setError(`画像は${MAX_IMAGE_SIZE_MB}MB以下にしてください`)
-      e.target.value = ''
-      return
-    }
-    setError('')
     setImageFile(file)
     setPreviewUrl(URL.createObjectURL(file))
-  }
-
-  const uploadImage = async (gameId: string): Promise<string | null> => {
-    if (!imageFile) return game?.image_path ?? null
-    const supabase = createClient()
-    const compressed = await compressToWebP(imageFile)
-    const path = `games/${gameId}.webp`
-    const { error } = await supabase.storage
-      .from('game-images')
-      .upload(path, compressed, { upsert: true, contentType: 'image/webp' })
-    if (error) throw new Error(error.message)
-    return path
+    setValue('use_submitted_image', false)
   }
 
   const onSubmit = async (values: FormValues) => {
     setSaving(true)
     setError('')
     try {
-      const isEdit = !!game
+      const gameId    = crypto.randomUUID()
+      let   imagePath: string | null = null
 
-      // 新規の場合は仮IDでパスを生成し、後でDBに保存
-      const targetId = game?.id ?? crypto.randomUUID()
-      const imagePath = await uploadImage(targetId)
+      if (imageFile) {
+        // 新しい画像をアップロード
+        const supabase   = createClient()
+        const compressed = await compressToWebP(imageFile)
+        const path       = `games/${gameId}.webp`
+        const { error: upErr } = await supabase.storage
+          .from('game-images')
+          .upload(path, compressed, { upsert: true, contentType: 'image/webp' })
+        if (upErr) throw new Error(upErr.message)
+        imagePath = path
+      } else if (values.use_submitted_image && submission.image_path) {
+        // 申請画像を game-images にコピー（サーバー側で処理）
+        imagePath = `games/${gameId}.webp` // approve API でコピー処理
+      }
 
-      const payload = { ...values, image_path: imagePath, id: isEdit ? undefined : targetId }
+      const payload = {
+        ...values,
+        id:                 gameId,
+        image_path:         imagePath,
+        submitter_nickname: submission.submitter_nickname,
+        submission_id:      submission.id,
+        copy_submitted_image: !imageFile && values.use_submitted_image && !!submission.image_path,
+        submitted_image_path: submission.image_path,
+      }
 
-      const res = await fetch(
-        isEdit ? `/api/admin/games/${game.id}` : '/api/admin/games',
-        {
-          method: isEdit ? 'PUT' : 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        }
-      )
+      const res = await fetch(`/api/admin/submissions/${submission.id}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
 
       if (!res.ok) {
         const data = await res.json()
         throw new Error(data.error ?? '保存に失敗しました')
       }
 
-      router.push('/admin/games')
+      router.push('/admin/submissions')
       router.refresh()
     } catch (e) {
       setError(e instanceof Error ? e.message : '保存に失敗しました')
@@ -176,6 +164,14 @@ export function GameForm({ game }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+
+      {/* 申請者コメント */}
+      {submission.submitter_comment && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <span className="font-medium">申請者コメント：</span>{submission.submitter_comment}
+        </div>
+      )}
+
       {/* タイトル & スラッグ */}
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
@@ -185,7 +181,7 @@ export function GameForm({ game }: Props) {
             className={inputClass}
             onChange={e => {
               setValue('title', e.target.value)
-              if (!game) setValue('slug', slugify(e.target.value))
+              setValue('slug', slugify(e.target.value))
             }}
           />
           {errors.title && <p className={errorClass}>{errors.title.message}</p>}
@@ -222,7 +218,7 @@ export function GameForm({ game }: Props) {
         <label className={labelClass}>難易度</label>
         <select {...register('difficulty')} className={inputClass}>
           <option value="">未設定</option>
-          {(Object.entries(DIFFICULTY_LABELS) as [keyof typeof DIFFICULTY_LABELS, string][]).map(([v, l]) => (
+          {(Object.entries(DIFFICULTY_LABELS) as [string, string][]).map(([v, l]) => (
             <option key={v} value={v}>{l}</option>
           ))}
         </select>
@@ -273,28 +269,45 @@ export function GameForm({ game }: Props) {
       {/* 外部リンク */}
       <div>
         <label className={labelClass}>外部リンク（公式サイトなど）</label>
-        <input
-          {...register('external_url')}
-          type="url"
-          className={inputClass}
-          placeholder="https://example.com"
-        />
+        <input {...register('external_url')} type="url" className={inputClass} placeholder="https://example.com" />
         {errors.external_url && <p className={errorClass}>{errors.external_url.message}</p>}
       </div>
 
       {/* 画像 */}
       <div>
         <label className={labelClass}>ゲーム画像</label>
+
+        {/* 申請画像プレビュー */}
+        {submittedImageUrl && (
+          <div className="mb-3 rounded-lg border border-gray-200 bg-gray-50 p-3">
+            <p className="mb-2 text-xs font-medium text-gray-500">申請者が提出した画像：</p>
+            <div className="flex items-center gap-3">
+              <img src={submittedImageUrl} alt="申請画像" className="h-24 w-24 rounded-lg object-contain border border-gray-200 bg-white" />
+              <label className="flex cursor-pointer items-center gap-2">
+                <input type="checkbox" {...register('use_submitted_image')} className="rounded border-gray-300 text-amber-500" />
+                <span className="text-sm text-gray-700">この画像を使用する</span>
+              </label>
+            </div>
+          </div>
+        )}
+
+        {/* 差し替え画像 */}
         <div className="flex items-start gap-4">
-          {previewUrl && (
+          {!useSubmittedImage && previewUrl && !submittedImageUrl && (
             <img src={previewUrl} alt="プレビュー" className="h-24 w-24 rounded-lg object-contain border border-gray-200" />
           )}
-          <input type="file" accept="image/*" onChange={handleImageChange} className="text-sm text-gray-600" />
+          {imageFile && previewUrl && (
+            <img src={previewUrl} alt="新しい画像プレビュー" className="h-24 w-24 rounded-lg object-contain border border-gray-200" />
+          )}
+          <div>
+            <input type="file" accept="image/*" onChange={handleImageChange} className="text-sm text-gray-600" />
+            <p className="mt-1 text-xs text-gray-400">差し替える場合は新しい画像を選択してください</p>
+          </div>
         </div>
       </div>
 
-      {/* 並び順 & 公開 */}
-      <div className="flex items-center gap-6">
+      {/* 並び順 & 各種フラグ */}
+      <div className="flex flex-wrap items-center gap-6">
         <div>
           <label className={labelClass}>並び順</label>
           <input type="number" {...register('sort_order')} className={`${inputClass} w-24`} />
@@ -323,13 +336,13 @@ export function GameForm({ game }: Props) {
         <button
           type="submit"
           disabled={saving}
-          className="rounded-lg bg-amber-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-amber-600 disabled:opacity-50"
+          className="rounded-lg bg-green-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-green-600 disabled:opacity-50"
         >
-          {saving ? '保存中...' : '保存する'}
+          {saving ? '登録中...' : '✓ 承認してゲームに追加'}
         </button>
         <button
           type="button"
-          onClick={() => router.push('/admin/games')}
+          onClick={() => router.push('/admin/submissions')}
           className="rounded-lg border border-gray-200 px-6 py-2.5 text-sm text-gray-600 hover:bg-gray-50"
         >
           キャンセル

@@ -17,6 +17,12 @@ async function AdminNav() {
           <Link href="/admin/games" className="flex items-center gap-1.5 text-sm font-bold text-gray-800">
             <LayoutDashboard className="h-4 w-4" /> 管理画面
           </Link>
+          <Link href="/admin/games" className="text-xs text-gray-500 hover:text-gray-700">
+            ゲーム管理
+          </Link>
+          <Link href="/admin/submissions" className="text-xs text-gray-500 hover:text-gray-700">
+            申請管理
+          </Link>
           <Link href="/games" className="text-xs text-gray-500 hover:text-gray-700">
             ← 公開サイトへ
           </Link>

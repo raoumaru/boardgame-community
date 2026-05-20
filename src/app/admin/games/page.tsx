@@ -8,7 +8,7 @@ async function GamesLoader() {
   const supabase = createAdminClient()
   const { data: games } = await supabase
     .from('games')
-    .select('id, title, title_kana, min_players, max_players, play_time_min, play_time_max, difficulty, is_published, is_recommendable, is_popular, sort_order, image_path')
+    .select('id, title, title_kana, min_players, max_players, play_time_min, play_time_max, difficulty, is_published, is_recommendable, is_popular, is_owned, sort_order, image_path')
     .order('sort_order', { ascending: true })
 
   return <AdminGamesClient games={games ?? []} />
