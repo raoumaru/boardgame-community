@@ -230,7 +230,7 @@ export default function RecommendPage() {
           {/* ボドゲーターキャラクター */}
           <div className="relative mx-auto h-56 w-full max-w-sm">
             <Image
-              src="/bodogater.png"
+              src="/bodogater.webp"
               alt="ボドゲーター"
               fill
               className="object-contain drop-shadow-[0_0_24px_rgba(251,191,36,0.3)]"

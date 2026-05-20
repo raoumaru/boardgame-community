@@ -28,7 +28,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['ウォーゲーム・エリアコントロール', '2人ガチ対戦', 'リプレイ性の高い重量ゲーム'],
     dislikedGames: ['サイコロ運が強いゲーム', '大人数パーティーゲーム'],
     games: ['テラフォーミング・マーズ', 'ルアーブル', 'ブラス：バーミンガム'],
-    image: '/mbti-characters/drih.png',
+    image: '/mbti-characters/drih.webp',
   },
   DRIL: {
     name: 'サイレントキラー',
@@ -40,7 +40,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['2人対戦カードゲーム', '手札管理・アブストラクト', 'シンプルで奥深いゲーム'],
     dislikedGames: ['大人数での議論が必要なゲーム', '協力ゲーム'],
     games: ['七不思議デュエル', 'カスカディア', 'ハイブ'],
-    image: '/mbti-characters/dril.png',
+    image: '/mbti-characters/dril.webp',
   },
 
   DRGH: {
@@ -53,7 +53,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['マルチプレイヤー交渉ゲーム', '大規模エリアコントロール', '4Xゲーム'],
     dislikedGames: ['2人専用ゲーム', '軽量カジュアルゲーム'],
     games: ['エクリプス', 'スモールワールド', 'シヴィライゼーション'],
-    image: '/mbti-characters/drgh.png',
+    image: '/mbti-characters/drgh.webp',
   },
 
   DRGL: {
@@ -66,7 +66,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['デッキ構築', 'エンジンビルディング', '大人数対戦'],
     dislikedGames: ['全員協力ゲーム', '勝敗なしのゲーム'],
     games: ['ドミニオン', 'ウィングスパン', '宝石の煌き'],
-    image: '/mbti-characters/drgl.png',
+    image: '/mbti-characters/drgl.webp',
   },
   DUIH: {
     name: 'ゴーストコンスピレイター',
@@ -78,7 +78,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['重量級協力ゲーム', 'キャンペーンゲーム', 'RPG的なゲーム'],
     dislikedGames: ['競争型ゲーム', '大人数パーティー'],
     games: ['グルームヘイヴン', 'マルコポーロの旅', 'フロスト'],
-    image: '/mbti-characters/duih.png',
+    image: '/mbti-characters/duih.webp',
   },
   DUIL: {
     name: 'フィクサーパートナー',
@@ -90,7 +90,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['2人協力ゲーム', 'パンデミック系', '軽め協力カードゲーム'],
     dislikedGames: ['人狼・裏切り者ゲーム', '大勢との初対面プレイ'],
     games: ['パンデミック', 'フォレスト・シャッフル', 'アーカム・ホラー'],
-    image: '/mbti-characters/duil.png',
+    image: '/mbti-characters/duil.webp',
   },
   DUGH: {
     name: 'アングラリーダー',
@@ -102,7 +102,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['大人数協力ゲーム', 'リアルタイム協力', 'ロールプレイ系'],
     dislikedGames: ['個人競争ゲーム', '軽量カジュアルゲーム'],
     games: ['マジック・メイズ', 'ディセント', 'アーカム・ホラーLCG'],
-    image: '/mbti-characters/dugh.png',
+    image: '/mbti-characters/dugh.webp',
   },
   DUGL: {
     name: 'パペットマスター',
@@ -114,7 +114,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['ワードゲーム', '大人数協力', 'コミュニケーションゲーム'],
     dislikedGames: ['黙々とやる重量級ゲーム', '純粋な個人競争ゲーム'],
     games: ['コードネーム', 'ハンビ', 'ワードスミス'],
-    image: '/mbti-characters/dugl.png',
+    image: '/mbti-characters/dugl.webp',
   },
   WRIH: {
     name: 'デビルギャンブラー',
@@ -126,7 +126,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['ダイスゲーム', 'バースト系', '少人数ギャンブル的ゲーム'],
     dislikedGames: ['緻密な計算が必要なゲーム', '運要素のない純粋アブストラクト'],
     games: ['バックギャモン', 'エルドラド', 'ルーインズ'],
-    image: '/mbti-characters/wrih.png',
+    image: '/mbti-characters/wrih.webp',
   },
   WRIL: {
     name: 'カオスジョーカー',
@@ -138,7 +138,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['ランダム要素強め', 'カードドラフト', 'カジュアル対戦'],
     dislikedGames: ['重量級戦略ゲーム', '長考が必要なゲーム'],
     games: ['ラブレター', 'クワークル', 'フラックス'],
-    image: '/mbti-characters/wril.png',
+    image: '/mbti-characters/wril.webp',
   },
   WRGH: {
     name: 'アナーキーメッセンジャー',
@@ -150,7 +150,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['大人数対戦・フリーフォーオール', 'カオス系カードゲーム', '陣営対立ゲーム'],
     dislikedGames: ['静かに集中する重量ゲーム', '少人数じっくり系'],
     games: ['キングダムビルダー', 'スモールワールド', 'エイジ・オブ・エンパイア'],
-    image: '/mbti-characters/wrgh.png',
+    image: '/mbti-characters/wrgh.webp',
   },
   WRGL: {
     name: 'ルーレットマニア',
@@ -162,7 +162,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['パーティーゲーム', '大人数カジュアル', '運ゲー'],
     dislikedGames: ['ガチ対戦', '長時間重量ゲーム'],
     games: ['ito', 'ガリンポ', 'カタン'],
-    image: '/mbti-characters/wrgl.png',
+    image: '/mbti-characters/wrgl.webp',
   },
   WUIH: {
     name: 'カースドエクスプローラー',
@@ -174,7 +174,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['ダンジョン探索系', 'ランダムマップ協力', '少人数重量協力'],
     dislikedGames: ['短時間カジュアル', '純粋計算ゲーム'],
     games: ['エルドリッチホラー', 'クトゥルフの呼び声', 'ジョーウォーカー'],
-    image: '/mbti-characters/wuih.png',
+    image: '/mbti-characters/wuih.webp',
   },
   WUIL: {
     name: 'ダークエンジェル',
@@ -186,7 +186,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['軽め協力ゲーム', 'ユニーク効果カードゲーム', 'ほのぼの系'],
     dislikedGames: ['ガチ対戦', '複雑ルールの重量ゲーム'],
     games: ['ナナトリドリ', 'おばけキャッチ', 'ニムト'],
-    image: '/mbti-characters/wuil.png',
+    image: '/mbti-characters/wuil.webp',
   },
   WUGH: {
     name: 'ナイトメアホスト',
@@ -198,7 +198,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['大人数リアルタイム協力', 'ワイワイ重量ゲーム', 'パーティー系'],
     dislikedGames: ['少人数じっくり系', '静かな2人ゲーム'],
     games: ['マジック・メイズ', 'ダンジョン！', 'ウルフ＆ヒツジ'],
-    image: '/mbti-characters/wugh.png',
+    image: '/mbti-characters/wugh.webp',
   },
   WUGL: {
     name: 'ロストドリーマー',
@@ -210,7 +210,7 @@ export const TYPES: Record<TypeCode, MbtiType> = {
     likedGames: ['パーティーゲーム', 'お絵かき・ワード系', '大人数で笑えるゲーム'],
     dislikedGames: ['ガチ競争', '長時間重量ゲーム'],
     games: ['ドブル', 'テレストレーション', 'コードネーム'],
-    image: '/mbti-characters/wugl.png',
+    image: '/mbti-characters/wugl.webp',
   },
 }
 
