@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic'
-
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { connection } from 'next/server'
@@ -8,7 +6,8 @@ import { SubmissionApproveForm } from '@/components/admin/SubmissionApproveForm'
 
 type Props = { params: Promise<{ id: string }> }
 
-async function ApproveLoader({ id }: { id: string }) {
+async function ApproveLoader({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   await connection()
   const supabase = createAdminClient()
 
@@ -59,11 +58,10 @@ async function ApproveLoader({ id }: { id: string }) {
   )
 }
 
-export default async function SubmissionApprovePage({ params }: Props) {
-  const { id } = await params
+export default function SubmissionApprovePage({ params }: Props) {
   return (
     <Suspense fallback={<div className="p-6 text-gray-500">読み込み中...</div>}>
-      <ApproveLoader id={id} />
+      <ApproveLoader params={params} />
     </Suspense>
   )
 }
