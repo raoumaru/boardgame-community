@@ -490,8 +490,21 @@ export default function MbtiPage() {
             </div>
           </div>
 
-          {/* 画像シェアボタン */}
-          <div className="mb-5 text-center">
+          {/* シェアボタン群 */}
+          <div className="mb-5 flex flex-col items-center gap-2">
+            {/* Xシェアボタン */}
+            <a
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`私のボドゲMBTIは${result.code}「${typeData.name}」でした！「${typeData.catchcopy}」 #ボドゲMBTI #ボードゲーム`)}&url=${encodeURIComponent(`https://www.boardgame-raou.com/mbti/${result.code.toLowerCase()}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 text-xs font-bold text-white transition-all hover:bg-white/20"
+            >
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              結果をXでシェア
+            </a>
+            {/* 画像シェアボタン */}
             <button
               onClick={() => handleShareImage(result.code, typeData.name, typeData.catchcopy, axisLabels, typeData.image)}
               disabled={sharing}
@@ -501,7 +514,7 @@ export default function MbtiPage() {
               {sharing ? '生成中...' : '結果画像をシェア・保存'}
             </button>
             {shareErrorMsg && (
-              <p className="mt-2 text-[10px] text-red-400">{shareErrorMsg}</p>
+              <p className="mt-1 text-[10px] text-red-400">{shareErrorMsg}</p>
             )}
           </div>
 
@@ -607,6 +620,17 @@ export default function MbtiPage() {
 
           {/* ボタン */}
           <div className="space-y-3 pb-8 text-center">
+            {/* ボドゲーターCTA */}
+            <div>
+              <Link href="/recommend"
+                className="group inline-flex items-center gap-2 rounded-full bg-purple-600 px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-purple-900/50 transition-all hover:bg-purple-500 hover:-translate-y-0.5"
+              >
+                <span>🎲</span>
+                <span>ボドゲーターでゲームを探す</span>
+                <span className="transition-transform group-hover:translate-x-1">→</span>
+              </Link>
+              <p className="mt-1.5 text-[10px] text-white/30">あなたのタイプに合ったゲームを診断します</p>
+            </div>
             <div>
               <Link href={`/mbti/${result.code.toLowerCase()}`}
                 className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-400/40 px-6 py-2.5 text-sm text-amber-300 transition-all hover:bg-amber-500/30"
