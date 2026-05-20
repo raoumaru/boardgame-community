@@ -164,6 +164,12 @@ async function GameDetailContent({ params }: { params: Promise<{ slug: string }>
             </svg>
           </div>
         )}
+        {g.submitter_nickname && (
+          <div className="absolute bottom-2 right-2 rounded-full bg-amber-500/90 px-3 py-1 text-center text-xs font-bold leading-tight text-white shadow backdrop-blur-sm">
+            <div className="whitespace-nowrap">{g.submitter_nickname}さん</div>
+            <div>おすすめ！</div>
+          </div>
+        )}
       </div>
 
       {/* コンテンツ */}

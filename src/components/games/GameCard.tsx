@@ -33,6 +33,13 @@ export function GameCard({ game, imageBaseUrl, isNew = false, priority = false }
             )}
           </div>
         )}
+        {/* おすすめバッジ */}
+        {game.submitter_nickname && (
+          <div className="absolute bottom-1.5 right-1.5 z-10 rounded-full bg-amber-500/90 px-2 py-1 text-center text-[9px] font-bold leading-tight text-white shadow backdrop-blur-sm">
+            <div className="whitespace-nowrap">{game.submitter_nickname}さん</div>
+            <div>おすすめ！</div>
+          </div>
+        )}
         {imageUrl ? (
           <Image
             src={imageUrl}

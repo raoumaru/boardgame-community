@@ -5,9 +5,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Suspense } from 'react'
-import { Send, Star, Users, Clock, Gamepad2, ChevronDown } from 'lucide-react'
+import { Send, Star, Users, Clock, Gamepad2 } from 'lucide-react'
 import { NavMenu } from '@/components/ui/NavMenu'
-import { GENRES, DIFFICULTY_LABELS } from '@/lib/types'
+import { GENRES } from '@/lib/types'
 import type { Metadata } from 'next'
 
 const schema = z.object({
@@ -19,7 +19,6 @@ const schema = z.object({
   max_players:        z.coerce.number().min(1).max(20).optional().or(z.literal('')),
   play_time_min:      z.coerce.number().min(1).optional().or(z.literal('')),
   play_time_max:      z.coerce.number().min(1).optional().or(z.literal('')),
-  difficulty:         z.enum(['easy', 'medium', 'hard', '']).optional(),
   genres:             z.array(z.string()).optional(),
   submitter_comment:  z.string().max(500).optional(),
   honeypot:           z.string().max(0),
@@ -27,7 +26,6 @@ const schema = z.object({
   omit_description:   z.boolean().optional(),
   omit_players:       z.boolean().optional(),
   omit_time:          z.boolean().optional(),
-  omit_difficulty:    z.boolean().optional(),
   omit_genres:        z.boolean().optional(),
 })
 
@@ -74,7 +72,6 @@ export default function SubmitPage() {
       omit_description: false,
       omit_players: false,
       omit_time: false,
-      omit_difficulty: false,
       omit_genres: false,
     },
   })
@@ -83,7 +80,6 @@ export default function SubmitPage() {
   const omitDescription    = watch('omit_description')
   const omitPlayers        = watch('omit_players')
   const omitTime           = watch('omit_time')
-  const omitDifficulty     = watch('omit_difficulty')
   const omitGenres         = watch('omit_genres')
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -117,8 +113,6 @@ export default function SubmitPage() {
         if (values.play_time_min) formData.append('play_time_min', String(values.play_time_min))
         if (values.play_time_max) formData.append('play_time_max', String(values.play_time_max))
       }
-      if (!values.omit_difficulty && values.difficulty)
-        formData.append('difficulty', values.difficulty)
       if (!values.omit_genres && watchedGenres.length > 0)
         formData.append('genres', JSON.stringify(watchedGenres))
       if (values.submitter_comment)
@@ -224,6 +218,7 @@ export default function SubmitPage() {
           {/* 画像 */}
           <div>
             <label className={labelClass}>ゲーム画像 <span className="text-red-400">*</span></label>
+            <p className="mb-2 text-xs text-white/50">ゲーム全体が映っている写真をアップロードしてください。</p>
             <div
               className="cursor-pointer rounded-xl border-2 border-dashed border-white/20 bg-white/5 p-5 text-center transition hover:border-amber-400/40 hover:bg-white/10"
               onClick={() => fileInputRef.current?.click()}
@@ -332,29 +327,6 @@ export default function SubmitPage() {
             </div>
           </div>
 
-          {/* 難易度 */}
-          <div>
-            <div className="mb-1 flex items-center justify-between">
-              <label className={`${labelClass} mb-0`}>難易度</label>
-              <label className="flex cursor-pointer items-center gap-1.5 text-xs text-white/40">
-                <input type="checkbox" {...register('omit_difficulty')} className="rounded border-white/30 bg-white/10 text-amber-500" />
-                管理者に任せる
-              </label>
-            </div>
-            <div className="relative">
-              <select
-                {...register('difficulty')}
-                disabled={omitDifficulty}
-                className={`${inputClass} appearance-none disabled:opacity-30`}
-              >
-                <option value="">選択してください</option>
-                {(Object.entries(DIFFICULTY_LABELS) as [string, string][]).map(([v, l]) => (
-                  <option key={v} value={v} className="bg-gray-900">{l}</option>
-                ))}
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
-            </div>
-          </div>
 
           {/* ジャンル */}
           <div>

@@ -4,12 +4,12 @@ export const GENRE_CATEGORY_MAP: Record<string, string[]> = {
   cooperative: ['cooperative'],
   bluff:       ['bluffing', 'hidden_role'],
   puzzle:      ['puzzle'],
-  strategy:    ['strategy', 'drafting', 'deck_building'],
+  strategy:    ['strategy', 'drafting', 'deck_building', 'trick_taking'],
   party:       ['party', 'family', 'word_sense'],
 }
 
 export const FUN_GENRES   = ['party', 'family', 'word_sense', 'bluffing', 'hidden_role']
-export const THINK_GENRES = ['strategy', 'puzzle', 'deck_building', 'drafting', 'cooperative']
+export const THINK_GENRES = ['strategy', 'puzzle', 'deck_building', 'drafting', 'cooperative', 'trick_taking']
 
 export type ScoringParams = {
   players:    '2' | '3-4' | '5+'

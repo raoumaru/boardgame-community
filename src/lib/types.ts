@@ -60,6 +60,7 @@ export const GENRES = [
   { value: 'deck_building',     label: 'デッキ構築' },
   { value: 'bluffing',          label: 'ブラフ' },
   { value: 'word_sense',        label: 'ワードセンス' },
+  { value: 'trick_taking',      label: 'トリックテイキング' },
 ] as const
 
 export type GenreValue = typeof GENRES[number]['value']

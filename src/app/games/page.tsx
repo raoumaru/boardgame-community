@@ -21,7 +21,7 @@ const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/objec
 
 // 一覧表示に必要なカラムのみ取得（rules・description・recommended_for は除外）
 const GAMES_SELECT =
-  "id, title, slug, title_kana, min_players, max_players, play_time_min, play_time_max, difficulty, genres, image_path, is_popular, is_recommendable, sort_order, created_at, external_url";
+  "id, title, slug, title_kana, min_players, max_players, play_time_min, play_time_max, difficulty, genres, image_path, is_popular, is_recommendable, sort_order, created_at, external_url, submitter_nickname";
 
 // 本番環境（Vercel）かどうか
 const IS_PRODUCTION = !!process.env.VERCEL_ENV
@@ -90,7 +90,7 @@ export default function GamesPage() {
           href="/submit"
           className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-6 py-2.5 text-sm font-bold text-white transition hover:bg-amber-400"
         >
-          🎲 ゲームを申請する
+          ゲームを申請する
         </Link>
       </div>
     </div>

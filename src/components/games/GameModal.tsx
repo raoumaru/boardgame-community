@@ -117,19 +117,18 @@ export function GameModal({ game, imageBaseUrl, onClose }: Props) {
               </svg>
             </div>
           )}
+          {game.submitter_nickname && (
+            <div className="absolute bottom-2 right-2 rounded-full bg-amber-500/90 px-3 py-1 text-center text-xs font-bold leading-tight text-white shadow backdrop-blur-sm">
+              <div className="whitespace-nowrap">{game.submitter_nickname}さん</div>
+              <div>おすすめ！</div>
+            </div>
+          )}
         </div>
 
         {/* コンテンツ */}
         <div className="space-y-5 p-5">
           {/* タイトル & 基本情報 */}
           <div>
-            {game.submitter_nickname && (
-              <div className="mb-2">
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-700">
-                  🎲 {game.submitter_nickname}さんおすすめ
-                </span>
-              </div>
-            )}
             <h2 className="text-2xl font-bold text-gray-900">{game.title}</h2>
             <div className="mt-2 flex flex-wrap gap-3 text-sm text-gray-500">
               <span className="flex items-center gap-1">
