@@ -38,7 +38,7 @@ function getClientIp(req: NextRequest): string {
 }
 
 // ─── メインミドルウェア ────────────────────────────────────────────────────
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // /api/recommend: 1分間に15リクエストまで
