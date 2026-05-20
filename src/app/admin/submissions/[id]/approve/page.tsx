@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { connection } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -5,9 +6,8 @@ import { SubmissionApproveForm } from '@/components/admin/SubmissionApproveForm'
 
 type Props = { params: Promise<{ id: string }> }
 
-export default async function SubmissionApprovePage({ params }: Props) {
+async function ApproveLoader({ id }: { id: string }) {
   await connection()
-  const { id } = await params
   const supabase = createAdminClient()
 
   const { data: submission } = await supabase
@@ -35,7 +35,7 @@ export default async function SubmissionApprovePage({ params }: Props) {
   }
 
   return (
-    <div>
+    <>
       <div className="mb-6">
         <a href="/admin/submissions" className="text-sm text-amber-600 hover:text-amber-700">
           ← 申請一覧に戻る
@@ -47,13 +47,21 @@ export default async function SubmissionApprovePage({ params }: Props) {
           申請者：{submission.submitter_nickname}さん ／ 申請日：{new Date(submission.created_at).toLocaleDateString('ja-JP')}
         </p>
       </div>
-
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <SubmissionApproveForm
           submission={submission}
           submittedImageUrl={submittedImageUrl}
         />
       </div>
-    </div>
+    </>
+  )
+}
+
+export default async function SubmissionApprovePage({ params }: Props) {
+  const { id } = await params
+  return (
+    <Suspense fallback={<div className="p-6 text-gray-500">読み込み中...</div>}>
+      <ApproveLoader id={id} />
+    </Suspense>
   )
 }
