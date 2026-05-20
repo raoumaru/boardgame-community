@@ -46,7 +46,7 @@ function getMbtiRecommendParams(code: TypeCode): ScoringParams {
     mood:       d === 'D' ? 'think' : 'fun',
     categories: r === 'R' ? ['strategy', 'bluff'] : ['cooperative', 'party'],
     time:       h === 'H' ? 'long' : 'short',
-    experience: d === 'D' && h === 'H' ? 'often' : d === 'W' && h === 'L' ? 'beginner' : 'sometimes',
+    experience: h === 'H' ? 'often' : d === 'W' && h === 'L' ? 'beginner' : 'sometimes',
   }
 }
 
