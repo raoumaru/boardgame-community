@@ -230,6 +230,7 @@ export default function MbtiPage() {
   const [sharing, setSharing] = useState(false)
   const [lineSharing, setLineSharing] = useState(false)
   const [xSharing, setXSharing] = useState(false)
+  const [xShareNote, setXShareNote] = useState<string | null>(null)
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null)
   const [shareErrorMsg, setShareErrorMsg] = useState<string | null>(null)
   const [mbtiGames, setMbtiGames] = useState<Game[]>([])
@@ -381,13 +382,37 @@ export default function MbtiPage() {
 
   const handleXShare = async (code: TypeCode, name: string, catchcopy: string, axisLabels: string[], imageSrc?: string) => {
     setXSharing(true)
+    setXShareNote(null)
     const text = `私のボドゲMBTIは${code}「${name}」でした！「${catchcopy}」 #ボドゲMBTI #ボードゲーム`
     const url = `https://www.boardgame-raou.com/mbti/${code.toLowerCase()}`
-    await shareWithImage(code, name, catchcopy, axisLabels, imageSrc,
-      { text, url, title: `ボドゲMBTI：${name}` },
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
-    )
-    setXSharing(false)
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+    let openTwitter = true
+    try {
+      const blob = await generateMbtiShareImage(code, name, catchcopy, axisLabels, imageSrc)
+      if (blob) {
+        const file = new File([blob], `boardgame-mbti-${name}.png`, { type: 'image/png' })
+        // モバイル: Web Share API でシステムシェートを開く → X を選ぶと画像付きで投稿できる
+        if (navigator.canShare?.({ files: [file] })) {
+          await navigator.share({ files: [file], text, title: `ボドゲMBTI：${name}` })
+          openTwitter = false
+        } else {
+          // PC: 画像をダウンロードしてから X を開く
+          const objUrl = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = objUrl
+          a.download = `boardgame-mbti-${name}.png`
+          a.click()
+          URL.revokeObjectURL(objUrl)
+          setXShareNote('📥 画像をダウンロードしました。Xの投稿画面で添付してシェアしてください。')
+        }
+      }
+    } catch (e) {
+      // ユーザーがシェートをキャンセルした場合は X を開かない
+      if (e instanceof Error && e.name === 'AbortError') openTwitter = false
+    } finally {
+      setXSharing(false)
+    }
+    if (openTwitter) window.open(twitterUrl, '_blank')
   }
 
   const handleCloseShareImage = () => {
@@ -565,6 +590,9 @@ export default function MbtiPage() {
                 {xSharing ? '準備中...' : '結果をXでシェア'}
               </button>
             </div>
+            {xShareNote && (
+              <p className="text-[11px] text-white/60">{xShareNote}</p>
+            )}
             {/* 画像シェアボタン */}
             <button
               onClick={() => handleShareImage(result.code, typeData.name, typeData.catchcopy, axisLabels, typeData.image)}
