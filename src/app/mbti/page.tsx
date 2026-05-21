@@ -229,6 +229,7 @@ export default function MbtiPage() {
   const [savedResult, setSavedResult] = useState<DiagResult | null>(null)
   const [sharing, setSharing] = useState(false)
   const [lineSharing, setLineSharing] = useState(false)
+  const [xSharing, setXSharing] = useState(false)
   const [shareImageUrl, setShareImageUrl] = useState<string | null>(null)
   const [shareErrorMsg, setShareErrorMsg] = useState<string | null>(null)
   const [mbtiGames, setMbtiGames] = useState<Game[]>([])
@@ -343,29 +344,50 @@ export default function MbtiPage() {
     }
   }
 
-  const handleLineShare = async (code: TypeCode, name: string, catchcopy: string, axisLabels: string[], imageSrc?: string) => {
-    setLineSharing(true)
-    const shareText = `私のボドゲMBTIは${code}「${name}」でした！「${catchcopy}」`
-    const shareUrl = `https://www.boardgame-raou.com/mbti/${code.toLowerCase()}`
+  // 画像生成 → Web Share API → フォールバックURLの共通ロジック
+  const shareWithImage = async (
+    code: TypeCode, name: string, catchcopy: string,
+    axisLabels: string[], imageSrc: string | undefined,
+    shareData: { title?: string; text?: string; url?: string },
+    fallbackUrl: string,
+  ) => {
     let handled = false
     try {
       const blob = await generateMbtiShareImage(code, name, catchcopy, axisLabels, imageSrc)
       if (blob && navigator.canShare) {
         const file = new File([blob], `boardgame-mbti-${name}.png`, { type: 'image/png' })
-        if (navigator.canShare({ files: [file] })) {
-          await navigator.share({ files: [file], text: `${shareText}\n${shareUrl}`, title: `ボドゲMBTI：${name}` })
+        const data = { ...shareData, files: [file] }
+        if (navigator.canShare(data)) {
+          await navigator.share(data)
           handled = true
         }
       }
     } catch (e) {
-      // ユーザーがシェートをキャンセルした場合はLINE URLを開かない
       if (e instanceof Error && e.name === 'AbortError') handled = true
-    } finally {
-      setLineSharing(false)
     }
-    if (!handled) {
-      window.open(`https://line.me/R/share?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`, '_blank')
-    }
+    if (!handled) window.open(fallbackUrl, '_blank')
+  }
+
+  const handleLineShare = async (code: TypeCode, name: string, catchcopy: string, axisLabels: string[], imageSrc?: string) => {
+    setLineSharing(true)
+    const text = `私のボドゲMBTIは${code}「${name}」でした！「${catchcopy}」`
+    const url = `https://www.boardgame-raou.com/mbti/${code.toLowerCase()}`
+    await shareWithImage(code, name, catchcopy, axisLabels, imageSrc,
+      { text: `${text}\n${url}`, title: `ボドゲMBTI：${name}` },
+      `https://line.me/R/share?text=${encodeURIComponent(`${text}\n${url}`)}`
+    )
+    setLineSharing(false)
+  }
+
+  const handleXShare = async (code: TypeCode, name: string, catchcopy: string, axisLabels: string[], imageSrc?: string) => {
+    setXSharing(true)
+    const text = `私のボドゲMBTIは${code}「${name}」でした！「${catchcopy}」 #ボドゲMBTI #ボードゲーム`
+    const url = `https://www.boardgame-raou.com/mbti/${code.toLowerCase()}`
+    await shareWithImage(code, name, catchcopy, axisLabels, imageSrc,
+      { text, url, title: `ボドゲMBTI：${name}` },
+      `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
+    )
+    setXSharing(false)
   }
 
   const handleCloseShareImage = () => {
@@ -531,18 +553,17 @@ export default function MbtiPage() {
                 </svg>
                 {lineSharing ? '準備中...' : 'LINEでシェア'}
               </button>
-              {/* Xシェア */}
-              <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`私のボドゲMBTIは${result.code}「${typeData.name}」でした！「${typeData.catchcopy}」 #ボドゲMBTI #ボードゲーム`)}&url=${encodeURIComponent(`https://www.boardgame-raou.com/mbti/${result.code.toLowerCase()}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 text-xs font-bold text-white transition-all hover:bg-white/20"
+              {/* Xシェア（画像付き） */}
+              <button
+                onClick={() => handleXShare(result.code, typeData.name, typeData.catchcopy, axisLabels, typeData.image)}
+                disabled={xSharing}
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 text-xs font-bold text-white transition-all hover:bg-white/20 disabled:opacity-50"
               >
                 <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                 </svg>
-                結果をXでシェア
-              </a>
+                {xSharing ? '準備中...' : '結果をXでシェア'}
+              </button>
             </div>
             {/* 画像シェアボタン */}
             <button
