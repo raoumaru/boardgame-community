@@ -218,7 +218,7 @@ export default async function MbtiDetailPage({ params }: Props) {
           <div className="flex items-center justify-center gap-3">
             {/* LINEシェア */}
             <a
-              href={`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(`https://www.boardgame-raou.com/mbti/${typeCode.toLowerCase()}`)}&text=${encodeURIComponent(`私のボドゲMBTIは${typeCode}「${type.name}」でした！「${type.catchcopy}」`)}`}
+              href={`https://line.me/R/share?text=${encodeURIComponent(`私のボドゲMBTIは${typeCode}「${type.name}」でした！「${type.catchcopy}」\nhttps://www.boardgame-raou.com/mbti/${typeCode.toLowerCase()}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-[#06C755]/40 bg-[#06C755]/15 px-5 py-2 text-xs font-bold text-[#06C755] transition-all hover:bg-[#06C755]/25"
