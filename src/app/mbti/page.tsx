@@ -377,7 +377,7 @@ export default function MbtiPage() {
   const handleXShare = async (code: TypeCode, name: string, catchcopy: string, axisLabels: string[], imageSrc?: string) => {
     setXSharing(true)
     setXShareNote(null)
-    const text = `私のボドゲMBTIは${code}「${name}」でした！「${catchcopy}」 #ボドゲMBTI #ボードゲーム`
+    const text = `私のボドゲMBTIは${code}「${name}」でした！「${catchcopy}」 #ボドゲMBTI #ボードゲーム #ゲームマーケット2026春`
     const url = `https://www.boardgame-raou.com/mbti/${code.toLowerCase()}`
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`
     let openTwitter = true
