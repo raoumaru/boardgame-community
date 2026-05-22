@@ -231,7 +231,6 @@ export default function MbtiPage() {
   const [lineSharing, setLineSharing] = useState(false)
   const [xSharing, setXSharing] = useState(false)
   const [xShareNote, setXShareNote] = useState<string | null>(null)
-  const [shareImageUrl, setShareImageUrl] = useState<string | null>(null)
   const [shareErrorMsg, setShareErrorMsg] = useState<string | null>(null)
   const [mbtiGames, setMbtiGames] = useState<Game[]>([])
   const [mbtiGamesLoading, setMbtiGamesLoading] = useState(false)
@@ -315,16 +314,10 @@ export default function MbtiPage() {
         return
       }
 
-      // iOS（Safari・Chrome共通）: ジェスチャータイムアウト問題のためオーバーレイ表示
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
-      if (isIOS) {
-        const url = URL.createObjectURL(blob)
-        setShareImageUrl(url)
-        return
-      }
-
-      // Android: Web Share API でファイル共有
       const file = new File([blob], `boardgame-mbti-${name}.png`, { type: 'image/png' })
+
+      // モバイル（iOS / Android）: Web Share API でシステムシェートを開く
+      // → iOS は「画像を保存」、Android は各アプリを選択できる
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], title: `ボドゲMBTI：${name}` })
         return
@@ -338,6 +331,7 @@ export default function MbtiPage() {
       a.click()
       URL.revokeObjectURL(url)
     } catch (e) {
+      if (e instanceof Error && e.name === 'AbortError') return // ユーザーキャンセル
       console.error(e)
       setShareErrorMsg(`エラー: ${e instanceof Error ? e.message : String(e)}`)
     } finally {
@@ -413,11 +407,6 @@ export default function MbtiPage() {
       setXSharing(false)
     }
     if (openTwitter) window.open(twitterUrl, '_blank')
-  }
-
-  const handleCloseShareImage = () => {
-    if (shareImageUrl) URL.revokeObjectURL(shareImageUrl)
-    setShareImageUrl(null)
   }
 
   // ── イントロ画面 ─────────────────────────────────────────────────────────────
@@ -743,28 +732,6 @@ export default function MbtiPage() {
         </div>
       </div>
 
-      {/* iOS用：生成画像オーバーレイ（長押し保存） */}
-      {shareImageUrl && (
-        <div
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 px-4"
-          onClick={handleCloseShareImage}
-        >
-          <p className="mb-3 text-sm font-bold text-amber-300">画像を長押しして保存 📸</p>
-          <p className="mb-5 text-xs text-white/50">カメラロールに保存できます</p>
-          <img
-            src={shareImageUrl}
-            alt="シェア用画像"
-            className="max-h-[70dvh] max-w-full rounded-xl shadow-2xl"
-            onClick={e => e.stopPropagation()}
-          />
-          <button
-            onClick={handleCloseShareImage}
-            className="mt-6 rounded-full border border-white/20 px-6 py-2 text-sm text-white/60 transition hover:text-white"
-          >
-            閉じる
-          </button>
-        </div>
-      )}
       </>
     )
   }
