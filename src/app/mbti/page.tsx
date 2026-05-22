@@ -10,15 +10,46 @@ import type { Game } from '@/lib/types'
 
 const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/game-images`
 
-// MBTIタイプコードから /api/recommend へのパラメータを導出
-function getMbtiRecommendParams(code: TypeCode) {
+// MBTIタイプコードとスコアから /api/recommend へのパラメータを導出
+// scores を渡すと各軸の傾向強度（%）に応じてパラメータが変わり、
+// 同じタイプコードでもスコアが違えば異なるゲームが推薦される
+function getMbtiRecommendParams(
+  code: TypeCode,
+  scores?: Record<string, { a: number; b: number }>
+) {
   const d = code[0], r = code[1], i = code[2], h = code[3]
+
+  // 各軸のA側比率 (0〜100)。スコアがない場合はタイプコードから推定
+  const ratio = (axis: string, fallback: number) =>
+    scores
+      ? Math.round(((scores[axis].a - scores[axis].b + 15) / 30) * 100)
+      : fallback
+  const dRatio = ratio('DW', d === 'D' ? 75 : 25) // 高いほどD寄り
+  const rRatio = ratio('RU', r === 'R' ? 75 : 25) // 高いほどR寄り
+  const hRatio = ratio('HL', h === 'H' ? 75 : 25) // 高いほどH寄り
+
+  // categories: 傾向が強い(≥65%)場合は絞り込み、境界線付近は両側を含めてブレンド
+  const categories =
+    r === 'R'
+      ? rRatio >= 65
+        ? ['strategy', 'bluff']
+        : ['strategy', 'bluff', 'cooperative']   // 境界線付近は協力ゲームも混ぜる
+      : (100 - rRatio) >= 65
+        ? ['cooperative', 'party']
+        : ['cooperative', 'party', 'strategy']   // 境界線付近は戦略ゲームも混ぜる
+
+  // experience: 実際のスコアで判定（重ゲー好き度 × 戦略思考度）
+  const experience =
+    hRatio >= 65 && dRatio >= 60 ? 'often'        // 強い重量級 × 戦略志向
+    : dRatio <= 40 && hRatio <= 40 ? 'beginner'   // 強い直感型 × 軽量級
+    : 'sometimes'
+
   return {
     players:    i === 'I' ? '2' : i === 'G' ? '5+' : '3-4',
     mood:       d === 'D' ? 'think' : 'fun',
-    categories: r === 'R' ? ['strategy', 'bluff'] : ['cooperative', 'party'],
+    categories,
     time:       h === 'H' ? 'long' : 'short',
-    experience: d === 'D' && h === 'H' ? 'often' : d === 'W' && h === 'L' ? 'beginner' : 'sometimes',
+    experience,
   }
 }
 
@@ -284,7 +315,7 @@ export default function MbtiPage() {
     if (!result) return
     setMbtiGames([])
     setMbtiGamesLoading(true)
-    const params = getMbtiRecommendParams(result.code)
+    const params = getMbtiRecommendParams(result.code, result.scores)
     fetch('/api/recommend', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
