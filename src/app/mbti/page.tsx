@@ -387,7 +387,7 @@ export default function MbtiPage() {
         const file = new File([blob], `boardgame-mbti-${name}.png`, { type: 'image/png' })
         // モバイル: Web Share API でシステムシェートを開く → X を選ぶと画像付きで投稿できる
         if (navigator.canShare?.({ files: [file] })) {
-          await navigator.share({ files: [file], text, title: `ボドゲMBTI：${name}` })
+          await navigator.share({ files: [file], text, url, title: `ボドゲMBTI：${name}` })
           openTwitter = false
         } else {
           // PC: 画像をダウンロードしてから X を開く
