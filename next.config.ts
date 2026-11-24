@@ -40,7 +40,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // X-Powered-By: Next.js ヘッダーを非表示（フレームワーク情報の漏洩防止）
   poweredByHeader: false,
-  cacheComponents: true,
+  cacheComponents: false,
   images: {
     unoptimized: true,
     remotePatterns: [
