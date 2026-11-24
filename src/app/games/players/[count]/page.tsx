@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/constants'
 import { unstable_cache } from 'next/cache'
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
@@ -105,7 +106,7 @@ export default async function PlayerCountPage({ params }: Props) {
     '@type': 'CollectionPage',
     name: `${config.label}ボードゲーム一覧 | ラ王のボドゲ倉庫`,
     description: config.description,
-    url: `https://www.boardgame-raou.com/games/players/${count}`,
+    url: `${SITE_URL}/games/players/${count}`,
   }
 
   return (

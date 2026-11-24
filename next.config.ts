@@ -7,11 +7,11 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",           // Next.js ハイドレーション用
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",           // Next.js ハイドレーション用
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://*.supabase.co",          // ゲーム画像（Supabase Storage）
-      "connect-src 'self' https://*.supabase.co https://*.vercel-insights.com https://vitals.vercel-insights.com",
+      "img-src 'self' data: blob: https://*.supabase.co https://*.google-analytics.com https://*.googletagmanager.com",          // ゲーム画像（Supabase Storage）
+      "connect-src 'self' https://*.supabase.co https://*.vercel-insights.com https://vitals.vercel-insights.com https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com",
       "frame-ancestors 'none'",                                     // iframeへの埋め込みを禁止
       "base-uri 'self'",
       "form-action 'self'",
@@ -24,7 +24,7 @@ const securityHeaders = [
   // リファラ情報の制限（外部サイトへの遷移時にURLを漏らさない）
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   // HTTPSを強制（Vercel本番環境で有効）
-  { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+  { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
   // 権限ポリシー（不要なブラウザAPIをブロック）
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=()' },
   // XSS Protection（旧ブラウザ向け）

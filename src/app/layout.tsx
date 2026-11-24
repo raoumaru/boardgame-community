@@ -3,6 +3,7 @@ import type React from "react";
 import { SITE_URL } from "@/lib/constants";
 import { Noto_Sans_JP } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { Footer } from "@/components/ui/Footer";
 import "./globals.css";
 
@@ -63,7 +64,9 @@ export default function RootLayout({
       >
         {children}
         <Footer />
-        <Analytics />
+        {/* Vercel Analytics は Vercel 上でのみ有効。移転完了後に削除する */}
+        {process.env.VERCEL && <Analytics />}
+        <GoogleAnalytics />
       </body>
     </html>
   );
