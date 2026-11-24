@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/constants'
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { z } from 'zod'
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
         '',
         '---',
         'ラ王のボドゲ倉庫 お問い合わせフォームより',
-        'https://www.boardgame-raou.com/contact',
+        `${SITE_URL}/contact`,
       ].join('\n'),
     })
 

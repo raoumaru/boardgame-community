@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/constants'
 import { notFound } from 'next/navigation'
 import { unstable_cache } from 'next/cache'
 import Link from 'next/link'
@@ -218,7 +219,7 @@ export default async function MbtiDetailPage({ params }: Props) {
           <div className="flex items-center justify-center gap-3">
             {/* LINEシェア */}
             <a
-              href={`https://line.me/R/share?text=${encodeURIComponent(`私のボドゲMBTIは${typeCode}「${type.name}」でした！「${type.catchcopy}」\nhttps://www.boardgame-raou.com/mbti/${typeCode.toLowerCase()}`)}`}
+              href={`https://line.me/R/share?text=${encodeURIComponent(`私のボドゲMBTIは${typeCode}「${type.name}」でした！「${type.catchcopy}」\n${SITE_URL}/mbti/${typeCode.toLowerCase()}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-[#06C755]/40 bg-[#06C755]/15 px-5 py-2 text-xs font-bold text-[#06C755] transition-all hover:bg-[#06C755]/25"
@@ -230,7 +231,7 @@ export default async function MbtiDetailPage({ params }: Props) {
             </a>
             {/* Xシェア */}
             <a
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`私のボドゲMBTIは${typeCode}「${type.name}」でした！「${type.catchcopy}」 #ボドゲMBTI #ボードゲーム`)}&url=${encodeURIComponent(`https://www.boardgame-raou.com/mbti/${typeCode.toLowerCase()}`)}`}
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`私のボドゲMBTIは${typeCode}「${type.name}」でした！「${type.catchcopy}」 #ボドゲMBTI #ボードゲーム`)}&url=${encodeURIComponent(`${SITE_URL}/mbti/${typeCode.toLowerCase()}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 text-xs font-bold text-white transition-all hover:bg-white/20"

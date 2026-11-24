@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/constants'
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -126,7 +127,7 @@ export async function POST(req: NextRequest) {
         `■ コメント：${submitterComment ?? 'なし'}`,
         '',
         '管理画面で審査してください：',
-        'https://www.boardgame-raou.com/admin/submissions',
+        `${SITE_URL}/admin/submissions`,
       ].join('\n'),
     })
   } catch (e) {

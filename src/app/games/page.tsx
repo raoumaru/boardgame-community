@@ -23,8 +23,8 @@ const IMAGE_BASE_URL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/objec
 const GAMES_SELECT =
   "id, title, slug, title_kana, min_players, max_players, play_time_min, play_time_max, difficulty, genres, image_path, is_popular, is_recommendable, sort_order, created_at, external_url, submitter_nickname";
 
-// 本番環境（Vercel）かどうか
-const IS_PRODUCTION = !!process.env.VERCEL_ENV
+// デプロイ環境（Vercel / Cloudflare）かどうか。ローカルの next dev ではテスト用ゲームも表示する
+const IS_PRODUCTION = process.env.NODE_ENV === "production"
 
 // 1時間キャッシュ。管理画面でゲームを保存・削除すると自動でリセット
 const fetchPublishedGames = unstable_cache(

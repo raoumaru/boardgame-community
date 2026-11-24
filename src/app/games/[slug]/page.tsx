@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/constants'
 import { cache } from 'react'
 import { unstable_cache } from 'next/cache'
 import { Suspense } from 'react'
@@ -131,7 +132,7 @@ async function GameDetailContent({ params }: { params: Promise<{ slug: string }>
     name: g.title,
     description: g.description ?? g.rules ?? undefined,
     image: imageUrl ?? undefined,
-    url: `https://www.boardgame-raou.com/games/${g.slug}`,
+    url: `${SITE_URL}/games/${g.slug}`,
     numberOfPlayers: {
       '@type': 'QuantitativeValue',
       minValue: g.min_players ?? undefined,
